@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="シェーダー ファイル">
-      <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\3d">
       <UniqueIdentifier>{8ccef709-d514-43f7-ad35-629a9edd5057}</UniqueIdentifier>
     </Filter>
@@ -51,6 +48,9 @@
     </Filter>
     <Filter Include="ソース ファイル\2d">
       <UniqueIdentifier>{814a0f6d-f847-4c45-856d-4688fa4c9e6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\シェーダー ファイル">
+      <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -161,51 +161,51 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\SpriteVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ShapeVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ShapePS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ObjPS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ObjVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\PrimitivePS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\PrimitiveVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\TerrainVS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Sprite.hlsli">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Shape.hlsli">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Obj.hlsli">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Primitive.hlsli">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Terrain.hlsli">
-      <Filter>シェーダー ファイル</Filter>
+      <Filter>ソース ファイル\シェーダー ファイル</Filter>
     </None>
   </ItemGroup>
 </Project>
