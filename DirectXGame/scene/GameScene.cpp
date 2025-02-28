@@ -18,6 +18,8 @@ GameScene::~GameScene() {
 
 	// マップチップフィールドの開放
 	delete mapChipFiled_;
+
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -25,6 +27,9 @@ void GameScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+
+	// ビュープロジェクション生成
+	viewProjection_.Initialize();
 
 	mapChipFiled_ = new MapChipField;
 	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
@@ -34,6 +39,9 @@ void GameScene::Initialize() {
 
 	// ブロックのモデルを読み込む
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
+
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
 }
 
 void GameScene::Update() {
@@ -63,7 +71,7 @@ void GameScene::Update() {
 		}
 	}
 
-	//debugCamera_->Update();
+	debugCamera_->Update();
 
 #ifdef _DEBUG
 
