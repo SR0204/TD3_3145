@@ -3,10 +3,12 @@
 #include "Audio.h"
 #include "DirectXCommon.h"
 #include "Input.h"
+#include "MapChipField.h"
 #include "Model.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include <sstream>
 
 /// <summary>
 /// ゲームシーン
@@ -39,10 +41,33 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	void GenerateBlocks();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
+
+	// ビュープロジェクション
+	ViewProjection viewProjection_;
+
+	// 3Dモデルデータ
+	Model* modelBlock_ = nullptr;
+
+	// マップチップフィールド
+	MapChipField* mapChipFiled_;
+
+	// マップモデル
+	Model* mapModel_ = nullptr;
+
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
+	// デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
+
 
 	/// <summary>
 	/// ゲームシーン用

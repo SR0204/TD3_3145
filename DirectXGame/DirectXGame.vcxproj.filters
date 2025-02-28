@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="シェーダー ファイル">
+      <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ヘッダー ファイル\3d">
       <UniqueIdentifier>{8ccef709-d514-43f7-ad35-629a9edd5057}</UniqueIdentifier>
     </Filter>
@@ -49,9 +52,6 @@
     <Filter Include="ソース ファイル\2d">
       <UniqueIdentifier>{814a0f6d-f847-4c45-856d-4688fa4c9e6c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\シェーダー ファイル">
-      <UniqueIdentifier>{718c7f4c-fc51-40ad-a221-b9456a7a1a3c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -68,6 +68,18 @@
     </ClCompile>
     <ClCompile Include="2d\ImGuiManager.cpp">
       <Filter>ソース ファイル\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="MapChipField.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldTransformEx.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MathUtilityForText.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="3d\ViewProjection.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,54 +170,60 @@
     <ClInclude Include="3d\ObjectColor.h">
       <Filter>ヘッダー ファイル\3d</Filter>
     </ClInclude>
+    <ClInclude Include="MapChipField.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtilityForText.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\SpritePS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\SpriteVS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ShapeVS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ShapePS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ObjPS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\ObjVS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\PrimitivePS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\PrimitiveVS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
     <FxCompile Include="Resources\shaders\TerrainVS.hlsl">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Sprite.hlsli">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Shape.hlsli">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Obj.hlsli">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Primitive.hlsli">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </None>
     <None Include="Resources\shaders\Terrain.hlsli">
-      <Filter>ソース ファイル\シェーダー ファイル</Filter>
+      <Filter>シェーダー ファイル</Filter>
     </None>
   </ItemGroup>
 </Project>
