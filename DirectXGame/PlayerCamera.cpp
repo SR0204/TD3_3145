@@ -3,6 +3,7 @@
 #include "ImGui.h"
 
 void PlayerCamera::Initialize(Vector3 worldPos, Vector3 radian) { 
+	saveTranslation_ = worldPos;//座標を保存
 	worldTransform_.translation_ = worldPos;//引数のワールド座標を代入
 	worldTransform_.rotation_ = radian;//引数の角度を代入
 	viewProjection_.farZ = 300.0f;//farZの設定
@@ -37,6 +38,10 @@ void PlayerCamera::Update() {
 	ImGui::Begin("Camera Status");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.01f);
 	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
+	if (ImGui::Button("Reset")){
+		worldTransform_.translation_ = saveTranslation_;
+		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
+	}
 	ImGui::End();
 }
 

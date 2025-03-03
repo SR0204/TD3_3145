@@ -38,4 +38,6 @@ private://メンバ変数
 
 	float moveVel_;//カメラの移動速度
 	float rotateVel_;//カメラの旋回速度
+
+	Vector3 saveTranslation_;//座標を保存
 };

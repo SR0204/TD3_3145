@@ -69,6 +69,10 @@ void Player::Update() {
 	ImGui::Begin("Player Status");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
 	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
+	if (ImGui::Button("Reset")) {
+		worldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
+		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
+	}
 	ImGui::End();
 }
 
