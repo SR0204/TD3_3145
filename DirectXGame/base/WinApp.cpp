@@ -91,6 +91,7 @@ void WinApp::CreateGameWindow(
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
 	windowStyle_ = windowStyle;
+	windowStyle_ = WS_OVERLAPPEDWINDOW;
 	aspectRatio_ = float(clientWidth) / float(clientHeight);
 	// ウィンドウクラスの設定
 	wndClass_.cbSize = sizeof(WNDCLASSEX);

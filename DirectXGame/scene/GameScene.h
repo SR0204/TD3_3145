@@ -9,7 +9,9 @@
 #include "WorldTransform.h"
 #include "Player.h"
 #include "PlayerCamera.h"
+#include "OverHeadCamera.h"
 #include "Skydome.h"
+
 
 /// <summary>
 /// ゲームシーン
@@ -50,8 +52,10 @@ private: // メンバ変数
 	ViewProjection viewProjection_;//ビュープロジェクション
 	Player* player_ = nullptr;// プレイヤー
 	PlayerCamera* playerCamera_ = nullptr;//プレイヤーのカメラ
+	OverHeadCamera* overHeadCamera_ = nullptr;//俯瞰カメラ
 	Skydome* skydome_ = nullptr;//天球
 
+	bool isOverHeadCameraActive_;//俯瞰カメラのアクティブ
 
 	/// <summary>
 	/// ゲームシーン用
