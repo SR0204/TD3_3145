@@ -9,6 +9,7 @@ GameScene::~GameScene() {
 	//解放処理
 	delete player_;
 	delete playerCamera_;
+	delete skydome_;
 }
  
 void GameScene::Initialize() {
@@ -19,23 +20,24 @@ void GameScene::Initialize() {
 
 	viewProjection_.Initialize();//ビュープロジェクションの初期化
 
-	player_ = new Player();//プレイヤーの生成
-	player_->Initialize();//プレイヤーの初期化
+	player_ = new Player();	//プレイヤーの生成
+	player_->Initialize();	//プレイヤーの初期化
 
-	playerCamera_ = new PlayerCamera();//プレイヤーのカメラの生成
-	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f});//プレイヤーのカメラの初期化
-	playerCamera_->SetParent(&player_->GetWorldTransform());//プレイヤーとカメラの親子関係を結ぶ
+	playerCamera_ = new PlayerCamera();									//プレイヤーのカメラの生成
+	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f});	//プレイヤーのカメラの初期化
+	playerCamera_->SetParent(&player_->GetWorldTransform());		//プレイヤーとカメラの親子関係を結ぶ
 	
-	skydome_ = new Skydome();//天球の生成
-	skydome_->Initialize();//天球の初期化
+	skydome_ = new Skydome();	//天球の生成
+	skydome_->Initialize();		//天球の初期化
 
-	AxisIndicator::GetInstance()->SetVisible(true);// 軸方向表示の表示を有効化
+	AxisIndicator::GetInstance()->SetVisible(true);							// 軸方向表示の表示を有効化
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);// 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 }
 
 void GameScene::Update() { 
-
+	//プレイヤーのカメラの更新
 	playerCamera_->Update();
+	//ビュープロジェクションにプレイヤーのカメラを登録する
 	viewProjection_.matView = playerCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
 

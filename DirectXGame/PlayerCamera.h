@@ -18,7 +18,7 @@ public://メンバ関数
 	/// 更新処理
 	/// </summary>
 	void Update();
-	
+
 	/// <summary>
 	/// ビュープロジェクションを取得
 	/// </summary>
@@ -33,10 +33,9 @@ public://メンバ関数
 
 private://メンバ変数
 	Input* input_;//入力
-
 	WorldTransform worldTransform_;//ワールド変換データ
 	ViewProjection viewProjection_;//ビュープロジェクション
 
-	float moveVel_;
-	float rotateVel_;
+	float moveVel_;//カメラの移動速度
+	float rotateVel_;//カメラの旋回速度
 };

@@ -5,7 +5,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-
 Player::~Player() { 
 	delete model_;
 }
@@ -28,11 +27,17 @@ void Player::Update() {
 	// ワールド変換データの更新
 	worldTransform_.UpdateMatrix(true);
 
-	//旋回処理
-	if (input_->PushKey(DIK_Q)){
+	//旋回処理[I:上 K:下 J:左 L:右]
+	if (input_->PushKey(DIK_K)) {
+		worldTransform_.rotation_.x += rotateVel_.x;
+	}
+	if (input_->PushKey(DIK_I)) {
+		worldTransform_.rotation_.x -= rotateVel_.x;
+	}
+	if (input_->PushKey(DIK_J)){
 		worldTransform_.rotation_.y -= rotateVel_.y;
 	}
-	if (input_->PushKey(DIK_E)) {
+	if (input_->PushKey(DIK_L)) {
 		worldTransform_.rotation_.y += rotateVel_.y;
 	}
 
@@ -41,7 +46,7 @@ void Player::Update() {
 		worldTransform_.rotation_.y *= -1;
 	}
 
-	//移動処理(向いてる方向に進む)
+	//移動処理(向いてる方向に進む)[W:前進 S:後退 A:左 D:右]
 	if (input_->PushKey(DIK_W)){
 		//座標に角度と移動速度を乗算した値を足す
 		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_;
@@ -62,10 +67,8 @@ void Player::Update() {
 
 	//ImGuiで値を表示
 	ImGui::Begin("Player Status");
-
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
 	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
-
 	ImGui::End();
 }
 
