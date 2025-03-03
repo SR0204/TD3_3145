@@ -24,3 +24,6 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vecto
 
 // ベクトル変換
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
+
+// 逆行列
+Matrix4x4 Inverse(const Matrix4x4& matrix);

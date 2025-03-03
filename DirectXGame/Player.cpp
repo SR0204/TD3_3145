@@ -16,8 +16,9 @@ void Player::Initialize() {
 	texture_ = TextureManager::Load("uvChecker.png");//テクスチャの読み込み
 	input_ = Input::GetInstance();//入力のインスタンスを取得
 
-	rotateVel_ = {0.02f, 0.02f, 0.02f};
-	moveVel_ = 0.1f;
+	hitRad_ = 1.0f;//当たり判定の半径
+	rotateVel_ = {0.02f, 0.02f, 0.02f};//旋回速度
+	moveVel_ = 0.1f;//移動速度
 }
 
 void Player::Update() {
@@ -42,6 +43,7 @@ void Player::Update() {
 
 	//移動処理(向いてる方向に進む)
 	if (input_->PushKey(DIK_W)){
+		//座標に角度と移動速度を乗算した値を足す
 		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_;
 		worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y) * moveVel_;
 	}

@@ -8,7 +8,8 @@ GameScene::GameScene() {}
 GameScene::~GameScene() { 
 	//解放処理
 	delete player_;
-	delete debugCamera_;
+	//delete debugCamera_;
+	delete playerCamera_;
 }
  
 void GameScene::Initialize() {
@@ -22,20 +23,22 @@ void GameScene::Initialize() {
 	player_ = new Player();//プレイヤーの生成
 	player_->Initialize();//プレイヤーの初期化
 
-	// デバッグカメラの生成
-	debugCamera_ = new DebugCamera(1280, 720);
+	//debugCamera_ = new DebugCamera(1280, 720);// デバッグカメラの生成
 
-	// 軸方向表示の表示を有効
-	AxisIndicator::GetInstance()->SetVisible(true);
-	// 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
+	playerCamera_ = new PlayerCamera();//プレイヤーのカメラの生成
+	playerCamera_->Initialize({0.0f, 50.0f, 0.0f}, {1.62f, 0.0f, 0.0f});//プレイヤーのカメラの初期化
+
+	
+	AxisIndicator::GetInstance()->SetVisible(true);// 軸方向表示の表示を有効化
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);// 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 }
 
 void GameScene::Update() { 
 
-	debugCamera_->Update();
-	viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-	viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+	//debugCamera_->Update();
+	playerCamera_->Update();
+	viewProjection_.matView = playerCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();

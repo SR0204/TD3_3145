@@ -26,13 +26,14 @@ public://メンバ関数
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
-private://メンバ変数
 
+private://メンバ変数
 	WorldTransform worldTransform_;	//ワールド変換データ
 	Model* model_ = nullptr;		//モデル
 	uint32_t texture_;//テクスチャ
 	Input* input_ = nullptr;		//入力
 
+	float hitRad_;//当たり判定の半径
 	Vector3 rotateVel_;//旋回速度
 	float moveVel_;//移動速度
 };
