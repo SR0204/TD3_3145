@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "AxisIndicator.h"
 #include "TextureManager.h"
 #include <cassert>
 
@@ -7,6 +8,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() { 
 	//解放処理
 	delete player_;
+	delete debugCamera_;
 }
  
 void GameScene::Initialize() {
@@ -19,9 +21,25 @@ void GameScene::Initialize() {
 
 	player_ = new Player();//プレイヤーの生成
 	player_->Initialize();//プレイヤーの初期化
+
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280, 720);
+
+	// 軸方向表示の表示を有効
+	AxisIndicator::GetInstance()->SetVisible(true);
+	// 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);
 }
 
 void GameScene::Update() { 
+
+	debugCamera_->Update();
+	viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+	viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+
+	// ビュープロジェクション行列の転送
+	viewProjection_.TransferMatrix();
+
 	player_->Update();//プレイヤーの更新処理
 }
 

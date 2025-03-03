@@ -1,20 +1,73 @@
 #include "Player.h"
+#include "TextureManager.h"
+#include "MathUtilityForText.h"
+#include "ImGui.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
-Player::~Player() {
 
+Player::~Player() { 
+	delete model_;
 }
 
 void Player::Initialize() { 
 	worldTransform_.Initialize();//ワールド変換データの初期化
-	model_ = Model::CreateSphere();//モデルの生成
+	model_ = Model::Create();// モデルの生成
+	texture_ = TextureManager::Load("uvChecker.png");//テクスチャの読み込み
 	input_ = Input::GetInstance();//入力のインスタンスを取得
+
+	rotateVel_ = {0.02f, 0.02f, 0.02f};
+	moveVel_ = 0.1f;
 }
 
 void Player::Update() {
 
+	const float pi = float(M_PI);
+
+	// ワールド変換データの更新
+	worldTransform_.UpdateMatrix(true);
+
+	//旋回処理
+	if (input_->PushKey(DIK_Q)){
+		worldTransform_.rotation_.y -= rotateVel_.y;
+	}
+	if (input_->PushKey(DIK_E)) {
+		worldTransform_.rotation_.y += rotateVel_.y;
+	}
+
+	//旋回値が|π|を越えたら値を変える
+	if (worldTransform_.rotation_.y >= pi || worldTransform_.rotation_.y <= -pi) {
+		worldTransform_.rotation_.y *= -1;
+	}
+
+	//移動処理(向いてる方向に進む)
+	if (input_->PushKey(DIK_W)){
+		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_;
+		worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y) * moveVel_;
+	}
+	if (input_->PushKey(DIK_S)) {
+		worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y) * moveVel_;
+		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y) * moveVel_;
+	}
+	if (input_->PushKey(DIK_D)) {
+		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
+		worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
+	}
+	if (input_->PushKey(DIK_A)) {
+		worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
+		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
+	}
+
+	//ImGuiで値を表示
+	ImGui::Begin("Player Status");
+
+	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
+	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
+
+	ImGui::End();
 }
 
 void Player::Draw(ViewProjection& viewProjection) { 
 	//3Dモデルの描画
-	model_->Draw(worldTransform_, viewProjection);
+	model_->Draw(worldTransform_, viewProjection,texture_);
 }
