@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "MapChipField.h"
 #include "TextureManager.h"
+#include "imgui.h"
 #include <cassert>
 #include <fstream>
 
@@ -20,6 +21,9 @@ GameScene::~GameScene() {
 	delete mapChipFiled_;
 
 	delete debugCamera_;
+
+	// 天球
+	delete SkySphere_;
 }
 
 void GameScene::Initialize() {
@@ -42,6 +46,15 @@ void GameScene::Initialize() {
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
+
+	// 天球の生成
+	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
+	SkySphere_ = new SkySphere();
+	SkySphere_->Initialize(modelSkySphere_, &viewProjection_);
+
+	//ビュープロジェクションの初期化
+	viewProjection_.farZ = 700;
+	viewProjection_.Initialize();
 }
 
 void GameScene::Update() {
@@ -73,6 +86,9 @@ void GameScene::Update() {
 
 	debugCamera_->Update();
 
+	//天球の更新
+	SkySphere_->Update();
+
 #ifdef _DEBUG
 
 	if (input_->TriggerKey(DIK_SPACE)) {
@@ -91,6 +107,12 @@ void GameScene::Update() {
 		// ビュープロジェクション行列の更新と転送
 		viewProjection_.UpdateMatrix();
 	}
+
+	ImGui::Begin("DebugCamera");
+
+	ImGui::DragFloat3("viewProjection", &viewProjection_.translation_.x, 1.0f);
+
+	ImGui::End();
 }
 
 void GameScene::Draw() {
@@ -119,6 +141,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	//天球の描画
+	SkySphere_->Draw();
 
 	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

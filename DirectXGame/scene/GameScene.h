@@ -9,6 +9,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <sstream>
+#include"SkySphere.h"
 
 /// <summary>
 /// ゲームシーン
@@ -68,6 +69,11 @@ private: // メンバ変数
 	// デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
 
+	// 天球
+	SkySphere* SkySphere_ = nullptr;
+
+	// 天球モデルデータ
+	Model* modelSkySphere_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
