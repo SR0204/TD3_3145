@@ -12,8 +12,8 @@ Player::~Player() {
 
 void Player::Initialize() { 
 	worldTransform_.Initialize();//ワールド変換データの初期化
-	model_ = Model::Create();// モデルの生成
-	texture_ = TextureManager::Load("uvChecker.png");//テクスチャの読み込み
+	model_ = Model::CreateFromOBJ("player");// モデルの生成
+	textureHandle_ = TextureManager::Load("uvChecker.png"); // テクスチャの読み込み
 	input_ = Input::GetInstance();//入力のインスタンスを取得
 
 	hitRad_ = 1.0f;//当たり判定の半径
@@ -71,5 +71,5 @@ void Player::Update() {
 
 void Player::Draw(ViewProjection& viewProjection) { 
 	//3Dモデルの描画
-	model_->Draw(worldTransform_, viewProjection,texture_);
+	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 }

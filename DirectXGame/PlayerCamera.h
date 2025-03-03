@@ -25,6 +25,12 @@ public://メンバ関数
 	/// <returns>ビュープロジェクションを取得</returns>
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
+	/// <summary>
+	/// 親となるワールドトランスフォームをセット
+	/// </summary>
+	/// <param name="parent"></param>
+	void SetParent(const WorldTransform* parent);
+
 private://メンバ変数
 	Input* input_;//入力
 

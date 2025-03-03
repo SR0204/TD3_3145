@@ -8,8 +8,8 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "Player.h"
-#include "DebugCamera.h"
 #include "PlayerCamera.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン
@@ -47,12 +47,11 @@ private: // メンバ変数
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
-	
 	ViewProjection viewProjection_;//ビュープロジェクション
-	Player* player_;//プレイヤー
-
-	DebugCamera* debugCamera_ = nullptr;//デバッグカメラ
+	Player* player_ = nullptr;// プレイヤー
 	PlayerCamera* playerCamera_ = nullptr;//プレイヤーのカメラ
+	Skydome* skydome_ = nullptr;//天球
+
 
 	/// <summary>
 	/// ゲームシーン用

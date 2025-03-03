@@ -41,3 +41,8 @@ void PlayerCamera::Update() {
 
 	ImGui::End();
 }
+
+void PlayerCamera::SetParent(const WorldTransform* parent) {
+	//親子関係を結ぶ
+	worldTransform_.parent_ = parent;
+}

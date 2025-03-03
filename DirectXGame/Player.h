@@ -25,12 +25,16 @@ public://メンバ関数
 	/// 描画処理
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
-
+	/// <summary>
+	/// ワールドトランスフォームを取得
+	/// </summary>
+	/// <returns>ワールドトランスフォームを取得</returns>
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
 private://メンバ変数
 	WorldTransform worldTransform_;	//ワールド変換データ
 	Model* model_ = nullptr;		//モデル
-	uint32_t texture_;//テクスチャ
+	uint32_t textureHandle_;//テクスチャ
 	Input* input_ = nullptr;		//入力
 
 	float hitRad_;//当たり判定の半径

@@ -8,7 +8,6 @@ GameScene::GameScene() {}
 GameScene::~GameScene() { 
 	//解放処理
 	delete player_;
-	//delete debugCamera_;
 	delete playerCamera_;
 }
  
@@ -23,27 +22,29 @@ void GameScene::Initialize() {
 	player_ = new Player();//プレイヤーの生成
 	player_->Initialize();//プレイヤーの初期化
 
-	//debugCamera_ = new DebugCamera(1280, 720);// デバッグカメラの生成
-
 	playerCamera_ = new PlayerCamera();//プレイヤーのカメラの生成
-	playerCamera_->Initialize({0.0f, 50.0f, 0.0f}, {1.62f, 0.0f, 0.0f});//プレイヤーのカメラの初期化
-
+	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f});//プレイヤーのカメラの初期化
+	playerCamera_->SetParent(&player_->GetWorldTransform());//プレイヤーとカメラの親子関係を結ぶ
 	
+	skydome_ = new Skydome();//天球の生成
+	skydome_->Initialize();//天球の初期化
+
 	AxisIndicator::GetInstance()->SetVisible(true);// 軸方向表示の表示を有効化
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_);// 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 }
 
 void GameScene::Update() { 
 
-	//debugCamera_->Update();
 	playerCamera_->Update();
 	viewProjection_.matView = playerCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
-
-	player_->Update();//プレイヤーの更新処理
+	//プレイヤーの更新処理
+	player_->Update();
+	//天球の更新処理
+	skydome_->Update();
 }
 
 void GameScene::Draw() {
@@ -74,6 +75,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw(viewProjection_);//プレイヤーの描画
+	skydome_->Draw(viewProjection_);//天球の描画
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
