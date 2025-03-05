@@ -66,17 +66,17 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 	}
 }
 
-MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex) {
+MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex) {
 
 	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex) {
 		return MapChipType::kBlank;
 	}
 
-	if (yIndex < 0 || kNumBlockVirtical - 1 < yIndex) {
+	if (zIndex < 0 || kNumBlockVirtical - 1 < zIndex) {
 		return MapChipType::kBlank;
 	}
 
-	return mapChipDate_.date[yIndex][xIndex];
+	return mapChipDate_.date[zIndex][xIndex];
 }
 
-Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex) { return Vector3(kBlockWidth * xIndex, kBlockHeight * (kNumBlockVirtical - 1 - yIndex), 0); }
+Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex) { return Vector3(kBlockWidth * xIndex,0,kBlockHeight * (zIndex) ); }
