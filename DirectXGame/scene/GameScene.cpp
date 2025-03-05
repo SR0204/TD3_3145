@@ -111,6 +111,7 @@ void GameScene::Update() {
 	ImGui::Begin("DebugCamera");
 
 	ImGui::DragFloat3("viewProjection", &viewProjection_.translation_.x, 1.0f);
+	ImGui::DragFloat3("Rotation", &viewProjection_.rotation_.x, 1.0f);
 
 	ImGui::End();
 }
