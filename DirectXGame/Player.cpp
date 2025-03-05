@@ -19,6 +19,8 @@ void Player::Initialize() {
 	deadZone_ = 8000;//デッドゾーン
 	trigerDeadZone_ = 30;//トリガーのデッドゾーン
 
+	leftStickLange_ = 0.0f;
+
 	hitRad_ = 1.0f;//当たり判定の半径
 	rotateVel_ = {0.02f, 0.02f, 0.02f};//旋回速度
 	moveVel_ = 0.1f;//移動速度
@@ -48,6 +50,17 @@ void Player::Update() {
 	ApplyTriggerDeadZone(leftTrigger);
 	ApplyTriggerDeadZone(rightTrigger);
 
+	//長さを求める
+	leftStickLange_ = sqrtf(powf(static_cast<float>(leftThumbX), 2.0f) + powf(static_cast<float>(leftThumbY), 2.0f));
+	rightStickLange_ = sqrtf(powf(static_cast<float>(rightThumbX), 2.0f) + powf(static_cast<float>(rightThumbY), 2.0f));
+
+	//単位ベクトルを求める
+	leftStickUnitVector_ = {static_cast<float>(leftThumbX) / leftStickLange_, static_cast<float>(leftThumbY) / leftStickLange_};
+	rightStickUnitVector_ = {static_cast<float>(rightThumbX) / rightStickLange_, static_cast<float>(rightThumbY) / rightStickLange_};
+
+
+	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.5f, 0.1f, 0.1f, 1.0f));
+	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.2f, 0.2f, 0.5f, 1.0f));
 
 	//コントローラーの状態をImGuiで出力
 	ImGui::Begin("Controller");
@@ -55,77 +68,181 @@ void Player::Update() {
 		// コントローラーが接続出来ている時
 		ImGui::Text("Connect");
 		//ボタン入力を確認
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
-			ImGui::Text("A Buttun is Push");
-		} else {
-			ImGui::Text("A Buttun is Release");
+		if (ImGui::TreeNode("Button")) {
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+				ImGui::Text("A Buttun     [1]");
+			} else {
+				ImGui::Text("A Buttun     [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+				ImGui::Text("B Buttun     [1]");
+			} else {
+				ImGui::Text("B Buttun     [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
+				ImGui::Text("X Buttun     [1]");
+			} else {
+				ImGui::Text("X Buttun     [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
+				ImGui::Text("Y Buttun     [1]");
+			} else {
+				ImGui::Text("Y Buttun     [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+				ImGui::Text("LS Buttun    [1]");
+			} else {
+				ImGui::Text("LS Buttun    [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+				ImGui::Text("RS Buttun    [1]");
+			} else {
+				ImGui::Text("RS Buttun    [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
+				ImGui::Text("START Buttun [1]");
+			} else {
+				ImGui::Text("START Buttun [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
+				ImGui::Text("UP Buttun    [1]");
+			} else {
+				ImGui::Text("UP Buttun    [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
+				ImGui::Text("DOWN Buttun  [1]");
+			} else {
+				ImGui::Text("DOWN Buttun  [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
+				ImGui::Text("RIGHT Buttun [1]");
+			} else {
+				ImGui::Text("RIGHT Buttun [0]");
+			}
+			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
+				ImGui::Text("LEFT Buttun  [1]");
+			} else {
+				ImGui::Text("LEFT Buttun  [0]");
+			}
+			ImGui::TreePop();
 		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
-			ImGui::Text("B Buttun is Push");
-		} else {
-			ImGui::Text("B Buttun is Release");
+		//スティック
+		if (ImGui::TreeNode("Stick")){
+			ImGui::Text("LeftStick  [%6d,%6d]", leftThumbX, leftThumbY);
+			ImGui::Text("RightStick [%6d,%6d]", rightThumbX, rightThumbY);
+			ImGui::Text("LeftStickLange [%f]", leftStickLange_);
+			ImGui::Text("UnitVector[%f,%f]", leftStickUnitVector_.x, leftStickUnitVector_.y);
+			ImGui::Text("LeftStickLange [%f]", rightStickLange_);
+			ImGui::Text("UnitVector[%f,%f]", rightStickUnitVector_.x, rightStickUnitVector_.y);
+			ImGui::Text("DeadZone Max [32767]");
+			ImGui::SliderInt("DeadZone", &deadZone_, 0, 32767);
+			if (ImGui::TreeNode("Set")) {
+				if (ImGui::Button("0", {50, 20})) {
+					deadZone_ = 0;
+				}
+				if (ImGui::Button("2000", {50, 20})) {
+					deadZone_ = 2000;
+				}
+				if (ImGui::Button("4000", {50, 20})) {
+					deadZone_ = 4000;
+				}
+				if (ImGui::Button("6000", {50, 20})) {
+					deadZone_ = 6000;
+				}
+				if (ImGui::Button("8000", {50, 20})) {
+					deadZone_ = 8000;
+				}
+				if (ImGui::Button("10000", {50, 20})) {
+					deadZone_ = 10000;
+				}
+				if (ImGui::Button("12000", {50, 20})) {
+					deadZone_ = 12000;
+				}
+				if (ImGui::Button("14000", {50, 20})) {
+					deadZone_ = 14000;
+				}
+				if (ImGui::Button("16000", {50, 20})) {
+					deadZone_ = 16000;
+				}
+				if (ImGui::Button("18000", {50, 20})) {
+					deadZone_ = 18000;
+				}
+				if (ImGui::Button("18000", {50, 20})) {
+					deadZone_ = 18000;
+				}
+				if (ImGui::Button("20000", {50, 20})) {
+					deadZone_ = 20000;
+				}
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
 		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
-			ImGui::Text("X Buttun is Push");
-		} else {
-			ImGui::Text("X Buttun is Release");
+		//トリガー
+		if (ImGui::TreeNode("Trigger")){
+			ImGui::Text("LeftTriger [%3d]", leftTrigger);
+			ImGui::Text("RightTriger[%3d]", rightTrigger);
+			ImGui::Text("TriggerDeadZone Max[255]");
+			ImGui::SliderInt("TriggerDeadZone", &trigerDeadZone_, 0, 255);
+			if (ImGui::TreeNode("Set")) {
+				if (ImGui::Button("0", {50, 20})) {
+					trigerDeadZone_ = 0;
+				}
+				if (ImGui::Button("32", {50, 20})) {
+					trigerDeadZone_ = 32;
+				}
+				if (ImGui::Button("64", {50, 20})) {
+					trigerDeadZone_ = 64;
+				}
+				if (ImGui::Button("96", {50, 20})) {
+					trigerDeadZone_ = 96;
+				}
+				if (ImGui::Button("128", {50, 20})) {
+					trigerDeadZone_ = 128;
+				}
+				if (ImGui::Button("160", {50, 20})) {
+					trigerDeadZone_ = 160;
+				}
+				if (ImGui::Button("192", {50, 20})) {
+					trigerDeadZone_ = 192;
+				}
+				if (ImGui::Button("224", {50, 20})) {
+					trigerDeadZone_ = 224;
+				}
+				if (ImGui::Button("255", {50, 20})) {
+					trigerDeadZone_ = 255;
+				}
+				ImGui::TreePop();
+			}
+			ImGui::TreePop();
 		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
-			ImGui::Text("Y Buttun is Push");
-		} else {
-			ImGui::Text("Y Buttun is Release");
+		//振動
+		if (ImGui::TreeNode("Vibration")) {
+			ImGui::Text("Vibration Max [65535]");
+			ImGui::SliderFloat("VibrationX", &vibrationVal_.x, 0.0f, 65535.0f);
+			ImGui::SliderFloat("VibrationY", &vibrationVal_.y, 0.0f, 65535.0f);
+			ImGui::TreePop();
 		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-			ImGui::Text("LS Buttun is Push");
-		} else {
-			ImGui::Text("LS Buttun is Release");
+		//リセット
+		if (ImGui::TreeNode("Reset")) {
+			ImGui::Text("DeadZone[8000]");
+			ImGui::Text("TrigerDeadZone[30]");
+			ImGui::Text("Vibration[0,0]");
+			if (ImGui::Button("Reset")) {
+				deadZone_ = 8000;
+				trigerDeadZone_ = 30;
+				vibrationVal_ = {};
+			}
+			ImGui::TreePop();
 		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-			ImGui::Text("RS Buttun is Push");
-		} else {
-			ImGui::Text("RS Buttun is Release");
-		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
-			ImGui::Text("START Buttun is Push");
-		} else {
-			ImGui::Text("START Buttun is Release");
-		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
-			ImGui::Text("UP Buttun is Push");
-		} else {
-			ImGui::Text("UP Buttun is Release");
-		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
-			ImGui::Text("DOWN Buttun is Push");
-		} else {
-			ImGui::Text("DOWN Buttun is Release");
-		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
-			ImGui::Text("RIGHT Buttun is Push");
-		} else {
-			ImGui::Text("RIGHT Buttun is Release");
-		}
-		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
-			ImGui::Text("LEFT Buttun is Push");
-		} else {
-			ImGui::Text("LEFT Buttun is Release");
-		}
-		ImGui::Text("leftThumb  [%6d,%6d]", leftThumbX, leftThumbY);
-		ImGui::Text("rightThumb [%6d,%6d]", rightThumbX, rightThumbY);
-		ImGui::Text("leftTriger [%3d]", leftTrigger);
-		ImGui::Text("rightTriger[%3d]", rightTrigger);
-		ImGui::Text("DeadZone Max [32767]");
-		ImGui::DragInt("DeadZone", &deadZone_, 1, 0, 32767);
-		ImGui::Text("TriggerDeadZone Max[255]");
-		ImGui::DragInt("TriggerDeadZone", &trigerDeadZone_, 1, 0, 255);
-		ImGui::Text("Vibration Max [65535]");
-		ImGui::DragFloat2("Vibration", &vibrationVal_.x, 100.0f, 0.0f, 65535.0f);
 	} else {
 		// コントローラーが接続出来ていない時
 		ImGui::Text("Unconnect");
 	}
 
 	ImGui::End();
+
+	ImGui::PopStyleColor();
+	ImGui::PopStyleColor();
 
 	///ーーーここまでーーー
 
@@ -147,11 +264,17 @@ void Player::Update() {
 	if (input_->PushKey(DIK_J)){
 		worldTransform_.rotation_.y -= rotateVel_.y;
 	}
-	
 
 	//旋回値が|π|を越えたら値を変える
 	if (worldTransform_.rotation_.y >= pi || worldTransform_.rotation_.y <= -pi) {
 		worldTransform_.rotation_.y *= -1;
+	}
+
+	//左SHIFTを押すと走る
+	if (input_->PushKey(DIK_LSHIFT)) {
+		moveVel_ = 0.2f;
+	} else {
+		moveVel_ = 0.1f;
 	}
 
 	//移動処理(向いてる方向に進む)[W:前進 S:後退 D:右 A:左 ]
@@ -173,8 +296,21 @@ void Player::Update() {
 		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
 	}
 
+	// 左スティックを使ったカメラ旋回
+	if (rightStickUnitVector_.x > 0.0f || rightStickUnitVector_.y > 0.0f || rightStickUnitVector_.x < 0.0f || rightStickUnitVector_.y < 0.0f) {
+		worldTransform_.rotation_.x += rightStickUnitVector_.y * -rotateVel_.x;
+		worldTransform_.rotation_.y -= -rightStickUnitVector_.x * rotateVel_.y;
+	}
+
+	//worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_;←これを移動処理に書いて
+	// 右スティックを使ったカメラ旋回
+	if (leftStickUnitVector_.x > 0.0f || leftStickUnitVector_.y > 0.0f || leftStickUnitVector_.x < 0.0f || leftStickUnitVector_.y < 0.0f) {
+		worldTransform_.translation_.x += leftStickUnitVector_.x * -moveVel_;
+		worldTransform_.translation_.z -= -leftStickUnitVector_.y * moveVel_;
+	}
+
 	//ImGuiで値を表示
-	ImGui::Begin("Player Status");
+	ImGui::Begin("Player");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
 	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
 	if (ImGui::Button("Reset")) {

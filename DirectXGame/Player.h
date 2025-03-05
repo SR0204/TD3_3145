@@ -66,6 +66,11 @@ private://メンバ変数
 	Vector2 vibrationVal_;//調整用バイブレーション値
 	int deadZone_;//デッドゾーン
 	int trigerDeadZone_;//トリガーのデッドゾーン
+	
+	float leftStickLange_;//左スティックのベクトルの長さ
+	Vector2 leftStickUnitVector_;//左単位ベクトル
+	float rightStickLange_;        // 右スティックのベクトルの長さ
+	Vector2 rightStickUnitVector_; // 右単位ベクトル
 
 	float hitRad_;		//当たり判定の半径
 	Vector3 rotateVel_;	//旋回速度
