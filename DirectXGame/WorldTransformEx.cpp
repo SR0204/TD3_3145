@@ -1,17 +1,23 @@
 #include "MathUtilityForText.h"
 #include "WorldTransform.h"
 
-void WorldTransform::UpdateMatrix() {
+void WorldTransform::UpdateMatrix(bool isTransfer) {
 	// スケール、回転、平行移動を合成して行列を計算する
 	matWorld_ = MakeAffineMatrix(scale_, rotation_, translation_);
 
-	////定数バッファに転送する
-	TransferMatrix();
+	if (parent_) {
+		matWorld_ *= parent_->matWorld_;
+	}
+
+	if (isTransfer == true) {
+		// 定数バッファに転送
+		TransferMatrix();
+	}
 }
 
 // レールカメラ専用
-void WorldTransform::UpdateMatrixRail() {
-
-	// スケール、回転、平行行列を合成して行列を計算する
-	matWorld_ = MakeAffineMatrix(scale_, rotation_, translation_);
-}
+//void WorldTransform::UpdateMatrixRail() {
+//
+//	// スケール、回転、平行行列を合成して行列を計算する
+//	matWorld_ = MakeAffineMatrix(scale_, rotation_, translation_);
+//}

@@ -10,6 +10,9 @@
 #include "WorldTransform.h"
 #include <sstream>
 #include"SkySphere.h"
+#include "Player.h"
+#include "PlayerCamera.h"
+#include "OverHeadCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -75,6 +78,11 @@ private: // メンバ変数
 	// 天球モデルデータ
 	Model* modelSkySphere_ = nullptr;
 
+	Player* player_ = nullptr;                 // プレイヤー
+	PlayerCamera* playerCamera_ = nullptr;     // プレイヤーのカメラ
+	OverHeadCamera* overHeadCamera_ = nullptr; // 俯瞰カメラ
+
+	bool isOverHeadCameraActive_; // 俯瞰カメラのアクティブ
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

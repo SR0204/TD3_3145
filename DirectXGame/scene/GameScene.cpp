@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include <cassert>
 #include <fstream>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
@@ -24,6 +25,10 @@ GameScene::~GameScene() {
 
 	// 天球
 	delete SkySphere_;
+
+	delete player_;
+	delete playerCamera_;
+	delete overHeadCamera_;
 }
 
 void GameScene::Initialize() {
@@ -34,6 +39,21 @@ void GameScene::Initialize() {
 
 	// ビュープロジェクション生成
 	viewProjection_.Initialize();
+
+	player_ = new Player(); // プレイヤーの生成
+	player_->Initialize();  // プレイヤーの初期化
+
+	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成
+	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f}); // プレイヤーのカメラの初期化
+	playerCamera_->SetParent(&player_->GetWorldTransform());           // プレイヤーとカメラの親子関係を結ぶ
+
+	overHeadCamera_ = new OverHeadCamera(); // 俯瞰カメラの生成
+	overHeadCamera_->Initialize();          // 俯瞰カメラの初期化
+
+	isOverHeadCameraActive_ = false; // 俯瞰カメラのアクティブ
+
+	AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 
 	mapChipFiled_ = new MapChipField;
 	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
@@ -59,6 +79,37 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+	if (isOverHeadCameraActive_ == false) {
+		// プレイヤーのカメラの更新
+		playerCamera_->Update();
+		// ビュープロジェクションにプレイヤーのカメラを登録する
+		viewProjection_.matView = playerCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
+	} else if (isOverHeadCameraActive_ == true) {
+		//
+		overHeadCamera_->Update();
+		//
+		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
+	}
+
+
+
+	// ビュープロジェクション行列の転送
+	viewProjection_.TransferMatrix();
+	// プレイヤーの更新処理
+	player_->Update();
+
+	// ImGuiで値を表示
+	ImGui::Begin("Camera");
+	if (ImGui::Button("OverHeadCamera")) {
+		isOverHeadCameraActive_ = true;
+	}
+	if (ImGui::Button("PlayerCamera")) {
+		isOverHeadCameraActive_ = false;
+	}
+	ImGui::End();
+
 	// ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
@@ -80,7 +131,7 @@ void GameScene::Update() {
 			//// 定数バッファに転送する
 			// worldTransformBlock->TransferMatrix();
 
-			worldTransformBlock->UpdateMatrix();
+			worldTransformBlock->UpdateMatrix(true);
 		}
 	}
 
@@ -142,6 +193,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	player_->Draw(viewProjection_); // プレイヤーの描画
 
 	//天球の描画
 	SkySphere_->Draw();
