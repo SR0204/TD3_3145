@@ -270,6 +270,13 @@ void Player::Update() {
 		worldTransform_.rotation_.y *= -1;
 	}
 
+	//カメラの角度制限
+	if (worldTransform_.rotation_.x > pi / 4.0f) {
+		worldTransform_.rotation_.x = pi / 4.0f;
+	}
+	if (worldTransform_.rotation_.x < -pi / 4.0f) {
+		worldTransform_.rotation_.x = -pi / 4.0f;
+	}
 
 	//移動処理(向いてる方向に進む)[W:前進 S:後退 D:右 A:左 ]
 	if (input_->PushKey(DIK_W)){
