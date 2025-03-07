@@ -21,7 +21,7 @@ GameScene::~GameScene() {
 	// マップチップフィールドの開放
 	delete mapChipFiled_;
 
-	delete debugCamera_;
+	//delete debugCamera_;
 
 	// 天球
 	delete SkySphere_;
@@ -65,7 +65,7 @@ void GameScene::Initialize() {
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
 
 	// デバッグカメラの生成
-	debugCamera_ = new DebugCamera(1280, 720);
+	//debugCamera_ = new DebugCamera(1280, 720);
 
 	// 天球の生成
 	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
@@ -135,36 +135,36 @@ void GameScene::Update() {
 		}
 	}
 
-	debugCamera_->Update();
+	//debugCamera_->Update();
 
 	//天球の更新
 	SkySphere_->Update();
 
-#ifdef _DEBUG
-
-	if (input_->TriggerKey(DIK_SPACE)) {
-		isDebugCameraActive_ = true;
-	}
-
-#endif // _DEBUG
-
-	if (isDebugCameraActive_) {
-		debugCamera_->Update();
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		// ビュープロジェクション行列の転送
-		viewProjection_.TransferMatrix();
-	} else {
-		// ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
-	}
-
-	ImGui::Begin("DebugCamera");
-
-	ImGui::DragFloat3("viewProjection", &viewProjection_.translation_.x, 1.0f);
-	ImGui::DragFloat3("Rotation", &viewProjection_.rotation_.x, 1.0f);
-
-	ImGui::End();
+//#ifdef _DEBUG
+//
+//	if (input_->TriggerKey(DIK_SPACE)) {
+//		isDebugCameraActive_ = true;
+//	}
+//
+//#endif // _DEBUG
+//
+//	if (isDebugCameraActive_) {
+//		debugCamera_->Update();
+//		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+//		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+//		// ビュープロジェクション行列の転送
+//		viewProjection_.TransferMatrix();
+//	} else {
+//		// ビュープロジェクション行列の更新と転送
+//		viewProjection_.UpdateMatrix();
+//	}
+//
+//	ImGui::Begin("DebugCamera");
+//
+//	ImGui::DragFloat3("viewProjection", &viewProjection_.translation_.x, 1.0f);
+//	ImGui::DragFloat3("Rotation", &viewProjection_.rotation_.x, 1.0f);
+//
+//	ImGui::End();
 }
 
 void GameScene::Draw() {
