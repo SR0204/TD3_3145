@@ -131,9 +131,9 @@ void Player::Update() {
 			ImGui::Text("LeftStick  [%6d,%6d]", leftThumbX, leftThumbY);
 			ImGui::Text("RightStick [%6d,%6d]", rightThumbX, rightThumbY);
 			ImGui::Text("LeftStickLange [%f]", leftStickLange_);
-			ImGui::Text("UnitVector[%f,%f]", leftStickUnitVector_.x, leftStickUnitVector_.y);
+			ImGui::Text("LeftUnitVector[%f,%f]", leftStickUnitVector_.x, leftStickUnitVector_.y);
 			ImGui::Text("LeftStickLange [%f]", rightStickLange_);
-			ImGui::Text("UnitVector[%f,%f]", rightStickUnitVector_.x, rightStickUnitVector_.y);
+			ImGui::Text("RightUnitVector[%f,%f]", rightStickUnitVector_.x, rightStickUnitVector_.y);
 			ImGui::Text("DeadZone Max [32767]");
 			ImGui::SliderInt("DeadZone", &deadZone_, 0, 32767);
 			if (ImGui::TreeNode("Set")) {
@@ -270,12 +270,6 @@ void Player::Update() {
 		worldTransform_.rotation_.y *= -1;
 	}
 
-	//左SHIFTを押すと走る
-	if (input_->PushKey(DIK_LSHIFT)) {
-		moveVel_ = 0.2f;
-	} else {
-		moveVel_ = 0.1f;
-	}
 
 	//移動処理(向いてる方向に進む)[W:前進 S:後退 D:右 A:左 ]
 	if (input_->PushKey(DIK_W)){
@@ -296,17 +290,28 @@ void Player::Update() {
 		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
 	}
 
-	// 左スティックを使ったカメラ旋回
+	// 右スティックを使ったカメラ旋回
 	if (rightStickUnitVector_.x > 0.0f || rightStickUnitVector_.y > 0.0f || rightStickUnitVector_.x < 0.0f || rightStickUnitVector_.y < 0.0f) {
 		worldTransform_.rotation_.x += rightStickUnitVector_.y * -rotateVel_.x;
 		worldTransform_.rotation_.y -= -rightStickUnitVector_.x * rotateVel_.y;
 	}
 
-	//worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_;←これを移動処理に書いて
-	// 右スティックを使ったカメラ旋回
-	if (leftStickUnitVector_.x > 0.0f || leftStickUnitVector_.y > 0.0f || leftStickUnitVector_.x < 0.0f || leftStickUnitVector_.y < 0.0f) {
-		worldTransform_.translation_.x += leftStickUnitVector_.x * -moveVel_;
-		worldTransform_.translation_.z -= -leftStickUnitVector_.y * moveVel_;
+	// 左スティックを使った移動
+	if (leftThumbY > 0 && leftThumbY <= 32767) {
+		worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y) * moveVel_;
+		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_;
+	}
+	if (leftThumbY < 0 && leftThumbY >= -32768) {
+		worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y) * moveVel_;
+		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y) * moveVel_;
+	}
+	if (leftThumbX > 0 && leftThumbX <= 32767) {
+		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
+		worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
+	}
+	if (leftThumbX < 0 && leftThumbX >= -32768) {
+		worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
+		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_;
 	}
 
 	//ImGuiで値を表示
