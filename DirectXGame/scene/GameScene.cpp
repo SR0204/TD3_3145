@@ -193,7 +193,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-
+	
 	player_->Draw(viewProjection_); // プレイヤーの描画
 
 	//天球の描画
@@ -228,9 +228,6 @@ void GameScene::Draw() {
 
 void GameScene::GenerateBlocks() {
 
-	// 要素数
-	const uint32_t kNumBlockVirtical = mapChipFiled_->GetNumBlockVirtical();
-	const uint32_t kNumBlockHorizontal = mapChipFiled_->GetNumBlockHorizontal();
 	// ブロック1個分の横幅
 	// const float kBlockWidth = 2.0f;
 	// const float kBlockHeight = 2.0f;

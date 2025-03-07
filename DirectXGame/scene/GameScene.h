@@ -78,6 +78,10 @@ private: // メンバ変数
 	// 天球モデルデータ
 	Model* modelSkySphere_ = nullptr;
 
+	// 要素数
+	const uint32_t kNumBlockVirtical = mapChipFiled_->GetNumBlockVirtical();
+	const uint32_t kNumBlockHorizontal = mapChipFiled_->GetNumBlockHorizontal();
+
 	Player* player_ = nullptr;                 // プレイヤー
 	PlayerCamera* playerCamera_ = nullptr;     // プレイヤーのカメラ
 	OverHeadCamera* overHeadCamera_ = nullptr; // 俯瞰カメラ
