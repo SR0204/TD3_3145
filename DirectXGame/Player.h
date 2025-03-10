@@ -3,6 +3,8 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
+class MapChipField;
+
 /// <summary>
 /// プレイヤー
 /// </summary>
@@ -57,6 +59,45 @@ public: // メンバ関数
 		}
 	}
 
+	// マップとの当たり判定情報
+	struct CollisionMapInfo {
+		bool Ceiling = false; // 天井衝突フラグ
+		bool landing = false; // 着地フラグ
+		bool HitWall = false; // 壁接触フラグ
+		Vector3 move;         // 移動量
+	};
+
+	void CheckMapCollision(CollisionMapInfo& info);
+
+	void CheckMapCollisionUp(CollisionMapInfo& info);
+	void CheckMapCollisionDown(CollisionMapInfo& info);
+	void CheckMapCollisionRight(CollisionMapInfo& info);
+	void CheckMapCollisionLeft(CollisionMapInfo& info);
+
+	// 角
+	enum Corner {
+		kRightBottom, // 右下
+		kLeftBottom,  // 左下
+		kRightTop,    // 右上
+		kLeftTop,     // 左上
+
+		kNumCorner // 要素数
+	};
+
+	Vector3 CornerPosition(const Vector3& center, Corner corner);
+
+	static inline const float kBlank = 1.0f;
+
+	// 判定結果を反映して移動させる
+	void CheckMapCollisionHit(const CollisionMapInfo& info);
+
+	// 天井に接触している場合の処理
+	void CeilingContact(const CollisionMapInfo& info);
+
+	// 接地状態の切り替え
+	void GroundedCondition(const CollisionMapInfo& info);
+
+
 private:                            // メンバ変数
 	WorldTransform worldTransform_; // ワールド変換データ
 	Model* model_ = nullptr;        // モデル
@@ -77,4 +118,7 @@ private:                            // メンバ変数
 	float hitRad_;      // 当たり判定の半径
 	Vector3 rotateVel_; // 旋回速度
 	float moveVel_;     // 移動速度
+
+	// マップチップのフィールド
+	MapChipField* mapChipField_;
 };
