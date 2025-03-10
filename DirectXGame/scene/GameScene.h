@@ -82,6 +82,10 @@ private: // メンバ変数
 	const uint32_t kNumBlockVirtical = mapChipFiled_->GetNumBlockVirtical();
 	const uint32_t kNumBlockHorizontal = mapChipFiled_->GetNumBlockHorizontal();
 
+	// 一ブロックのサイズ
+	static inline const float kBlockWidth = 2.0f;  // 横
+	static inline const float kBlockHeight = 2.0f; // 縦
+
 	Player* player_ = nullptr;                 // プレイヤー
 	PlayerCamera* playerCamera_ = nullptr;     // プレイヤーのカメラ
 	OverHeadCamera* overHeadCamera_ = nullptr; // 俯瞰カメラ

@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 	player_ = new Player(); // プレイヤーの生成
 	player_->Initialize();  // プレイヤーの初期化
 	if (mapChipTable.count("4")) {
-		player_->SetTranslation({2.0f, 0.0f, .0f});
+		player_->SetTranslation({2.0f, 0.0f, 2.0f});
 	}
 
 	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成

@@ -6,6 +6,10 @@
 // Vector3同士の加算
 Vector3& operator+=(Vector3& lhs, const Vector3& rhv);
 
+// 2項演算子のオーバーロード
+// Vector3の足し算
+const Vector3 operator+(const Vector3& v1, const Vector3& v2);
+
 // Vector3同士の減算
 Vector3& operator-=(Vector3& lhs, const Vector3& rhv);
 
