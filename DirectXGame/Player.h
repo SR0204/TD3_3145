@@ -29,6 +29,8 @@ public: // メンバ関数
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
+	void SetTranslation(Vector3 translation) { worldTransform_.translation_ = translation; }
+
 	/// <summary>
 	/// ワールドトランスフォームを取得
 	/// </summary>
