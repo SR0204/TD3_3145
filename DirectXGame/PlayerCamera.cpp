@@ -40,16 +40,19 @@ void PlayerCamera::Update() {
 	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
 	if (ImGui::Button("FPS", {120, 20})) {
 		worldTransform_.translation_ = saveTranslation_;
+		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 	}
 	if (ImGui::Button("TPS LEFT SIDE", {120, 20})) {
 		worldTransform_.translation_ = {-8.5f, 4.0f, -15.0f};
+		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 	}
 	if (ImGui::Button("TPS RIGHT SIDE", {120, 20})) {
 		worldTransform_.translation_ = {8.5f, 4.0f, -15.0f};
+		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 	}
-	if (ImGui::Button("OVER HEAD", {120, 20})) {
-		worldTransform_.translation_ = {0.0f, 30.0f, 0.0f};
-		worldTransform_.rotation_ = {1.57f, 0.0f, 0.0f};
+	if (ImGui::Button("TPS BACK SIDE", {120, 20})) {
+		worldTransform_.translation_ = {0.0f, 4.0f, -15.0f};
+		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 	}
 	if (ImGui::Button("Reset", {120, 20})) {
 		worldTransform_.translation_ = saveTranslation_;
