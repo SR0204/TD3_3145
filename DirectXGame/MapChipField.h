@@ -68,7 +68,7 @@ public:
 
 	struct IndexSet {
 		uint32_t xIndex;
-		uint32_t yIndex;
+		uint32_t zIndex;
 	};
 
 	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
