@@ -329,6 +329,25 @@ void Player::Update() {
 		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 	}
 	ImGui::End();
+
+	// 衝突情報の初期化
+	CollisionMapInfo collisionMapInfo;
+
+	// 移動量に速度の値をコピー
+	//collisionMapInfo.move = velocity_;
+
+	// マップ衝突チェック
+	CheckMapCollision(collisionMapInfo);
+
+	// 判定結果を反映して移動させる
+	//CheckMapCollisionHit(collisionMapInfo);
+
+	//CeilingContact(collisionMapInfo);
+
+	//GroundedCondition(collisionMapInfo);
+
+	//AnimateTurn();
+
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
