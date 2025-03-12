@@ -66,6 +66,23 @@ public:
 	static inline const float kBlockWidth = 2.0f;
 	static inline const float kBlockHeight = 2.0f;
 
+	struct IndexSet {
+		uint32_t xIndex;
+		uint32_t yIndex;
+	};
+
+	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
+
+	// 範囲矩形
+	struct Rect {
+		float left;   // 左端
+		float right;  // 右端
+		float bottom; // 下端
+		float top;    // 上端
+	};
+
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);	
+
 private:
 	// ブロックの個数
 	static inline const uint32_t kNumBlockVirtical = 20;
