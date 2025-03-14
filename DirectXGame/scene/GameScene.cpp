@@ -1,10 +1,10 @@
 #include "GameScene.h"
+#include "AxisIndicator.h"
 #include "MapChipField.h"
 #include "TextureManager.h"
 #include "imgui.h"
 #include <cassert>
 #include <fstream>
-#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
@@ -23,8 +23,6 @@ GameScene::~GameScene() {
 
 	// マップチップフィールドの開放
 	delete mapChipFiled_;
-
-	//delete debugCamera_;
 
 	// 天球
 	delete SkySphere_;
@@ -45,6 +43,10 @@ void GameScene::Initialize() {
 
 	player_ = new Player(); // プレイヤーの生成
 	player_->Initialize();  // プレイヤーの初期化
+	if (mapChipTable.count("4")) {
+		player_->SetTranslation({2.0f, 0.0f, 2.0f});
+	}
+	
 
 	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成
 	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f}); // プレイヤーのカメラの初期化
@@ -67,15 +69,12 @@ void GameScene::Initialize() {
 	// ブロックのモデルを読み込む
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
 
-	// デバッグカメラの生成
-	//debugCamera_ = new DebugCamera(1280, 720);
-
 	// 天球の生成
 	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
 	SkySphere_ = new SkySphere();
 	SkySphere_->Initialize(modelSkySphere_, &viewProjection_);
 
-	//ビュープロジェクションの初期化
+	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
 	viewProjection_.Initialize();
 }
@@ -95,8 +94,6 @@ void GameScene::Update() {
 		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
 	}
-
-
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
@@ -121,53 +118,12 @@ void GameScene::Update() {
 			if (!worldTransformBlock)
 				continue;
 
-			//// 平行移動行列
-			// Matrix4x4 result = {
-			//     1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, worldTransformBlock->translation_.x, worldTransformBlock->translation_.y,
-			//     worldTransformBlock->translation_.z, 1.0f};
-
-			// Matrix4x4 matWorld = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-			//// 平行移動だけ代入
-			// worldTransformBlock->matWorld_ = matWorld;
-
-			//// 定数バッファに転送する
-			// worldTransformBlock->TransferMatrix();
-
 			worldTransformBlock->UpdateMatrix(true);
 		}
 	}
 
-	//debugCamera_->Update();
-
-	//天球の更新
+	// 天球の更新
 	SkySphere_->Update();
-
-//#ifdef _DEBUG
-//
-//	if (input_->TriggerKey(DIK_SPACE)) {
-//		isDebugCameraActive_ = true;
-//	}
-//
-//#endif // _DEBUG
-//
-//	if (isDebugCameraActive_) {
-//		debugCamera_->Update();
-//		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-//		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-//		// ビュープロジェクション行列の転送
-//		viewProjection_.TransferMatrix();
-//	} else {
-//		// ビュープロジェクション行列の更新と転送
-//		viewProjection_.UpdateMatrix();
-//	}
-//
-//	ImGui::Begin("DebugCamera");
-//
-//	ImGui::DragFloat3("viewProjection", &viewProjection_.translation_.x, 1.0f);
-//	ImGui::DragFloat3("Rotation", &viewProjection_.rotation_.x, 1.0f);
-//
-//	ImGui::End();
 }
 
 void GameScene::Draw() {
@@ -196,10 +152,10 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
+
 	player_->Draw(viewProjection_); // プレイヤーの描画
 
-	//天球の描画
+	// 天球の描画
 	SkySphere_->Draw();
 
 	// ブロックの描画
@@ -231,9 +187,6 @@ void GameScene::Draw() {
 
 void GameScene::GenerateBlocks() {
 
-	// ブロック1個分の横幅
-	// const float kBlockWidth = 2.0f;
-	// const float kBlockHeight = 2.0f;
 	// 要素数を変更する
 	// 配列を設定
 	worldTransformBlocks_.resize(kNumBlockVirtical);
