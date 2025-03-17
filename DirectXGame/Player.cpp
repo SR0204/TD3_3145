@@ -365,7 +365,7 @@ void Player::CheckMapCollision(CollisionMapInfo& info) {
 // マップ衝突上判定
 void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	// 上昇あり？
-	if (info.move.z <= 0) {
+	if (info.move.y <= 0) {
 		return;
 	}
 
@@ -400,10 +400,10 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 	// ブロックにヒット?
 	if (hit) {
 		// めり込みを排除する方向に移動量を設定する
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, +hitRad_ / 2.0f, 0));
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, +kHeight / 2.0f, 0));
 		// めり込み先ブロックの範囲矩形
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
-		info.move.z = std::max(0.0f, rect.bottom - worldTransform_.translation_.z - (hitRad_ / 2.0f + kBlank));
+		info.move.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (kHeight / 2.0f + kBlank));
 		// 天井に当たったことを記録する
 		info.Ceiling = true;
 	}
@@ -412,7 +412,7 @@ void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
 void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 
 	// 下降あり？
-	if (info.move.z >= 0) {
+	if (info.move.y >= 0) {
 		return;
 	}
 
@@ -447,10 +447,10 @@ void Player::CheckMapCollisionDown(CollisionMapInfo& info) {
 	// ブロックにヒット?
 	if (hit) {
 		// めり込みを排除する方向に移動量を設定する
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, +hitRad_ / 2.0f, 0));
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, +kHeight / 2.0f, 0));
 		// めり込み先ブロックの範囲矩形
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
-		info.move.z = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (hitRad_ / 2.0f + kBlank));
+		info.move.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (kHeight / 2.0f + kBlank));
 		// 天井に当たったことを記録する
 		info.landing = true;
 	}
@@ -495,10 +495,10 @@ void Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	// ブロックにヒット?
 	if (hit) {
 		// めり込みを排除する方向に移動量を設定する
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(+hitRad_ / 2.0f, 0, 0));
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(+kWidth / 2.0f, 0, 0));
 		// めり込み先ブロックの範囲矩形
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
-		info.move.x = std::max(0.0f, rect.right - worldTransform_.translation_.x - (hitRad_ / 2.0f + kBlank));
+		info.move.x = std::max(0.0f, rect.right - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
 		// 天井に当たったことを記録する
 		info.Ceiling = true;
 	}
@@ -541,10 +541,10 @@ void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 	// ブロックにヒット?
 	if (hit) {
 		// めり込みを排除する方向に移動量を設定する
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(-hitRad_ / 2.0f, 0, 0));
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(-kWidth / 2.0f, 0, 0));
 		// めり込み先ブロックの範囲矩形
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
-		info.move.x = std::max(0.0f, rect.right - worldTransform_.translation_.x - (hitRad_ / 2.0f + kBlank));
+		info.move.x = std::max(0.0f, rect.right - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
 		// 天井に当たったことを記録する
 		info.Ceiling = true;
 	}
@@ -553,10 +553,10 @@ void Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 Vector3 Player::CornerPosition(const Vector3& center, Corner corner) {
 
 	Vector3 offsetTable[kNumCorner] = {
-	    {+hitRad_ / 2.0f, -hitRad_ / 2.0f, 0}, //  kRightBottom
-	    {-hitRad_ / 2.0f, -hitRad_ / 2.0f, 0}, //  kLeftBottom
-	    {+hitRad_ / 2.0f, +hitRad_ / 2.0f, 0}, //  kRightTop
-	    {-hitRad_ / 2.0f, +hitRad_ / 2.0f, 0}, //  kLeftTop
+	    {+kWidth / 2.0f, -kHeight / 2.0f, 0}, //  kRightBottom
+	    {-kWidth / 2.0f, -kHeight / 2.0f, 0}, //  kLeftBottom
+	    {+kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kRightTop
+	    {-kWidth / 2.0f, +kHeight / 2.0f, 0}, //  kLeftTop
 	};
 
 	return center + offsetTable[static_cast<uint32_t>(corner)];
