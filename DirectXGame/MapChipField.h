@@ -81,7 +81,7 @@ public:
 		float top;    // 上端
 	};
 
-	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);	
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t zIndex);	
 
 private:
 	// ブロックの個数
