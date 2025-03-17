@@ -11,12 +11,15 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 
 	delete modelBlock_;
+	delete modelSkySphere_;
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
 		}
 	}
+
+
 
 	// マップチップフィールドの開放
 	delete mapChipFiled_;

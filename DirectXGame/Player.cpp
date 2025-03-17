@@ -10,10 +10,10 @@
 Player::~Player() { delete model_; }
 
 void Player::Initialize() {
-	worldTransform_.Initialize();                           // ワールド変換データの初期化
-	model_ = Model::CreateFromOBJ("player");                // モデルの生成
-	textureHandle_ = TextureManager::Load("uvChecker.png"); // テクスチャの読み込み
-	input_ = Input::GetInstance();                          // 入力のインスタンスを取得
+	worldTransform_.Initialize();									// ワールド変換データの初期化
+	model_ = Model::CreateFromOBJ("player");				// モデルの生成
+	textureHandle_ = TextureManager::Load("uvChecker.png");	// テクスチャの読み込み
+	input_ = Input::GetInstance();									// 入力のインスタンスを取得
 
 	vibrationVal_ = {};
 	deadZone_ = 8000;     // デッドゾーン
@@ -21,9 +21,9 @@ void Player::Initialize() {
 
 	leftStickLange_ = 0.0f;
 
-	hitRad_ = 1.0f;                     // 当たり判定の半径
-	rotateVel_ = {0.02f, 0.02f, 0.02f}; // 旋回速度
-	moveVel_ = 0.1f;                    // 移動速度
+	hitRad_ = 1.0f;                   // 当たり判定の半径
+	rotateVel_ = {0.0f, 0.03f, 0.0f}; // 旋回速度
+	moveVel_ = 0.1f;                  // 移動速度
 }
 
 void Player::Update() {
@@ -31,16 +31,16 @@ void Player::Update() {
 	// コントローラー関係
 	/// ーーーここからーーー
 
-	DWORD dwResult = XInputGetState(0, &state_);                      // コントローラーの状態を取得
-	vibration_.wLeftMotorSpeed = static_cast<WORD>(vibrationVal_.x);  // 左モーターの振動強さ（最大値）
-	vibration_.wRightMotorSpeed = static_cast<WORD>(vibrationVal_.y); // 右モーターの振動強さ（最大値）
-	XInputSetState(0, &vibration_);                                   // コントローラー0のバイブレーションを設定
-	int leftThumbX = state_.Gamepad.sThumbLX;                         // 左スティックのX値
-	int leftThumbY = state_.Gamepad.sThumbLY;                         // 左スティックのY値
-	int rightThumbX = state_.Gamepad.sThumbRX;                        // 右スティックのX値
-	int rightThumbY = state_.Gamepad.sThumbRY;                        // 右スティックのX値
-	BYTE leftTrigger = state_.Gamepad.bLeftTrigger;                   // 左トリガーの値
-	BYTE rightTrigger = state_.Gamepad.bRightTrigger;                 // 右トリガーの値
+	DWORD dwResult = XInputGetState(0, &state_);		// コントローラーの状態を取得
+	vibration_.wLeftMotorSpeed = static_cast<WORD>(vibrationVal_.x);	// 左モーターの振動強さ（最大値）
+	vibration_.wRightMotorSpeed = static_cast<WORD>(vibrationVal_.y);	// 右モーターの振動強さ（最大値）
+	XInputSetState(0, &vibration_);					// コントローラー0のバイブレーションを設定
+	int leftThumbX = state_.Gamepad.sThumbLX;							// 左スティックのX値
+	int leftThumbY = state_.Gamepad.sThumbLY;							// 左スティックのY値
+	int rightThumbX = state_.Gamepad.sThumbRX;							// 右スティックのX値
+	int rightThumbY = state_.Gamepad.sThumbRY;							// 右スティックのX値
+	BYTE leftTrigger = state_.Gamepad.bLeftTrigger;						// 左トリガーの値
+	BYTE rightTrigger = state_.Gamepad.bRightTrigger;					// 右トリガーの値
 
 	// デッドゾーンの適用
 	ApplyDeadZone(leftThumbX);
