@@ -22,7 +22,7 @@ void Player::Initialize() {
 	leftStickLange_ = 0.0f;
 
 	hitRad_ = 1.0f;                     // 当たり判定の半径
-	rotateVel_ = {0.02f, 0.02f, 0.02f}; // 旋回速度
+	rotateVel_ = {0.0f, 0.03f, 0.0f}; // 旋回速度
 	moveVel_ = 0.1f;                    // 移動速度
 }
 
