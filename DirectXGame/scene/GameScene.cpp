@@ -1,208 +1,87 @@
 #include "GameScene.h"
-#include "AxisIndicator.h"
-#include "MapChipField.h"
-#include "TextureManager.h"
-#include "imgui.h"
-#include <cassert>
-#include <fstream>
+#include <iostream>
+#include <windows.h>
 
-GameScene::GameScene() {}
+GameScene::GameScene() : map(1.0f), player(2.0f, 2.0f, 0.8f, map) {}
 
 GameScene::~GameScene() {
-
-	delete modelBlock_;
-	delete modelSkySphere_;
-
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+	for (auto& worldTransformBlockLine : worldTransformBlocks_) {
+		for (auto& worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
+			worldTransformBlock = nullptr; // 二重解放防止
 		}
 	}
-
-
-
-	// マップチップフィールドの開放
-	delete mapChipFiled_;
-
-	// 天球
-	delete SkySphere_;
-
-	delete player_;
-	delete playerCamera_;
-	delete overHeadCamera_;
 }
 
+
 void GameScene::Initialize() {
-
-	dxCommon_ = DirectXCommon::GetInstance();
-	input_ = Input::GetInstance();
-	audio_ = Audio::GetInstance();
-
-	// ビュープロジェクション生成
-	viewProjection_.Initialize();
-
-	player_ = new Player(); // プレイヤーの生成
-	player_->Initialize();  // プレイヤーの初期化
-	if (mapChipTable.count("4")) {
-		player_->SetTranslation({2.0f, 0.0f, 2.0f});
-	}
-	
-
-	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成
-	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f}); // プレイヤーのカメラの初期化
-	playerCamera_->SetParent(&player_->GetWorldTransform());           // プレイヤーとカメラの親子関係を結ぶ
-
-	overHeadCamera_ = new OverHeadCamera(); // 俯瞰カメラの生成
-	overHeadCamera_->Initialize();          // 俯瞰カメラの初期化
-
-	isOverHeadCameraActive_ = false; // 俯瞰カメラのアクティブ
-
-	AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
-
-	mapChipFiled_ = new MapChipField;
-	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
-
-	// 表示ブロックの生成
-	GenerateBlocks();
-
-	// ブロックのモデルを読み込む
+	// ブロックのモデルを先に読み込む（順番変更OK）
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
 
-	// 天球の生成
-	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
-	SkySphere_ = new SkySphere();
-	SkySphere_->Initialize(modelSkySphere_, &viewProjection_);
-
-	// ビュープロジェクションの初期化
-	viewProjection_.farZ = 700;
-	viewProjection_.Initialize();
+	// マップのブロックを生成
+	GenerateBlocks();
 }
 
 void GameScene::Update() {
+	// キーボード入力を取得
+	if (GetAsyncKeyState('W') & 0x8000)
+		player.Move(0, -0.1f);
+	if (GetAsyncKeyState('S') & 0x8000)
+		player.Move(0, 0.1f);
+	if (GetAsyncKeyState('A') & 0x8000)
+		player.Move(-0.1f, 0);
+	if (GetAsyncKeyState('D') & 0x8000)
+		player.Move(0.1f, 0);
 
-	if (isOverHeadCameraActive_ == false) {
-		// プレイヤーのカメラの更新
-		playerCamera_->Update();
-		// ビュープロジェクションにプレイヤーのカメラを登録する
-		viewProjection_.matView = playerCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
-	} else if (isOverHeadCameraActive_ == true) {
-		//
-		overHeadCamera_->Update();
-		//
-		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
-	}
+	auto pos = player.GetPosition();
+	std::cout << "Player Position: (" << pos.x << ", " << pos.z << ")\n";
 
-	// ビュープロジェクション行列の転送
-	viewProjection_.TransferMatrix();
-	// プレイヤーの更新処理
-	player_->Update();
-
-	// ImGuiで値を表示
-	ImGui::Begin("Camera");
-	if (ImGui::Button("OverHeadCamera")) {
-		isOverHeadCameraActive_ = true;
-	}
-	if (ImGui::Button("PlayerCamera")) {
-		isOverHeadCameraActive_ = false;
-	}
-	ImGui::End();
-
-	// ブロックの更新
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
-			if (!worldTransformBlock)
-				continue;
-
-			worldTransformBlock->UpdateMatrix(true);
+	// 各ブロックのワールド変換情報を更新
+	for (auto& worldTransformBlockLine : worldTransformBlocks_) {
+		for (auto& worldTransformBlock : worldTransformBlockLine) {
+			if (worldTransformBlock) {
+				worldTransformBlock->UpdateMatrix(true);
+			}
 		}
 	}
-
-	// 天球の更新
-	SkySphere_->Update();
 }
 
 void GameScene::Draw() {
-
-	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
-
-#pragma region 背景スプライト描画
-	// 背景スプライト描画前処理
-	Sprite::PreDraw(commandList);
-
-	/// <summary>
-	/// ここに背景スプライトの描画処理を追加できる
-	/// </summary>
-
-	// スプライト描画後処理
-	Sprite::PostDraw();
-	// 深度バッファクリア
-	dxCommon_->ClearDepthBuffer();
-#pragma endregion
-
-#pragma region 3Dオブジェクト描画
-	// 3Dオブジェクト描画前処理
-	Model::PreDraw(commandList);
-
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
-
-	player_->Draw(viewProjection_); // プレイヤーの描画
-
-	// 天球の描画
-	SkySphere_->Draw();
-
-	// ブロックの描画
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
-				continue;
-			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+	for (auto& worldTransformBlockLine : worldTransformBlocks_) {
+		for (auto& worldTransformBlock : worldTransformBlockLine) {
+			if (worldTransformBlock) {
+				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			}
 		}
 	}
-
-	// 3Dオブジェクト描画後処理
-	Model::PostDraw();
-#pragma endregion
-
-#pragma region 前景スプライト描画
-	// 前景スプライト描画前処理
-	Sprite::PreDraw(commandList);
-
-	/// <summary>
-	/// ここに前景スプライトの描画処理を追加できる
-	/// </summary>
-
-	// スプライト描画後処理
-	Sprite::PostDraw();
-
-#pragma endregion
 }
 
 void GameScene::GenerateBlocks() {
+	// `map.GetWidth()` と `map.GetHeight()` を使う
+	uint32_t mapWidth = map.GetWidth();
+	uint32_t mapHeight = map.GetHeight();
 
-	// 要素数を変更する
-	// 配列を設定
-	worldTransformBlocks_.resize(kNumBlockVirtical);
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		// １列の要素数を設定
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	// 配列をマップサイズに合わせる
+	worldTransformBlocks_.resize(mapHeight);
+	for (uint32_t i = 0; i < mapHeight; i++) {
+		worldTransformBlocks_[i].resize(mapWidth);
 	}
 
 	// キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
-			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+	for (uint32_t i = 0; i < mapHeight; i++) {
+		for (uint32_t j = 0; j < mapWidth; j++) {
+			if (map.GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+				// 新しいブロックのワールド変換データを作成
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
+
+				// 位置をマップのインデックスから取得
+				worldTransform->translation_ = map.GetMapChipPositionByIndex(j, i);
+
+				// 配列に登録
 				worldTransformBlocks_[i][j] = worldTransform;
-				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
+			} else {
+				worldTransformBlocks_[i][j] = nullptr;
 			}
 		}
 	}
