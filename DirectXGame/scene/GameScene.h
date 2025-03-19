@@ -23,6 +23,10 @@
 
 class GameScene {
 private:
+	DirectXCommon* dxCommon_ = nullptr;
+	Input* input_ = nullptr;
+	Audio* audio_ = nullptr;
+
 	Map map;
 	Player player;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
