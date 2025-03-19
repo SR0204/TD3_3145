@@ -18,6 +18,11 @@ GameScene::~GameScene() {
 }
 
 void GameScene::Initialize() {
+
+	dxCommon_ = DirectXCommon::GetInstance();
+	input_ = Input::GetInstance();
+	audio_ = Audio::GetInstance();
+
 	// ブロックのモデルを先に読み込む（順番変更OK）
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
 
