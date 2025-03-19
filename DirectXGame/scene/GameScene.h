@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include<Sprite.h>
 
 class GameScene {
 private:
