@@ -12,9 +12,9 @@ GameScene::~GameScene() {
 		}
 	}
 
-	for (uint32_t i = 0; i < mapHeight; i++) {
+	/*for (uint32_t i = 0; i < mapHeight; i++) {
 		worldTransformBlocks_[i].resize(mapWidth, nullptr);
-	}
+	}*/
 }
 
 void GameScene::Initialize() {
