@@ -19,7 +19,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
-	void Initialize();
+	void Initialize(const Vector3& position);
 
 	/// <summary>
 	/// 更新処理
@@ -61,6 +61,35 @@ public: // メンバ関数
 
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
+	// マップとの当たり判定情報
+	struct CollisionMapInfo {
+		bool Ceiling = false; // 天井衝突フラグ
+		bool landing = false; // 着地フラグ
+		bool HitWall = false; // 壁接触フラグ
+		Vector3 move;         // 移動量
+	};
+
+	void CheckMapCollision(CollisionMapInfo& info);
+
+	void CheckMapCollisionUp(CollisionMapInfo& info);
+	void CheckMapCollisionDown(CollisionMapInfo& info);
+	void CheckMapCollisionRight(CollisionMapInfo& info);
+	void CheckMapCollisionLeft(CollisionMapInfo& info);
+
+	// 角
+	enum Corner {
+		kRightBottom, // 右下
+		kLeftBottom,  // 左下
+		kRightTop,    // 右上
+		kLeftTop,     // 左上
+
+		kNumCorner // 要素数
+	};
+
+	Vector3 CornerPosition(const Vector3& center, Corner corner);
+
+	static inline const float kBlank = 1.0f;
+
 private:                            // メンバ変数
 	WorldTransform worldTransform_; // ワールド変換データ
 	Model* model_ = nullptr;        // モデル
@@ -79,6 +108,7 @@ private:                            // メンバ変数
 	Vector2 rightStickUnitVector_; // 右単位ベクトル
 
 	float hitRad_;      // 当たり判定の半径
+	float hitHeight;    // 当たり判定の半径
 	Vector3 rotateVel_; // 旋回速度
 	float moveVel_;     // 移動速度
 

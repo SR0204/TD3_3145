@@ -41,11 +41,12 @@ void GameScene::Initialize() {
 	// ビュープロジェクション生成
 	viewProjection_.Initialize();
 
+	// 座標をマップチップ番号で指定
+	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(2, 3);
+
 	player_ = new Player(); // プレイヤーの生成
-	player_->Initialize();  // プレイヤーの初期化
-	if (mapChipTable.count("4")) {
-		player_->SetTranslation({2.0f, 0.0f, 2.0f});
-	}
+	player_->Initialize(playerPosition);  // プレイヤーの初期化
+	
 	
 
 	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成
