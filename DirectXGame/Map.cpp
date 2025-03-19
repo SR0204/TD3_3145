@@ -2,7 +2,18 @@
 #include <fstream>
 #include <sstream>
 
-Map::Map(float scale, const std::string& filename) { LoadFromCSV(filename); }
+Map::Map(const std::string& filename) { LoadFromCSV(filename); }
+
+//**マップチップの種類を取得**
+MapChipType Map::GetMapChipTypeByIndex(uint32_t x, uint32_t y) const {
+	if (x >= width_ || y >= height_) {
+		return MapChipType::kBlank; // 範囲外なら空白
+	}
+	return mapData_[y][x];
+}
+
+//**マップチップのワールド座標を取得**
+Vector3 Map::GetMapChipPositionByIndex(uint32_t x, uint32_t y) const { return Vector3(static_cast<float>(x), 0.0f, static_cast<float>(y)); }
 
 // CSVファイルを読み込んで `mapData_` を作成
 void Map::LoadFromCSV(const std::string& filename) {
@@ -25,6 +36,12 @@ void Map::LoadFromCSV(const std::string& filename) {
 
 	file.close();
 
-	// マップの幅と高さを設定
-	height_ = static_cast<uint32_t>(mapData_.size());
-	width_ = height_ > 0 ? static_cast<uint32_t>(mapData_[0].size()) : 0;
+	// 幅と高さを設定
+	if (!mapData_.empty()) {
+		height_ = static_cast<uint32_t>(mapData_.size());   // 行数が高さ
+		width_ = static_cast<uint32_t>(mapData_[0].size()); // 最初の行の要素数が幅
+	} else {
+		height_ = 0;
+		width_ = 0;
+	}
+}

@@ -16,14 +16,16 @@ private:
 	Model* modelBlock_ = nullptr;
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
-	
+	// `map.GetWidth()` と `map.GetHeight()` を使う
+	uint32_t mapWidth = map.GetWidth();
+	uint32_t mapHeight = map.GetHeight();
 
 public:
 	GameScene();
 	~GameScene();
 	void Initialize();
 	void Update();
-	void Draw(); // ここにDirectXの描画処理を後で追加
+	void Draw();
 	void GenerateBlocks();
 };
 

@@ -1,20 +1,19 @@
-#ifndef PLAYER_H
-#define PLAYER_H
-
-#include "Map.h"
-#include "Rectangle.h"
-
+#include<Vector3.h>
+#include"Map.h"
 class Player {
-private:
-	class Rectangle hitbox;
-	const Map& map;
-
 public:
-	Player(float startX, float startZ, float size, const Map& map);
+	Player(float x, float z, float size, Map& map);
 
-	DirectX::XMFLOAT3 GetPosition() const;
-	bool CanMoveTo(float newX, float newZ);
-	void Move(float deltaX, float deltaZ);
+	void Move(float dx, float dz);
+	Vector3 GetPosition() const { return position_; }
+
+	 // 位置を設定するためのメソッド
+	void SetPosition(const Vector3& position);
+
+private:
+	Vector3 position_;
+	float size_; // プレイヤーの大きさ（ヒットボックス）
+	Map& map_;   // マップ情報への参照
+
+	bool CanMoveTo(float newX, float newZ); // 目的地に移動できるか判定
 };
-
-#endif // PLAYER_H

@@ -1,15 +1,13 @@
+#pragma once
+
 #include<vector>
 #include<Vector3.h>
-
-enum class MapChipType {
-	kBlank, // 空白
-	kBlock, // ブロック
-	kPlayer,
-};
+#include <string>
+#include"MapChipType.h"
 
 class Map {
 public:
-	Map(float scale, const std::string& filename);
+	Map(const std::string& filename);
 
 	// マップの幅を取得
 	uint32_t GetWidth() const { return width_; }
