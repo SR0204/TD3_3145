@@ -7,6 +7,19 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include<Sprite.h>
+#include "Audio.h"
+#include "DirectXCommon.h"
+#include "Input.h"
+#include "MapChipField.h"
+#include "Model.h"
+#include "Sprite.h"
+#include "ViewProjection.h"
+#include "WorldTransform.h"
+#include <sstream>
+#include"SkySphere.h"
+
+#include "PlayerCamera.h"
+#include "OverHeadCamera.h"
 
 class GameScene {
 private:
