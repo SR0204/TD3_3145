@@ -21,7 +21,7 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 	// ブロックのモデルを先に読み込む（順番変更OK）
-	modelBlock_ = Model::CreateFromOBJ("Resources/cube", true);
+	modelBlock_ = Model::CreateFromOBJ("cube", true);
 
 	// マップのブロックを生成
 	GenerateBlocks();
