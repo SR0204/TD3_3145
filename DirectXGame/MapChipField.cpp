@@ -4,8 +4,6 @@
 #include <map>
 #include <sstream>
 
-
-
 void MapChipField::Initialize() {}
 
 void MapChipField::Update() {}
@@ -74,29 +72,30 @@ MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex
 	return mapChipDate_.date[zIndex][xIndex];
 }
 
-Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex) { return Vector3(kBlockWidth * xIndex, -2, kBlockHeight * zIndex); }
+Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex) { // Z軸に基づいてブロックの位置を設定
+	return Vector3(kBlockWidth * xIndex, 0, kBlockHeight * zIndex);                 // Z軸を考慮 }
+}
 
-//MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
-//
-//	IndexSet indexSet = {};
-//
-//	indexSet.xIndex = static_cast<uint32_t>((position.x + kBlockWidth / 2) / kBlockWidth);
-//
-//	indexSet.zIndex = kNumBlockVirtical - 1 - static_cast<uint32_t>((position.z + kBlockHeight / 2) / kBlockHeight);
-//
-//	return indexSet;
-//}
-//
-//MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t zIndex) {
-//
-//	// 指定ブロックの中心座標を取得する
-//	Vector3 center = GetMapChipPositionByIndex(xIndex, zIndex);
-//
-//	Rect rect;
-//	rect.left = center.x - kBlockWidth / 2.0f;
-//	rect.right = center.x + kBlockWidth / 2.0f;
-//	rect.bottom = center.z - kBlockHeight / 2.0f;
-//	rect.top = center.z + kBlockHeight / 2.0f;
-//
-//	return rect;
-//}
+MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
+
+	IndexSet indexSet = {};
+
+	indexSet.xIndex = static_cast<uint32_t>((position.x + kBlockWidth / 2) / kBlockWidth);
+
+	indexSet.zIndex = kNumBlockVirtical - 1 - static_cast<uint32_t>((position.z + kBlockHeight / 2) / kBlockHeight);
+
+	return indexSet;
+}
+
+MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t zIndex) {
+	// 指定ブロックの中心座標を取得する
+	Vector3 center = GetMapChipPositionByIndex(xIndex, zIndex);
+
+	Rect rect;
+	rect.left = center.x - kBlockWidth / 2.0f;
+	rect.right = center.x + kBlockWidth / 2.0f;
+	rect.back = center.z - kBlockDepth / 2.0f;  // こちらはZ軸に合わせて調整
+	rect.front = center.z + kBlockDepth / 2.0f; // Z軸の範囲設定
+
+	return rect;
+}

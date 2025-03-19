@@ -19,8 +19,6 @@ GameScene::~GameScene() {
 		}
 	}
 
-
-
 	// マップチップフィールドの開放
 	delete mapChipFiled_;
 
@@ -43,11 +41,9 @@ void GameScene::Initialize() {
 
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(9, 3);
-
-	player_ = new Player(); // プレイヤーの生成
-	player_->Initialize(playerPosition);  // プレイヤーの初期化
-	
-	
+	playerPosition.y = 2;
+	player_ = new Player();              // プレイヤーの生成
+	player_->Initialize(playerPosition); // プレイヤーの初期化
 
 	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成
 	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f}); // プレイヤーのカメラの初期化
@@ -187,12 +183,9 @@ void GameScene::Draw() {
 }
 
 void GameScene::GenerateBlocks() {
-
 	// 要素数を変更する
-	// 配列を設定
 	worldTransformBlocks_.resize(kNumBlockVirtical);
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		// １列の要素数を設定
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
 
@@ -203,6 +196,8 @@ void GameScene::GenerateBlocks() {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
 				worldTransformBlocks_[i][j] = worldTransform;
+
+				// XZ軸に合わせて位置を設定
 				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
 			}
 		}

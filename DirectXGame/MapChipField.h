@@ -65,23 +65,24 @@ public:
 	// 一ブロックのサイズ
 	static inline const float kBlockWidth = 2.0f;
 	static inline const float kBlockHeight = 2.0f;
+	static inline const float kBlockDepth = 2.0f;
 
 	struct IndexSet {
 		uint32_t xIndex;
 		uint32_t zIndex;
 	};
 
-	//IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
+	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
 
-	//// 範囲矩形
-	//struct Rect {
-	//	float left;   // 左端
-	//	float right;  // 右端
-	//	float bottom; // 下端
-	//	float top;    // 上端
-	//};
+	// 範囲矩形
+	struct Rect {
+		float left;   // 左端
+		float right;  // 右端
+		float back; // 下端
+		float front;  // 上端
+	};
 
-	//Rect GetRectByIndex(uint32_t xIndex, uint32_t zIndex);	
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t zIndex);	
 
 private:
 	// ブロックの個数

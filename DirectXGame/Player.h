@@ -61,29 +61,36 @@ public: // メンバ関数
 
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
+	void InputMove();
+
+	void AnimateTurn();
+
 	// マップとの当たり判定情報
 	struct CollisionMapInfo {
 		bool Ceiling = false; // 天井衝突フラグ
 		bool landing = false; // 着地フラグ
-		bool HitWall = false; // 壁接触フラグ
+		bool hitWall = false; // 壁接触フラグ
 		Vector3 move;         // 移動量
 	};
 
 	void CheckMapCollision(CollisionMapInfo& info);
 
-	void CheckMapCollisionUp(CollisionMapInfo& info);
-	void CheckMapCollisionDown(CollisionMapInfo& info);
+	void CheckMapCollisionForward(CollisionMapInfo& info);
+	void CheckMapCollisionBackward(CollisionMapInfo& info);
 	void CheckMapCollisionRight(CollisionMapInfo& info);
 	void CheckMapCollisionLeft(CollisionMapInfo& info);
 
 	// 角
 	enum Corner {
-		kRightBottom, // 右下
-		kLeftBottom,  // 左下
-		kRightTop,    // 右上
-		kLeftTop,     // 左上
-
-		kNumCorner // 要素数
+		kRightBottomFront, // 右下前
+		kLeftBottomFront,  // 左下前
+		kRightTopFront,    // 右上前
+		kLeftTopFront,     // 左上前
+		kRightBottomBack,  // 右下後
+		kLeftBottomBack,   // 左下後
+		kRightTopBack,     // 右上後
+		kLeftTopBack,      // 左上後
+		kNumCorner         // 要素数
 	};
 
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
@@ -107,8 +114,10 @@ private:                            // メンバ変数
 	float rightStickLange_;        // 右スティックのベクトルの長さ
 	Vector2 rightStickUnitVector_; // 右単位ベクトル
 
-	float hitRad_;      // 当たり判定の半径
-	float hitHeight;    // 当たり判定の半径
+	// キャラクターの当たり判定サイズ
+	float kWidth;
+	float kHeight;
+	float kDepth;       // プレイヤーの奥行き（新しく追加）
 	Vector3 rotateVel_; // 旋回速度
 	float moveVel_;     // 移動速度
 
