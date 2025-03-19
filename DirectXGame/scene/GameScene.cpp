@@ -42,7 +42,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	// 座標をマップチップ番号で指定
-	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(2, 3);
+	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(9, 3);
 
 	player_ = new Player(); // プレイヤーの生成
 	player_->Initialize(playerPosition);  // プレイヤーの初期化
