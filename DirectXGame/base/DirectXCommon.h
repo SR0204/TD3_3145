@@ -24,9 +24,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(
-	    WinApp* win, int32_t backBufferWidth = WinApp::kWindowWidth,
-	    int32_t backBufferHeight = WinApp::kWindowHeight, bool enableDebugLayer = true);
+	void Initialize(WinApp* win, int32_t backBufferWidth = WinApp::kWindowWidth, int32_t backBufferHeight = WinApp::kWindowHeight, bool enableDebugLayer = true);
 
 	/// <summary>
 	/// 描画前処理

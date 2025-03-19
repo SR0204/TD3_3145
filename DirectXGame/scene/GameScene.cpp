@@ -15,8 +15,6 @@ GameScene::~GameScene() {
 	for (uint32_t i = 0; i < mapHeight; i++) {
 		worldTransformBlocks_[i].resize(mapWidth, nullptr);
 	}
-
-	delete modelBlock_;
 }
 
 void GameScene::Initialize() {
@@ -88,6 +86,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	// 描画するブロックをループで描画
 	if (modelBlock_) {
 		for (auto& worldTransformBlockLine : worldTransformBlocks_) {
 			for (auto& worldTransformBlock : worldTransformBlockLine) {
@@ -119,9 +118,9 @@ void GameScene::Draw() {
 void GameScene::GenerateBlocks() {
 
 	// 配列をマップサイズに合わせる
-	worldTransformBlocks_.resize(mapHeight);
-	for (uint32_t i = 0; i < mapHeight; i++) {
-		worldTransformBlocks_[i].resize(mapWidth);
+	worldTransformBlocks_.resize(map.GetHeight()); // mapHeight → map.GetHeight()
+	for (uint32_t i = 0; i < map.GetHeight(); i++) {
+		worldTransformBlocks_[i].resize(map.GetWidth()); // mapWidth → map.GetWidth()
 	}
 
 	// キューブの生成
