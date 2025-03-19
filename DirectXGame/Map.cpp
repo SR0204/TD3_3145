@@ -5,15 +5,15 @@
 Map::Map(const std::string& filename) { LoadFromCSV(filename); }
 
 //**マップチップの種類を取得**
-MapChipType Map::GetMapChipTypeByIndex(uint32_t x, uint32_t y) const {
-	if (x >= width_ || y >= height_) {
+MapChipType Map::GetMapChipTypeByIndex(uint32_t x, uint32_t z) const {
+	if (x >= width_ || z >= height_) {
 		return MapChipType::kBlank; // 範囲外なら空白
 	}
-	return mapData_[y][x];
+	return mapData_[z][x];
 }
 
 //**マップチップのワールド座標を取得**
-Vector3 Map::GetMapChipPositionByIndex(uint32_t x, uint32_t y) const { return Vector3(static_cast<float>(x), 0.0f, static_cast<float>(y)); }
+Vector3 Map::GetMapChipPositionByIndex(uint32_t x, uint32_t z) const { return Vector3(static_cast<float>(x), 0.0f, static_cast<float>(z)); }
 
 // CSVファイルを読み込んで `mapData_` を作成
 void Map::LoadFromCSV(const std::string& filename) {
