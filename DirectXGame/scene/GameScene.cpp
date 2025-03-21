@@ -49,7 +49,7 @@ void GameScene::Initialize() {
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
 
 	// 座標をマップチップ番号で指定
-	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(9, 3);
+	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 8);
 	playerPosition.y = 2;
 	player_ = new Player();              // プレイヤーの生成
 	player_->Initialize(playerPosition); // プレイヤーの初期化
@@ -117,7 +117,7 @@ void GameScene::Update() {
 			if (!worldTransformBlock)
 				continue;
 
-			worldTransformBlock->UpdateMatrix(true);
+			worldTransformBlock->UpdateMatrixBlock();
 		}
 	}
 

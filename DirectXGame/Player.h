@@ -3,7 +3,6 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
-
 class MapChipField;
 /// <summary>
 /// プレイヤー
@@ -67,14 +66,15 @@ public: // メンバ関数
 		bool landing = false; // 着地フラグ
 		bool hitWall = false; // 壁接触フラグ
 		Vector3 move;         // 移動量
+		bool isBlocked = false;
 	};
 
-	void CheckMapCollision(CollisionMapInfo& info);
+	bool CheckMapCollision(CollisionMapInfo& info);
 
-	void CheckMapCollisionForward(CollisionMapInfo& info);
-	void CheckMapCollisionBackward(CollisionMapInfo& info);
-	void CheckMapCollisionRight(CollisionMapInfo& info);
-	void CheckMapCollisionLeft(CollisionMapInfo& info);
+	bool CheckMapCollisionForward(CollisionMapInfo& info);
+	bool CheckMapCollisionBackward(CollisionMapInfo& info);
+	bool CheckMapCollisionRight(CollisionMapInfo& info);
+	bool CheckMapCollisionLeft(CollisionMapInfo& info);
 
 	// 角
 	enum Corner {
@@ -93,9 +93,9 @@ public: // メンバ関数
 
 	static inline const float kBlank = 1.0f;
 
-	
+	bool CheckCollisionWithCSVMap(CollisionMapInfo& info);
 
-private:                            // メンバ変数
+	private:                            // メンバ変数
 	WorldTransform worldTransform_; // ワールド変換データ
 	Model* model_ = nullptr;        // モデル
 	uint32_t textureHandle_;        // テクスチャ
@@ -117,8 +117,9 @@ private:                            // メンバ変数
 	float kHeight;
 	float kDepth;       // プレイヤーの奥行き（新しく追加）
 	Vector3 rotateVel_; // 旋回速度
-	float moveVel_;     // 移動速度
+	Vector3 moveVel_;   // 移動速度
 
 	// マップチップのフィールド
 	MapChipField* mapChipField_ = nullptr;
+	float kBlockSize = 1.0f;
 };
