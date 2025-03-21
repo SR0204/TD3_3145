@@ -9,7 +9,7 @@
 
 Player::~Player() { delete model_; }
 
-void Player::Initialize() {
+void Player::Initialize(const Vector3& position) {
 	worldTransform_.Initialize();									// ワールド変換データの初期化
 	model_ = Model::CreateFromOBJ("player");				// モデルの生成
 	textureHandle_ = TextureManager::Load("uvChecker.png");	// テクスチャの読み込み

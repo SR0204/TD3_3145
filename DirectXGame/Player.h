@@ -19,7 +19,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 初期化処理
 	/// </summary>
-	void Initialize();
+	void Initialize(const Vector3& position);
 
 	/// <summary>
 	/// 更新処理
