@@ -61,10 +61,13 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 
 MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex) {
 
-	if (xIndex >= kNumBlockHorizontal || zIndex >= kNumBlockVirtical) {
+	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex) {
 		return MapChipType::kBlank;
 	}
 
+	if (zIndex < 0 || kNumBlockVirtical - 1 < zIndex) {
+		return MapChipType::kBlank;
+	}
 
 	return mapChipDate_.date[zIndex][xIndex];
 }

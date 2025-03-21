@@ -2,8 +2,8 @@
 #include "Input.h"
 #include "Model.h"
 #include "WorldTransform.h"
+#include"MapChipField.h"
 
-class MapChipField;
 
 /// <summary>
 /// プレイヤー
@@ -61,10 +61,6 @@ public: // メンバ関数
 
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
-	void InputMove();
-
-	void AnimateTurn();
-
 	// マップとの当たり判定情報
 	struct CollisionMapInfo {
 		bool Ceiling = false; // 天井衝突フラグ
@@ -96,6 +92,8 @@ public: // メンバ関数
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
 	static inline const float kBlank = 1.0f;
+
+	
 
 private:                            // メンバ変数
 	WorldTransform worldTransform_; // ワールド変換データ

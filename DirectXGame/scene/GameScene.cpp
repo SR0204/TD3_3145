@@ -2,7 +2,7 @@
 #include "AxisIndicator.h"
 #include "MapChipField.h"
 #include "TextureManager.h"
-#include "imgui.h"
+//#include "imgui.h"
 #include <cassert>
 #include <fstream>
 
@@ -97,14 +97,14 @@ void GameScene::Update() {
 	
 
 	// ImGuiで値を表示
-	ImGui::Begin("Camera");
+	/*ImGui::Begin("Camera");
 	if (ImGui::Button("OverHeadCamera")) {
 		isOverHeadCameraActive_ = true;
 	}
 	if (ImGui::Button("PlayerCamera")) {
 		isOverHeadCameraActive_ = false;
 	}
-	ImGui::End();
+	ImGui::End();*/
 
 	// ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
