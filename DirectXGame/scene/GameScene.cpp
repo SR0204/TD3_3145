@@ -39,11 +39,21 @@ void GameScene::Initialize() {
 	// ビュープロジェクション生成
 	viewProjection_.Initialize();
 
+	mapChipFiled_ = new MapChipField;
+	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
+
+	// 表示ブロックの生成
+	GenerateBlocks();
+
+	// ブロックのモデルを読み込む
+	modelBlock_ = Model::CreateFromOBJ("cube", true);
+
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(9, 3);
 	playerPosition.y = 2;
 	player_ = new Player();              // プレイヤーの生成
 	player_->Initialize(playerPosition); // プレイヤーの初期化
+	player_->SetMapChipField(mapChipFiled_);
 
 	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成
 	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f}); // プレイヤーのカメラの初期化
@@ -57,14 +67,7 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 
-	mapChipFiled_ = new MapChipField;
-	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
-
-	// 表示ブロックの生成
-	GenerateBlocks();
-
-	// ブロックのモデルを読み込む
-	modelBlock_ = Model::CreateFromOBJ("cube", true);
+	
 
 	// 天球の生成
 	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);

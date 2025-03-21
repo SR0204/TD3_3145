@@ -2,9 +2,9 @@
 #include "Input.h"
 #include "Model.h"
 #include "WorldTransform.h"
-#include"MapChipField.h"
 
 
+class MapChipField;
 /// <summary>
 /// プレイヤー
 /// </summary>
@@ -120,5 +120,5 @@ private:                            // メンバ変数
 	float moveVel_;     // 移動速度
 
 	// マップチップのフィールド
-	MapChipField* mapChipField_;
+	MapChipField* mapChipField_ = nullptr;
 };

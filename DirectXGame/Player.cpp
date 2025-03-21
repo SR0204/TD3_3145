@@ -4,7 +4,7 @@
 #include "MathUtilityForText.h"
 #include "TextureManager.h"
 #define _USE_MATH_DEFINES
-#include <MapChipField.h>
+#include "MapChipField.h"
 #include <math.h>
 
 Player::~Player() { delete model_; }
@@ -32,11 +32,7 @@ void Player::Initialize(const Vector3& position) {
 
 void Player::Update() {
 
-	// 衝突情報の初期化
-	CollisionMapInfo collisionMapInfo;
-
-	// マップ衝突チェック
-	CheckMapCollision(collisionMapInfo);
+	
 
 	// コントローラー関係
 	/// ーーーここからーーー
@@ -339,6 +335,12 @@ void Player::Update() {
 		worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
 	}
 	ImGui::End();*/
+
+	// 衝突情報の初期化
+	CollisionMapInfo collisionMapInfo;
+
+	// マップ衝突チェック
+	CheckMapCollision(collisionMapInfo);
 }
 
 void Player::Draw(ViewProjection& viewProjection) {

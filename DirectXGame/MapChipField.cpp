@@ -4,6 +4,14 @@
 #include <map>
 #include <sstream>
 
+namespace {
+std::map<std::string, MapChipType> mapChipTable = {
+    {"0", MapChipType::kBlank },
+    {"1", MapChipType::kBlock },
+    {"4", MapChipType::kPlayer},
+};
+}
+
 void MapChipField::Initialize() {}
 
 void MapChipField::Update() {}
