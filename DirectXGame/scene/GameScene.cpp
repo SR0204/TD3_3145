@@ -85,17 +85,16 @@ void GameScene::Update() {
 		viewProjection_.matView = playerCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
 	} else if (isOverHeadCameraActive_ == true) {
-		//
+		
 		overHeadCamera_->Update();
-		//
+		
 		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
 	}
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
-	// プレイヤーの更新処理
-	player_->Update();
+	
 
 	// ImGuiで値を表示
 	ImGui::Begin("Camera");
@@ -118,6 +117,9 @@ void GameScene::Update() {
 			worldTransformBlock->UpdateMatrix(true);
 		}
 	}
+
+	// プレイヤーの更新処理
+	player_->Update();
 
 	// 天球の更新
 	SkySphere_->Update();
