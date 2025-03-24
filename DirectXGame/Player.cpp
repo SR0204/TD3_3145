@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "Player.h"
-#include "ImGui.h"
+// #include "ImGui.h"
 #include "MathUtilityForText.h"
 #include "TextureManager.h"
 #define _USE_MATH_DEFINES
@@ -35,7 +35,7 @@ void Player::Update() {
 	// コントローラー関係
 	/// ーーーここからーーー
 
-	DWORD dwResult = XInputGetState(0, &state_);                      // コントローラーの状態を取得
+	// DWORD dwResult = XInputGetState(0, &state_);                      // コントローラーの状態を取得
 	vibration_.wLeftMotorSpeed = static_cast<WORD>(vibrationVal_.x);  // 左モーターの振動強さ（最大値）
 	vibration_.wRightMotorSpeed = static_cast<WORD>(vibrationVal_.y); // 右モーターの振動強さ（最大値）
 	XInputSetState(0, &vibration_);                                   // コントローラー0のバイブレーションを設定
@@ -62,190 +62,190 @@ void Player::Update() {
 	leftStickUnitVector_ = {static_cast<float>(leftThumbX) / leftStickLange_, static_cast<float>(leftThumbY) / leftStickLange_};
 	rightStickUnitVector_ = {static_cast<float>(rightThumbX) / rightStickLange_, static_cast<float>(rightThumbY) / rightStickLange_};
 
-	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.5f, 0.1f, 0.1f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.2f, 0.2f, 0.5f, 1.0f));
+	// ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.5f, 0.1f, 0.1f, 1.0f));
+	// ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.2f, 0.2f, 0.5f, 1.0f));
 
-	// コントローラーの状態をImGuiで出力
-	ImGui::Begin("Controller");
-	if (dwResult == ERROR_SUCCESS) {
-		// コントローラーが接続出来ている時
-		ImGui::Text("Connect");
-		// ボタン入力を確認
-		if (ImGui::TreeNode("Button")) {
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
-				ImGui::Text("A Buttun     [1]");
-			} else {
-				ImGui::Text("A Buttun     [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
-				ImGui::Text("B Buttun     [1]");
-			} else {
-				ImGui::Text("B Buttun     [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
-				ImGui::Text("X Buttun     [1]");
-			} else {
-				ImGui::Text("X Buttun     [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
-				ImGui::Text("Y Buttun     [1]");
-			} else {
-				ImGui::Text("Y Buttun     [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-				ImGui::Text("LS Buttun    [1]");
-			} else {
-				ImGui::Text("LS Buttun    [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-				ImGui::Text("RS Buttun    [1]");
-			} else {
-				ImGui::Text("RS Buttun    [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
-				ImGui::Text("START Buttun [1]");
-			} else {
-				ImGui::Text("START Buttun [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
-				ImGui::Text("UP Buttun    [1]");
-			} else {
-				ImGui::Text("UP Buttun    [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
-				ImGui::Text("DOWN Buttun  [1]");
-			} else {
-				ImGui::Text("DOWN Buttun  [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
-				ImGui::Text("RIGHT Buttun [1]");
-			} else {
-				ImGui::Text("RIGHT Buttun [0]");
-			}
-			if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
-				ImGui::Text("LEFT Buttun  [1]");
-			} else {
-				ImGui::Text("LEFT Buttun  [0]");
-			}
-			ImGui::TreePop();
-		}
-		// スティック
-		if (ImGui::TreeNode("Stick")) {
-			ImGui::Text("LeftStick  [%6d,%6d]", leftThumbX, leftThumbY);
-			ImGui::Text("RightStick [%6d,%6d]", rightThumbX, rightThumbY);
-			ImGui::Text("LeftStickLange [%f]", leftStickLange_);
-			ImGui::Text("LeftUnitVector[%f,%f]", leftStickUnitVector_.x, leftStickUnitVector_.y);
-			ImGui::Text("LeftStickLange [%f]", rightStickLange_);
-			ImGui::Text("RightUnitVector[%f,%f]", rightStickUnitVector_.x, rightStickUnitVector_.y);
-			ImGui::Text("DeadZone Max [32767]");
-			ImGui::SliderInt("DeadZone", &deadZone_, 0, 32767);
-			if (ImGui::TreeNode("Set")) {
-				if (ImGui::Button("0", {50, 20})) {
-					deadZone_ = 0;
-				}
-				if (ImGui::Button("2000", {50, 20})) {
-					deadZone_ = 2000;
-				}
-				if (ImGui::Button("4000", {50, 20})) {
-					deadZone_ = 4000;
-				}
-				if (ImGui::Button("6000", {50, 20})) {
-					deadZone_ = 6000;
-				}
-				if (ImGui::Button("8000", {50, 20})) {
-					deadZone_ = 8000;
-				}
-				if (ImGui::Button("10000", {50, 20})) {
-					deadZone_ = 10000;
-				}
-				if (ImGui::Button("12000", {50, 20})) {
-					deadZone_ = 12000;
-				}
-				if (ImGui::Button("14000", {50, 20})) {
-					deadZone_ = 14000;
-				}
-				if (ImGui::Button("16000", {50, 20})) {
-					deadZone_ = 16000;
-				}
-				if (ImGui::Button("18000", {50, 20})) {
-					deadZone_ = 18000;
-				}
-				if (ImGui::Button("18000", {50, 20})) {
-					deadZone_ = 18000;
-				}
-				if (ImGui::Button("20000", {50, 20})) {
-					deadZone_ = 20000;
-				}
-				ImGui::TreePop();
-			}
-			ImGui::TreePop();
-		}
-		// トリガー
-		if (ImGui::TreeNode("Trigger")) {
-			ImGui::Text("LeftTriger [%3d]", leftTrigger);
-			ImGui::Text("RightTriger[%3d]", rightTrigger);
-			ImGui::Text("TriggerDeadZone Max[255]");
-			ImGui::SliderInt("TriggerDeadZone", &trigerDeadZone_, 0, 255);
-			if (ImGui::TreeNode("Set")) {
-				if (ImGui::Button("0", {50, 20})) {
-					trigerDeadZone_ = 0;
-				}
-				if (ImGui::Button("32", {50, 20})) {
-					trigerDeadZone_ = 32;
-				}
-				if (ImGui::Button("64", {50, 20})) {
-					trigerDeadZone_ = 64;
-				}
-				if (ImGui::Button("96", {50, 20})) {
-					trigerDeadZone_ = 96;
-				}
-				if (ImGui::Button("128", {50, 20})) {
-					trigerDeadZone_ = 128;
-				}
-				if (ImGui::Button("160", {50, 20})) {
-					trigerDeadZone_ = 160;
-				}
-				if (ImGui::Button("192", {50, 20})) {
-					trigerDeadZone_ = 192;
-				}
-				if (ImGui::Button("224", {50, 20})) {
-					trigerDeadZone_ = 224;
-				}
-				if (ImGui::Button("255", {50, 20})) {
-					trigerDeadZone_ = 255;
-				}
-				ImGui::TreePop();
-			}
-			ImGui::TreePop();
-		}
-		// 振動
-		if (ImGui::TreeNode("Vibration")) {
-			ImGui::Text("Vibration Max [65535]");
-			ImGui::SliderFloat("VibrationX", &vibrationVal_.x, 0.0f, 65535.0f);
-			ImGui::SliderFloat("VibrationY", &vibrationVal_.y, 0.0f, 65535.0f);
-			ImGui::TreePop();
-		}
-		// リセット
-		if (ImGui::TreeNode("Reset")) {
-			ImGui::Text("DeadZone[8000]");
-			ImGui::Text("TrigerDeadZone[30]");
-			ImGui::Text("Vibration[0,0]");
-			if (ImGui::Button("Reset")) {
-				deadZone_ = 8000;
-				trigerDeadZone_ = 30;
-				vibrationVal_ = {};
-			}
-			ImGui::TreePop();
-		}
-	} else {
-		// コントローラーが接続出来ていない時
-		ImGui::Text("Unconnect");
-	}
+	//// コントローラーの状態をImGuiで出力
+	// ImGui::Begin("Controller");
+	// if (dwResult == ERROR_SUCCESS) {
+	//	// コントローラーが接続出来ている時
+	//	ImGui::Text("Connect");
+	//	// ボタン入力を確認
+	//	if (ImGui::TreeNode("Button")) {
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
+	//			ImGui::Text("A Buttun     [1]");
+	//		} else {
+	//			ImGui::Text("A Buttun     [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
+	//			ImGui::Text("B Buttun     [1]");
+	//		} else {
+	//			ImGui::Text("B Buttun     [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
+	//			ImGui::Text("X Buttun     [1]");
+	//		} else {
+	//			ImGui::Text("X Buttun     [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
+	//			ImGui::Text("Y Buttun     [1]");
+	//		} else {
+	//			ImGui::Text("Y Buttun     [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
+	//			ImGui::Text("LS Buttun    [1]");
+	//		} else {
+	//			ImGui::Text("LS Buttun    [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
+	//			ImGui::Text("RS Buttun    [1]");
+	//		} else {
+	//			ImGui::Text("RS Buttun    [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
+	//			ImGui::Text("START Buttun [1]");
+	//		} else {
+	//			ImGui::Text("START Buttun [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
+	//			ImGui::Text("UP Buttun    [1]");
+	//		} else {
+	//			ImGui::Text("UP Buttun    [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
+	//			ImGui::Text("DOWN Buttun  [1]");
+	//		} else {
+	//			ImGui::Text("DOWN Buttun  [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
+	//			ImGui::Text("RIGHT Buttun [1]");
+	//		} else {
+	//			ImGui::Text("RIGHT Buttun [0]");
+	//		}
+	//		if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
+	//			ImGui::Text("LEFT Buttun  [1]");
+	//		} else {
+	//			ImGui::Text("LEFT Buttun  [0]");
+	//		}
+	//		ImGui::TreePop();
+	//	}
+	//	// スティック
+	//	if (ImGui::TreeNode("Stick")) {
+	//		ImGui::Text("LeftStick  [%6d,%6d]", leftThumbX, leftThumbY);
+	//		ImGui::Text("RightStick [%6d,%6d]", rightThumbX, rightThumbY);
+	//		ImGui::Text("LeftStickLange [%f]", leftStickLange_);
+	//		ImGui::Text("LeftUnitVector[%f,%f]", leftStickUnitVector_.x, leftStickUnitVector_.y);
+	//		ImGui::Text("LeftStickLange [%f]", rightStickLange_);
+	//		ImGui::Text("RightUnitVector[%f,%f]", rightStickUnitVector_.x, rightStickUnitVector_.y);
+	//		ImGui::Text("DeadZone Max [32767]");
+	//		ImGui::SliderInt("DeadZone", &deadZone_, 0, 32767);
+	//		if (ImGui::TreeNode("Set")) {
+	//			if (ImGui::Button("0", {50, 20})) {
+	//				deadZone_ = 0;
+	//			}
+	//			if (ImGui::Button("2000", {50, 20})) {
+	//				deadZone_ = 2000;
+	//			}
+	//			if (ImGui::Button("4000", {50, 20})) {
+	//				deadZone_ = 4000;
+	//			}
+	//			if (ImGui::Button("6000", {50, 20})) {
+	//				deadZone_ = 6000;
+	//			}
+	//			if (ImGui::Button("8000", {50, 20})) {
+	//				deadZone_ = 8000;
+	//			}
+	//			if (ImGui::Button("10000", {50, 20})) {
+	//				deadZone_ = 10000;
+	//			}
+	//			if (ImGui::Button("12000", {50, 20})) {
+	//				deadZone_ = 12000;
+	//			}
+	//			if (ImGui::Button("14000", {50, 20})) {
+	//				deadZone_ = 14000;
+	//			}
+	//			if (ImGui::Button("16000", {50, 20})) {
+	//				deadZone_ = 16000;
+	//			}
+	//			if (ImGui::Button("18000", {50, 20})) {
+	//				deadZone_ = 18000;
+	//			}
+	//			if (ImGui::Button("18000", {50, 20})) {
+	//				deadZone_ = 18000;
+	//			}
+	//			if (ImGui::Button("20000", {50, 20})) {
+	//				deadZone_ = 20000;
+	//			}
+	//			ImGui::TreePop();
+	//		}
+	//		ImGui::TreePop();
+	//	}
+	//	// トリガー
+	//	if (ImGui::TreeNode("Trigger")) {
+	//		ImGui::Text("LeftTriger [%3d]", leftTrigger);
+	//		ImGui::Text("RightTriger[%3d]", rightTrigger);
+	//		ImGui::Text("TriggerDeadZone Max[255]");
+	//		ImGui::SliderInt("TriggerDeadZone", &trigerDeadZone_, 0, 255);
+	//		if (ImGui::TreeNode("Set")) {
+	//			if (ImGui::Button("0", {50, 20})) {
+	//				trigerDeadZone_ = 0;
+	//			}
+	//			if (ImGui::Button("32", {50, 20})) {
+	//				trigerDeadZone_ = 32;
+	//			}
+	//			if (ImGui::Button("64", {50, 20})) {
+	//				trigerDeadZone_ = 64;
+	//			}
+	//			if (ImGui::Button("96", {50, 20})) {
+	//				trigerDeadZone_ = 96;
+	//			}
+	//			if (ImGui::Button("128", {50, 20})) {
+	//				trigerDeadZone_ = 128;
+	//			}
+	//			if (ImGui::Button("160", {50, 20})) {
+	//				trigerDeadZone_ = 160;
+	//			}
+	//			if (ImGui::Button("192", {50, 20})) {
+	//				trigerDeadZone_ = 192;
+	//			}
+	//			if (ImGui::Button("224", {50, 20})) {
+	//				trigerDeadZone_ = 224;
+	//			}
+	//			if (ImGui::Button("255", {50, 20})) {
+	//				trigerDeadZone_ = 255;
+	//			}
+	//			ImGui::TreePop();
+	//		}
+	//		ImGui::TreePop();
+	//	}
+	//	// 振動
+	//	if (ImGui::TreeNode("Vibration")) {
+	//		ImGui::Text("Vibration Max [65535]");
+	//		ImGui::SliderFloat("VibrationX", &vibrationVal_.x, 0.0f, 65535.0f);
+	//		ImGui::SliderFloat("VibrationY", &vibrationVal_.y, 0.0f, 65535.0f);
+	//		ImGui::TreePop();
+	//	}
+	//	// リセット
+	//	if (ImGui::TreeNode("Reset")) {
+	//		ImGui::Text("DeadZone[8000]");
+	//		ImGui::Text("TrigerDeadZone[30]");
+	//		ImGui::Text("Vibration[0,0]");
+	//		if (ImGui::Button("Reset")) {
+	//			deadZone_ = 8000;
+	//			trigerDeadZone_ = 30;
+	//			vibrationVal_ = {};
+	//		}
+	//		ImGui::TreePop();
+	//	}
+	// } else {
+	//	// コントローラーが接続出来ていない時
+	//	ImGui::Text("Unconnect");
+	// }
 
-	ImGui::End();
+	// ImGui::End();
 
-	ImGui::PopStyleColor();
-	ImGui::PopStyleColor();
+	// ImGui::PopStyleColor();
+	// ImGui::PopStyleColor();
 
 	/// ーーーここまでーーー
 
@@ -261,7 +261,7 @@ void Player::Update() {
 
 	// マップ衝突チェック（通常マップ + CSVマップ）
 	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
-
+		collisionMapInfo.isBlocked = true;
 		moveVel_ = {0.0f, 0.0f, 0.0f}; // 移動を停止
 	}
 
@@ -362,12 +362,14 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 
 bool Player::CheckMapCollision(CollisionMapInfo& info) {
-	// 衝突判定を行い、1つでも衝突があればtrueを返す
-	if (CheckMapCollisionBackward(info) || CheckMapCollisionForward(info) || CheckMapCollisionRight(info) || CheckMapCollisionLeft(info)) {
-		return true; // 衝突があればtrueを返す
+	// まずCSVマップの簡易衝突判定を行う
+	if (CheckCollisionWithCSVMap(info)) {
+		return true;
 	}
 
-	// 衝突がなければfalseを返す
+	if (CheckMapCollisionRight(info) || CheckMapCollisionLeft(info) || CheckMapCollisionBackward(info) || CheckMapCollisionForward(info)) {
+		return true; // 1つでも衝突があればtrueを返す
+	}
 	return false;
 }
 
@@ -378,10 +380,10 @@ bool Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	}
 
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, -kDepth * 0.3f), kRightTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, +kDepth * 0.3f), kRightBottomFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, -kDepth * 0.3f), kRightTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, +kDepth * 0.3f), kRightBottomBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f), kRightTopFront),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomFront),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f), kRightTopBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomBack),
 	};
 
 	bool hit = false;
@@ -397,7 +399,7 @@ bool Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 	if (hit) {
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(+kWidth / 2.0f, 0, 0));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
-		info.move.x = std::max(0.0f, rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank * 0.5f));
+		info.move.x = std::max(0.0f, rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
 		info.hitWall = true;
 		return true;
 	}
@@ -412,10 +414,10 @@ bool Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 	}
 
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, -kDepth * 0.3f), kLeftTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, +kDepth * 0.3f), kLeftBottomFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, -kDepth * 0.3f), kLeftTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, +kDepth * 0.3f), kLeftBottomBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f), kLeftTopFront),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomFront),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f), kLeftTopBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomBack),
 	};
 
 	bool hit = false;
@@ -446,10 +448,10 @@ bool Player::CheckMapCollisionForward(CollisionMapInfo& info) {
 	}
 
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, -kDepth * 0.3f), kRightTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, -kDepth * 0.3f), kLeftTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, +kDepth * 0.3f), kRightBottomFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, +kDepth * 0.3f), kLeftBottomFront),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f), kLeftTopFront),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f), kRightTopFront),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomFront), // 修正
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomFront),
 	};
 
 	bool hit = false;
@@ -480,10 +482,10 @@ bool Player::CheckMapCollisionBackward(CollisionMapInfo& info) {
 	}
 
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, -kDepth * 0.3f), kRightTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, -kDepth * 0.3f), kLeftTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth * 0.3f, 0, +kDepth * 0.3f), kRightBottomBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth * 0.3f, 0, +kDepth * 0.3f), kLeftBottomBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftTopBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightTopBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomBack),
+	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomBack),
 	};
 
 	bool hit = false;
@@ -523,18 +525,28 @@ Vector3 Player::CornerPosition(const Vector3& center, Corner corner) {
 }
 
 bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
-	// プレイヤーの新しい位置
-	Vector3 newPosition = worldTransform_.translation_ + info.move;
+	// プレイヤーの四隅をチェック
+	std::array<Vector3, 4> corners = {
+	    worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f),
+	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f),
+	};
 
-	// マップ座標へ変換（ブロックサイズを考慮）
-	int mapX = static_cast<int>(newPosition.x / kBlockSize);
-	int mapZ = static_cast<int>(newPosition.z / kBlockSize);
+	for (const auto& corner : corners) {
+		int mapX = static_cast<int>(corner.x / kBlockSize);
+		int mapZ = static_cast<int>(corner.z / kBlockSize);
 
-	// その位置にブロックがあるか確認
-	if (mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kBlock) { // 1がブロック
-		info.move = Vector3(0, 0, 0);                                              // その場でストップ
-		info.hitWall = true;
-		return true;
+		if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight()) {
+			return false;
+		}
+
+		if (mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kBlock) {
+			info.move = Vector3(0, 0, 0);
+			info.hitWall = true;
+			return true;
+		}
 	}
+
 	return false;
 }

@@ -17,8 +17,6 @@ enum class MapChipType {
 	kPlayer,
 };
 
-
-
 struct MapChipDate {
 	std::vector<std::vector<MapChipType>> date;
 };
@@ -48,14 +46,13 @@ public:
 
 	void LoadMapChipCsv(const std::string& filePath);
 
-	MapChipType GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex);
+	MapChipType GetMapChipTypeByIndex(int xIndex, int zIndex);
 
 	Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex);
 
 	uint32_t GetNumBlockVirtical() const { return kNumBlockVirtical; };
 	uint32_t GetNumBlockHorizontal() const { return kNumBlockHorizontal; };
 
-	
 	
 
 	struct IndexSet {
@@ -67,13 +64,19 @@ public:
 
 	// 範囲矩形
 	struct Rect {
-		float left;   // 左端
-		float right;  // 右端
-		float back; // 下端
-		float front;  // 上端
+		float left;  // 左端
+		float right; // 右端
+		float back;  // 下端
+		float front; // 上端
 	};
 
-	Rect GetRectByIndex(uint32_t xIndex, uint32_t zIndex);	
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t zIndex);
+
+	int GetMapWidth() const;
+
+	int GetMapHeight() const;
+
+
 
 private:
 	// 一ブロックのサイズ

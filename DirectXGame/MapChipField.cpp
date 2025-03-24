@@ -67,20 +67,17 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 	}
 }
 
-MapChipType MapChipField::GetMapChipTypeByIndex(uint32_t xIndex, uint32_t zIndex) {
-
-	if (xIndex < 0 || kNumBlockHorizontal - 1 < xIndex) {
+MapChipType MapChipField::GetMapChipTypeByIndex(int xIndex, int zIndex) {
+	if (xIndex < 0 || xIndex >= static_cast<int>(kNumBlockHorizontal)) {
 		return MapChipType::kBlank;
 	}
-
-	if (zIndex < 0 || kNumBlockVirtical - 1 < zIndex) {
+	if (zIndex < 0 || zIndex >= static_cast<int>(kNumBlockVirtical)) {
 		return MapChipType::kBlank;
 	}
-
 	return mapChipDate_.date[zIndex][xIndex];
 }
 
-Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex) { return Vector3(kBlockWidth * xIndex, 0, kBlockHeight * (kNumBlockVirtical  - zIndex)); }
+Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex) { return Vector3(kBlockWidth * xIndex, 0, kBlockHeight * zIndex); }
 
 MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
 
@@ -88,7 +85,7 @@ MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3&
 
 	indexSet.xIndex = static_cast<uint32_t>((position.x + kBlockWidth / 2) / kBlockWidth);
 
-	indexSet.zIndex = kNumBlockVirtical - 1 - static_cast<uint32_t>((position.z + kBlockHeight / 2) / kBlockHeight);
+	indexSet.zIndex = static_cast<uint32_t>(position.z / kBlockHeight);
 
 	return indexSet;
 }
@@ -100,8 +97,15 @@ MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t zIndex
 	Rect rect;
 	rect.left = center.x - kBlockWidth / 2.0f;
 	rect.right = center.x + kBlockWidth / 2.0f;
-	rect.back = center.z - kBlockDepth / 2.0f;  // こちらはZ軸に合わせて調整
-	rect.front = center.z + kBlockDepth / 2.0f; // Z軸の範囲設定
-
+	rect.back = center.z - kBlockHeight / 2.0f;
+	rect.front = center.z + kBlockHeight / 2.0f;
+	
 	return rect;
+}
+int MapChipField::GetMapWidth() const {
+	return static_cast<int>(mapChipDate_.date[0].size()); // 1行の要素数がマップの横幅
+}
+
+int MapChipField::GetMapHeight() const {
+	return static_cast<int>(mapChipDate_.date.size()); // 行数がマップの縦幅
 }
