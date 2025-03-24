@@ -2,7 +2,7 @@
 #include "AxisIndicator.h"
 #include "MapChipField.h"
 #include "TextureManager.h"
-//#include "imgui.h"
+// #include "imgui.h"
 #include <cassert>
 #include <fstream>
 
@@ -28,6 +28,8 @@ GameScene::~GameScene() {
 	delete player_;
 	delete playerCamera_;
 	delete overHeadCamera_;
+
+	delete time_; // メモリ解放
 }
 
 void GameScene::Initialize() {
@@ -67,8 +69,6 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 
-	
-
 	// 天球の生成
 	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
 	SkySphere_ = new SkySphere();
@@ -77,6 +77,9 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
 	viewProjection_.Initialize();
+
+	time_ = new Time(5.0f); // （5秒に設定）
+	time_->Initialize();
 }
 
 void GameScene::Update() {
@@ -88,24 +91,23 @@ void GameScene::Update() {
 		viewProjection_.matView = playerCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
 	} else if (isOverHeadCameraActive_ == true) {
-		
+
 		overHeadCamera_->Update();
-		
+
 		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
 	}
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
-	
 
 	// ImGuiで値を表示
 	/*ImGui::Begin("Camera");
 	if (ImGui::Button("OverHeadCamera")) {
-		isOverHeadCameraActive_ = true;
+	    isOverHeadCameraActive_ = true;
 	}
 	if (ImGui::Button("PlayerCamera")) {
-		isOverHeadCameraActive_ = false;
+	    isOverHeadCameraActive_ = false;
 	}
 	ImGui::End();*/
 
@@ -126,6 +128,12 @@ void GameScene::Update() {
 
 	// 天球の更新
 	SkySphere_->Update();
+
+	time_->Update(); // 時間を更新して表示
+
+	if (time_->IsTimeOver()) {
+		std::cout << "Game Over!" << std::endl;
+	}
 }
 
 void GameScene::Draw() {
@@ -173,6 +181,8 @@ void GameScene::Draw() {
 	Model::PostDraw();
 #pragma endregion
 
+	time_->Draw();
+
 #pragma region 前景スプライト描画
 	// 前景スプライト描画前処理
 	Sprite::PreDraw(commandList);
@@ -206,5 +216,12 @@ void GameScene::GenerateBlocks() {
 				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
 			}
 		}
+	}
+}
+
+void GameScene::DrawTimeUI() {
+
+	if (time_) {
+		time_->Draw(); // TimeクラスのDrawを呼び出す
 	}
 }

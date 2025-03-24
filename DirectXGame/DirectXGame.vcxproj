@@ -118,6 +118,7 @@
     <ClCompile Include="PlayerCamera.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="SkySphere.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="WorldTransformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -156,6 +157,7 @@
     <ClInclude Include="PlayerCamera.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="SkySphere.h" />
+    <ClInclude Include="Time.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">

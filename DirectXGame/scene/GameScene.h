@@ -13,7 +13,6 @@
 #include "Player.h"
 #include "PlayerCamera.h"
 #include "OverHeadCamera.h"
-#include"Time.h"
 #include "Time.h"
 
 
@@ -49,6 +48,9 @@ public: // メンバ関数
 	void Draw();
 
 	void GenerateBlocks();
+
+	// 時間表示用の関数
+	void DrawTimeUI();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -94,6 +96,8 @@ private: // メンバ変数
 	OverHeadCamera* overHeadCamera_ = nullptr; // 俯瞰カメラ
 
 	bool isOverHeadCameraActive_; // 俯瞰カメラのアクティブ
+
+	Time* time_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
