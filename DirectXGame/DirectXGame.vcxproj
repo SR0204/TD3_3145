@@ -110,9 +110,11 @@
     <ClCompile Include="3d\ViewProjection.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
     <ClCompile Include="MathUtilityForText.cpp" />
+    <ClCompile Include="MyMath.cpp" />
     <ClCompile Include="OverHeadCamera.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerCamera.cpp" />
@@ -144,6 +146,7 @@
     <ClInclude Include="base\StringUtility.h" />
     <ClInclude Include="base\TextureManager.h" />
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="MapChipField.h" />
     <ClInclude Include="MathUtilityForText.h" />
@@ -151,6 +154,7 @@
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
+    <ClInclude Include="MyMath.h" />
     <ClInclude Include="OverHeadCamera.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerCamera.h" />

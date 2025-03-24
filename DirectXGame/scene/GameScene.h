@@ -13,6 +13,8 @@
 #include "Player.h"
 #include "PlayerCamera.h"
 #include "OverHeadCamera.h"
+#include "Enemy.h"
+
 
 /// <summary>
 /// ゲームシーン
@@ -47,6 +49,15 @@ public: // メンバ関数
 
 	void GenerateBlocks();
 
+	// 敵発生
+	void SpawnEnemy(Vector3 position);
+
+	// 敵発生データの読み込み
+	void LoadEnemyPopData();
+
+	// 敵発生コマンドの更新
+	void UpDateEnemyPopCommands();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -54,6 +65,8 @@ private: // メンバ変数
 
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
+
+	Model* model_ = nullptr;
 
 	// 3Dモデルデータ
 	Model* modelBlock_ = nullptr;
@@ -91,6 +104,18 @@ private: // メンバ変数
 	OverHeadCamera* overHeadCamera_ = nullptr; // 俯瞰カメラ
 
 	bool isOverHeadCameraActive_; // 俯瞰カメラのアクティブ
+
+	// enemy
+	uint32_t enemyTextureHandle_ = 0;
+	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
+
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
+	// 待機中フラグ
+	bool waitFlag = false;
+	// 待機タイマー
+	int32_t waitTimer = 0;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

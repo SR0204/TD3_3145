@@ -57,6 +57,8 @@ public:
 	/// </summary>
 	void UpdateMatrix(bool isTransfer);
 
+	void EnemyUpdateMatrix();
+
 	void UpdateMatrixBlock();
 
 private:

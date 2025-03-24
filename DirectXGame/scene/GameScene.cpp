@@ -2,7 +2,7 @@
 #include "AxisIndicator.h"
 #include "MapChipField.h"
 #include "TextureManager.h"
-//#include "imgui.h"
+// #include "imgui.h"
 #include <cassert>
 #include <fstream>
 
@@ -28,6 +28,13 @@ GameScene::~GameScene() {
 	delete player_;
 	delete playerCamera_;
 	delete overHeadCamera_;
+
+	delete model_;
+
+	delete enemy_;
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 }
 
 void GameScene::Initialize() {
@@ -67,8 +74,6 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 
-	
-
 	// 天球の生成
 	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
 	SkySphere_ = new SkySphere();
@@ -77,6 +82,10 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
 	viewProjection_.Initialize();
+
+	// Enemy
+	enemyTextureHandle_ = TextureManager::Load("uvChecker.png");
+	LoadEnemyPopData();
 }
 
 void GameScene::Update() {
@@ -88,24 +97,23 @@ void GameScene::Update() {
 		viewProjection_.matView = playerCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
 	} else if (isOverHeadCameraActive_ == true) {
-		
+
 		overHeadCamera_->Update();
-		
+
 		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
 	}
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
-	
 
 	// ImGuiで値を表示
 	/*ImGui::Begin("Camera");
 	if (ImGui::Button("OverHeadCamera")) {
-		isOverHeadCameraActive_ = true;
+	    isOverHeadCameraActive_ = true;
 	}
 	if (ImGui::Button("PlayerCamera")) {
-		isOverHeadCameraActive_ = false;
+	    isOverHeadCameraActive_ = false;
 	}
 	ImGui::End();*/
 
@@ -126,6 +134,20 @@ void GameScene::Update() {
 
 	// 天球の更新
 	SkySphere_->Update();
+
+	// Enemy更新
+	UpDateEnemyPopCommands();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
+	enemies_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
 }
 
 void GameScene::Draw() {
@@ -169,6 +191,11 @@ void GameScene::Draw() {
 		}
 	}
 
+	// Enemy描画
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	}
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -208,3 +235,95 @@ void GameScene::GenerateBlocks() {
 		}
 	}
 }
+
+#pragma region 敵発生関連関数
+void GameScene::SpawnEnemy(Vector3 position) {
+	Enemy* newEnemy = new Enemy();
+
+	newEnemy->SetGameScene(this); // GameScene をセット
+
+	newEnemy->Initialize(model_, enemyTextureHandle_, &viewProjection_, position);
+
+	/*newEnemy->SetPlayer(player_);*/
+
+	enemies_.push_back(newEnemy);
+}
+
+void GameScene::LoadEnemyPopData() {
+	// ファイルを開く
+	std::ifstream file;
+	file.open("Resources/enemyPop.csv");
+	assert(file.is_open());
+
+	// ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands << file.rdbuf();
+
+	// ファイルを閉じる
+	file.close();
+}
+
+void GameScene::UpDateEnemyPopCommands() {
+	// 待機処理
+	if (waitFlag) {
+		waitTimer--;
+		if (waitTimer <= 0) {
+			// 待機完了
+			waitFlag = false;
+		}
+		return;
+	}
+
+	// １行分の文字列を入れる変数
+	std::string line;
+
+	// コマンド実行ループ
+	while (getline(enemyPopCommands, line)) {
+		// １行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		std::string word;
+
+		// ,区切りで行の先頭文字列を取得
+		getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			// コメント行を飛ばす
+			continue;
+		}
+
+		// POPコマンド
+		if (word.find("POP") == 0) {
+			// x座標
+			getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+
+			// y座標
+			getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+
+			// z座標
+			getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			// 敵を発生させる
+			SpawnEnemy(Vector3(x, y, z));
+		}
+
+		// WAITコマンド
+		else if (word.find("WAIT") == 0) {
+			getline(line_stream, word, ',');
+
+			// 待ち時間
+			int32_t waitTime = atoi(word.c_str());
+
+			// 待機開始
+			waitFlag = true;
+			waitTimer = waitTime;
+
+			// コマンドループを抜ける
+			break;
+		}
+	}
+}
+#pragma endregion
