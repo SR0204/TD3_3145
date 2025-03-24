@@ -13,6 +13,7 @@
 #include "Player.h"
 #include "PlayerCamera.h"
 #include "OverHeadCamera.h"
+#include"Time.h"
 
 /// <summary>
 /// ゲームシーン
@@ -91,6 +92,8 @@ private: // メンバ変数
 	OverHeadCamera* overHeadCamera_ = nullptr; // 俯瞰カメラ
 
 	bool isOverHeadCameraActive_; // 俯瞰カメラのアクティブ
+
+	Time* time_ = nullptr;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
