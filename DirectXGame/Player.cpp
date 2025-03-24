@@ -254,6 +254,11 @@ void Player::Update() {
 	// ワールド変換データの更新
 	worldTransform_.UpdateMatrix(true);
 
+	// 移動情報をセット
+	CollisionMapInfo collisionMapInfo;
+	collisionMapInfo.move = moveVel_;
+	collisionMapInfo.isBlocked = false; // 初期状態ではブロックされていない
+
 	// 旋回処理 [I:上 K:下 L:右 J:左]
 	bool rotated = false;
 	if (input_->PushKey(DIK_K)) {
@@ -344,10 +349,7 @@ void Player::Update() {
 	}
 	ImGui::End();*/
 
-	// 移動情報をセット
-	CollisionMapInfo collisionMapInfo;
-	collisionMapInfo.move = moveVel_;
-	collisionMapInfo.isBlocked = false; // 初期状態ではブロックされていない
+	
 
 	// マップ衝突チェック（通常マップ + CSVマップ）
 	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
