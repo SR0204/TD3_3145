@@ -85,7 +85,7 @@ private:
 	static inline const float kBlockDepth = 1.0f;
 
 	// ブロックの個数
-	static inline const uint32_t kNumBlockVirtical = 22;
+	static inline const uint32_t kNumBlockVirtical = 34;
 	static inline const uint32_t kNumBlockHorizontal = 100;
 
 	MapChipDate mapChipDate_;
