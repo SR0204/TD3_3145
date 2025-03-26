@@ -114,7 +114,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
     <ClCompile Include="MathUtilityForText.cpp" />
-    <ClCompile Include="MyMath.cpp" />
     <ClCompile Include="OverHeadCamera.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerCamera.cpp" />
@@ -154,7 +153,6 @@
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
     <ClInclude Include="math\Vector4.h" />
-    <ClInclude Include="MyMath.h" />
     <ClInclude Include="OverHeadCamera.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerCamera.h" />

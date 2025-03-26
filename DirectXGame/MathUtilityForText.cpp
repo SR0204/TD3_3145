@@ -209,3 +209,15 @@ Matrix4x4 Inverse(const Matrix4x4& matrix) {
 
 	return result;
 };
+
+Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2) {
+	Matrix4x4 result{};
+	for (int row = 0; row < 4; ++row) {
+		for (int column = 0; column < 4; ++column) {
+			for (int i = 0; i < 4; ++i) {
+				result.m[row][column] += m1.m[row][i] * m2.m[i][column];
+			}
+		}
+	}
+	return result;
+}
