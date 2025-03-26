@@ -95,6 +95,7 @@ public: // メンバ関数
 
 	bool CheckCollisionWithCSVMap(CollisionMapInfo& info);
 
+	
 	private:                            // メンバ変数
 	WorldTransform worldTransform_; // ワールド変換データ
 	Model* model_ = nullptr;        // モデル
@@ -122,4 +123,6 @@ public: // メンバ関数
 	// マップチップのフィールド
 	MapChipField* mapChipField_ = nullptr;
 	float kBlockSize = 1.0f;
+
+	bool canMoveAfterCollision;
 };

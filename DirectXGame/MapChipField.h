@@ -60,7 +60,7 @@ public:
 		uint32_t zIndex;
 	};
 
-	IndexSet GetMapChipIndexSetByPosition(const Vector3& position);
+	IndexSet GetMapChipIndexSetByPosition(Vector3 pos);
 
 	// 範囲矩形
 	struct Rect {
@@ -70,7 +70,7 @@ public:
 		float front; // 上端
 	};
 
-	Rect GetRectByIndex(uint32_t xIndex, uint32_t zIndex);
+	Rect GetRectByIndex(int xIndex, int zIndex);
 
 	int GetMapWidth() const;
 
@@ -85,7 +85,7 @@ private:
 	static inline const float kBlockDepth = 1.0f;
 
 	// ブロックの個数
-	static inline const uint32_t kNumBlockVirtical = 20;
+	static inline const uint32_t kNumBlockVirtical = 22;
 	static inline const uint32_t kNumBlockHorizontal = 100;
 
 	MapChipDate mapChipDate_;

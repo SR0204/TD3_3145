@@ -5,6 +5,7 @@
 #include "TextureManager.h"
 #define _USE_MATH_DEFINES
 #include "MapChipField.h"
+#include <cassert>
 #include <math.h>
 
 Player::~Player() { delete model_; }
@@ -21,10 +22,10 @@ void Player::Initialize(const Vector3& position) {
 
 	leftStickLange_ = 0.0f;
 
-	kWidth = 1.0f;
-	kHeight = 1.0f;
-	kDepth = 1.0f;
-	rotateVel_ = {0.0f, 0.03f, 0.0f}; // 旋回速度
+	kWidth = 0.5f;
+	kHeight = 0.5f;
+	kDepth = 0.5f;
+	rotateVel_ = {0.0f, 0.05f, 0.0f}; // 旋回速度
 	moveVel_ = {0.1f, 0.0f, 0.1f};    // 移動速度
 
 	worldTransform_.translation_ = position; // 初期配置
@@ -259,6 +260,13 @@ void Player::Update() {
 	collisionMapInfo.move = moveVel_;
 	collisionMapInfo.isBlocked = false; // 初期状態ではブロックされていない
 
+	// 移動処理を行う前に衝突判定を行う
+	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
+		// 衝突している場合、移動を停止
+		collisionMapInfo.isBlocked = true;
+		moveVel_ = {0.0f, 0.0f, 0.0f}; // 移動を停止
+	}
+
 	// 旋回処理 [I:上 K:下 L:右 J:左]
 	bool rotated = false;
 	if (input_->PushKey(DIK_K)) {
@@ -284,6 +292,11 @@ void Player::Update() {
 		moveVel_ = {0.1f, 0.0f, 0.1f}; // 移動速度を復元
 	}
 
+	// 回転処理が終わった後でrotatedをfalseにリセット
+	if (!input_->PushKey(DIK_K) && !input_->PushKey(DIK_I) && !input_->PushKey(DIK_L) && !input_->PushKey(DIK_J)) {
+		rotated = false;
+	}
+
 	// 旋回値が|π|を越えたら値を変える
 	if (worldTransform_.rotation_.y >= pi || worldTransform_.rotation_.y <= -pi) {
 		worldTransform_.rotation_.y *= -1;
@@ -297,23 +310,25 @@ void Player::Update() {
 		worldTransform_.rotation_.x = -pi / 4.0f;
 	}
 
-	// 移動処理(向いてる方向に進む)[W:前進 S:後退 D:右 A:左 ]
-	if (input_->PushKey(DIK_W)) {
-		// 座標に角度と移動速度を乗算した値を足す
-		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_.z;
-		worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y) * moveVel_.x;
-	}
-	if (input_->PushKey(DIK_S)) {
-		worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y) * moveVel_.z;
-		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y) * moveVel_.x;
-	}
-	if (input_->PushKey(DIK_D)) {
-		worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.z;
-		worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.x;
-	}
-	if (input_->PushKey(DIK_A)) {
-		worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.z;
-		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.x;
+	// 視点の荒ぶりを防ぐために、移動方向のベクトルに影響するように移動処理を調整
+	if (!collisionMapInfo.isBlocked) {
+		// 向いている方向に進む
+		if (input_->PushKey(DIK_W)) {
+			worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y) * moveVel_.z;
+			worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y) * moveVel_.x;
+		}
+		if (input_->PushKey(DIK_S)) {
+			worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y) * moveVel_.z;
+			worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y) * moveVel_.x;
+		}
+		if (input_->PushKey(DIK_D)) {
+			worldTransform_.translation_.z += cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.z;
+			worldTransform_.translation_.x += sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.x;
+		}
+		if (input_->PushKey(DIK_A)) {
+			worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.z;
+			worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.x;
+		}
 	}
 
 	// 右スティックを使ったカメラ旋回
@@ -349,14 +364,23 @@ void Player::Update() {
 	}
 	ImGui::End();*/
 
-	
+	// キーが放された場合に減速処理を行う
+	// const float deceleration = 0.05f;
+	// if (!input_->PushKey(DIK_W) && !input_->PushKey(DIK_S)) {
+	//	if (moveVel_.z > 0.0f) {
+	//		moveVel_.z = std::max(0.0f, moveVel_.z - deceleration);
+	//	} else if (moveVel_.z < 0.0f) {
+	//		moveVel_.z = std::min(0.0f, moveVel_.z + deceleration);
+	//	}
+	//}
 
-	// マップ衝突チェック（通常マップ + CSVマップ）
-	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
-		collisionMapInfo.isBlocked = true;
-		moveVel_ = {0.0f, 0.0f, 0.0f};            // 移動を停止
-		worldTransform_.translation_ -= moveVel_; // 衝突後の位置を修正（進んだ分だけ戻す）
-	}
+	// if (!input_->PushKey(DIK_A) && !input_->PushKey(DIK_D)) {
+	//	if (moveVel_.x > 0.0f) {
+	//		moveVel_.x = std::max(0.0f, moveVel_.x - deceleration);
+	//	} else if (moveVel_.x < 0.0f) {
+	//		moveVel_.x = std::min(0.0f, moveVel_.x + deceleration);
+	//	}
+	// }
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
@@ -382,11 +406,12 @@ bool Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 		return false;
 	}
 
+	// 四隅の座標を修正
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f), kRightTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f), kRightTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomBack),
+	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f),
 	};
 
 	bool hit = false;
@@ -404,6 +429,9 @@ bool Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
 		info.move.x = std::max(0.0f, rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
 		info.hitWall = true;
+
+		// デバッグログ
+		// std::cout << "Collision Right! Adjusted X: " << info.move.x << std::endl;
 		return true;
 	}
 
@@ -416,11 +444,12 @@ bool Player::CheckMapCollisionLeft(CollisionMapInfo& info) {
 		return false;
 	}
 
+	// 四隅の座標を修正
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f), kLeftTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f), kLeftTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomBack),
+	    worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f),
 	};
 
 	bool hit = false;
@@ -450,11 +479,12 @@ bool Player::CheckMapCollisionForward(CollisionMapInfo& info) {
 		return false;
 	}
 
+	// 四隅の座標を修正
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f), kLeftTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f), kRightTopFront),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomFront), // 修正
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomFront),
+	    worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f),
 	};
 
 	bool hit = false;
@@ -480,51 +510,59 @@ bool Player::CheckMapCollisionForward(CollisionMapInfo& info) {
 
 // 後退方向（Z-）の衝突判定
 bool Player::CheckMapCollisionBackward(CollisionMapInfo& info) {
+	// 前方向の移動なら処理不要
 	if (info.move.z >= 0) {
 		return false;
 	}
 
+	// 後退方向の4つのコーナーの座標
+	// 四隅の座標を修正
 	std::array<Vector3, 4> positionNew = {
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightTopBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, +kDepth / 2.0f), kLeftBottomBack),
-	    CornerPosition(worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f), kRightBottomBack),
+	    worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
+	    worldTransform_.translation_ + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
 	};
 
+	// 衝突判定
 	bool hit = false;
-	MapChipField::IndexSet indexSet;
 	for (const auto& pos : positionNew) {
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(pos);
+		auto indexSet = mapChipField_->GetMapChipIndexSetByPosition(pos);
 		if (mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.zIndex) == MapChipType::kBlock) {
 			hit = true;
 			break;
 		}
 	}
 
+	// 衝突時の処理
 	if (hit) {
-		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, 0, -kDepth / 2.0f));
+		auto indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + Vector3(0, 0, -kDepth / 2.0f));
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
+
+		// プレイヤーの後ろ方向への移動を制限
 		info.move.z = std::min(0.0f, rect.back - worldTransform_.translation_.z + (kDepth / 2.0f + kBlank * 0.5f));
+
 		info.hitWall = true;
 		return true;
 	}
+
 	return false;
 }
 
 Vector3 Player::CornerPosition(const Vector3& center, Corner corner) {
-
-	Vector3 offsetTable[kNumCorner] = {
-	    {+kWidth / 2.0f, -kHeight / 2.0f, +kDepth / 2.0f}, // kRightBottomFront
-	    {-kWidth / 2.0f, -kHeight / 2.0f, +kDepth / 2.0f}, // kLeftBottomFront
-	    {+kWidth / 2.0f, +kHeight / 2.0f, +kDepth / 2.0f}, // kRightTopFront
-	    {-kWidth / 2.0f, +kHeight / 2.0f, +kDepth / 2.0f}, // kLeftTopFront
-	    {+kWidth / 2.0f, -kHeight / 2.0f, -kDepth / 2.0f}, // kRightBottomBack
-	    {-kWidth / 2.0f, -kHeight / 2.0f, -kDepth / 2.0f}, // kLeftBottomBack
-	    {+kWidth / 2.0f, +kHeight / 2.0f, -kDepth / 2.0f}, // kRightTopBack
-	    {-kWidth / 2.0f, +kHeight / 2.0f, -kDepth / 2.0f}, // kLeftTopBack
+	static const std::array<Vector3, kNumCorner> offsetTable = {
+	    Vector3(+kWidth / 2.0f, -kHeight / 2.0f, +kDepth / 2.0f), // kRightBottomFront
+	    Vector3(-kWidth / 2.0f, -kHeight / 2.0f, +kDepth / 2.0f), // kLeftBottomFront
+	    Vector3(+kWidth / 2.0f, +kHeight / 2.0f, +kDepth / 2.0f), // kRightTopFront
+	    Vector3(-kWidth / 2.0f, +kHeight / 2.0f, +kDepth / 2.0f), // kLeftTopFront
+	    Vector3(+kWidth / 2.0f, -kHeight / 2.0f, -kDepth / 2.0f), // kRightBottomBack
+	    Vector3(-kWidth / 2.0f, -kHeight / 2.0f, -kDepth / 2.0f), // kLeftBottomBack
+	    Vector3(+kWidth / 2.0f, +kHeight / 2.0f, -kDepth / 2.0f), // kRightTopBack
+	    Vector3(-kWidth / 2.0f, +kHeight / 2.0f, -kDepth / 2.0f)  // kLeftTopBack
 	};
 
-	return center + offsetTable[static_cast<uint32_t>(corner)];
+	assert(static_cast<size_t>(corner) < offsetTable.size());
+	return center + offsetTable[static_cast<size_t>(corner)];
 }
 
 bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
@@ -536,20 +574,35 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, +kDepth / 2.0f),
 	};
 
+	bool hitX = false;
+	bool hitZ = false;
+
 	for (const auto& corner : corners) {
-		int mapX = static_cast<int>(corner.x / kBlockSize);
-		int mapZ = static_cast<int>(corner.z / kBlockSize);
+		int mapX = static_cast<int>(std::floor(corner.x / kBlockSize));
+		int mapZ = static_cast<int>(std::floor(corner.z / kBlockSize));
 
-		if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight()) {
-			return false;
-		}
+		if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight() || mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kBlock) {
 
-		if (mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kBlock) {
-			info.move = Vector3(0, 0, 0);
-			info.hitWall = true;
-			return true;
+			// XとZそれぞれの軸を個別にチェック
+			if (corner.x != worldTransform_.translation_.x) {
+				hitX = true;
+			}
+			if (corner.z != worldTransform_.translation_.z) {
+				hitZ = true;
+			}
 		}
 	}
 
-	return false;
+	// X方向の衝突があったらX成分をゼロにする
+	if (hitX) {
+		info.move.x = 0;
+	}
+
+	// Z方向の衝突があったらZ成分をゼロにする
+	if (hitZ) {
+		info.move.z = 0;
+	}
+
+	info.hitWall = hitX || hitZ;
+	return info.hitWall;
 }

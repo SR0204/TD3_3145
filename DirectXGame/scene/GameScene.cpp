@@ -49,8 +49,9 @@ void GameScene::Initialize() {
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
 
 	// 座標をマップチップ番号で指定
-	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 8);
+	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
 	playerPosition.y = 2;
+
 	player_ = new Player();              // プレイヤーの生成
 	player_->Initialize(playerPosition); // プレイヤーの初期化
 	player_->SetMapChipField(mapChipFiled_);

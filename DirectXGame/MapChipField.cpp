@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "MapChipField.h"
 #include <cassert>
 #include <fstream>
@@ -79,28 +80,24 @@ MapChipType MapChipField::GetMapChipTypeByIndex(int xIndex, int zIndex) {
 
 Vector3 MapChipField::GetMapChipPositionByIndex(uint32_t xIndex, uint32_t zIndex) { return Vector3(kBlockWidth * xIndex, 0, kBlockHeight * zIndex); }
 
-MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(const Vector3& position) {
+MapChipField::IndexSet MapChipField::GetMapChipIndexSetByPosition(Vector3 pos) {
+	int x = static_cast<int>(std::floor(pos.x / kBlockWidth));
+	int z = static_cast<int>(std::floor(pos.z / kBlockHeight));
 
-	IndexSet indexSet = {};
+	// 範囲外アクセス防止
+	unsigned int xIndex = static_cast<unsigned int>(std::max(0, std::min(x, static_cast<int>(GetMapWidth() - 1))));
+	unsigned int zIndex = static_cast<unsigned int>(std::max(0, std::min(z, static_cast<int>(GetMapHeight() - 1))));
 
-	indexSet.xIndex = static_cast<uint32_t>((position.x + kBlockWidth / 2) / kBlockWidth);
-
-	indexSet.zIndex = static_cast<uint32_t>(position.z / kBlockHeight);
-
-	return indexSet;
+	return {xIndex, zIndex};
 }
 
-MapChipField::Rect MapChipField::GetRectByIndex(uint32_t xIndex, uint32_t zIndex) {
-	// 指定ブロックの中心座標を取得する
-	Vector3 center = GetMapChipPositionByIndex(xIndex, zIndex);
+MapChipField::Rect MapChipField::GetRectByIndex(int xIndex, int zIndex) {
+	float left = xIndex * kBlockWidth;
+	float right = left + kBlockWidth;
+	float front = zIndex * kBlockHeight;
+	float back = front + kBlockHeight;
 
-	Rect rect;
-	rect.left = center.x - kBlockWidth / 2.0f;
-	rect.right = center.x + kBlockWidth / 2.0f;
-	rect.back = center.z - kBlockHeight / 2.0f;
-	rect.front = center.z + kBlockHeight / 2.0f;
-	
-	return rect;
+	return {left, right, front, back};
 }
 int MapChipField::GetMapWidth() const {
 	return static_cast<int>(mapChipDate_.date[0].size()); // 1行の要素数がマップの横幅
