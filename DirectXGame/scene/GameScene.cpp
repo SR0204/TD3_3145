@@ -2,7 +2,7 @@
 #include "AxisIndicator.h"
 #include "MapChipField.h"
 #include "TextureManager.h"
-//#include "imgui.h"
+// #include "imgui.h"
 #include <cassert>
 #include <fstream>
 
@@ -42,6 +42,16 @@ void GameScene::Initialize() {
 	mapChipFiled_ = new MapChipField;
 	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
 
+	// 音
+	music = audio_->LoadWave("sound/n003.wav");
+
+	audio_->PauseWave(music);
+
+	// 音声再生
+	playMusic = audio_->PlayWave(music, true);
+
+
+
 	// 表示ブロックの生成
 	GenerateBlocks();
 
@@ -68,8 +78,6 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 
-	
-
 	// 天球の生成
 	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
 	SkySphere_ = new SkySphere();
@@ -89,24 +97,23 @@ void GameScene::Update() {
 		viewProjection_.matView = playerCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
 	} else if (isOverHeadCameraActive_ == true) {
-		
+
 		overHeadCamera_->Update();
-		
+
 		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
 	}
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
-	
 
 	// ImGuiで値を表示
 	/*ImGui::Begin("Camera");
 	if (ImGui::Button("OverHeadCamera")) {
-		isOverHeadCameraActive_ = true;
+	    isOverHeadCameraActive_ = true;
 	}
 	if (ImGui::Button("PlayerCamera")) {
-		isOverHeadCameraActive_ = false;
+	    isOverHeadCameraActive_ = false;
 	}
 	ImGui::End();*/
 

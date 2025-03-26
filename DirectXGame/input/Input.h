@@ -70,6 +70,8 @@ public: // メンバ関数
 	/// <returns>トリガーか</returns>
 	bool TriggerKey(BYTE keyNumber) const;
 
+	bool ReleseKey(BYTE keyNumber) const;
+
 	/// <summary>
 	/// 全キー情報取得
 	/// </summary>

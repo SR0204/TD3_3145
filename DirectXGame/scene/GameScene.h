@@ -5,14 +5,14 @@
 #include "Input.h"
 #include "MapChipField.h"
 #include "Model.h"
+#include "OverHeadCamera.h"
+#include "Player.h"
+#include "PlayerCamera.h"
+#include "SkySphere.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <sstream>
-#include"SkySphere.h"
-#include "Player.h"
-#include "PlayerCamera.h"
-#include "OverHeadCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -46,6 +46,10 @@ public: // メンバ関数
 	void Draw();
 
 	void GenerateBlocks();
+
+	bool IsFinished() const { return isFinished; }
+
+	bool IsClear() const { return isClear; }
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -91,7 +95,15 @@ private: // メンバ変数
 	OverHeadCamera* overHeadCamera_ = nullptr; // 俯瞰カメラ
 
 	bool isOverHeadCameraActive_; // 俯瞰カメラのアクティブ
-	/// <summary>
-	/// ゲームシーン用
-	/// </summary>
+
+	// 終了フラグ
+	bool isFinished = false;
+
+	bool isClear = false;
+
+	// 音
+	uint32_t music;
+
+	// 音声再生
+	uint32_t playMusic;
 };
