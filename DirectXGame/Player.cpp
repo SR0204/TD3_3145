@@ -4,6 +4,7 @@
 #include "MathUtilityForText.h"
 #include "TextureManager.h"
 #define _USE_MATH_DEFINES
+#include "GameScene.h"
 #include "MapChipField.h"
 #include <cassert>
 #include <iostream>
@@ -256,6 +257,13 @@ void Player::Update() {
 	// ワールド変換データの更新
 	worldTransform_.UpdateMatrix(true);
 
+	// クリア判定
+	if (mapChipField_->IsClearBlock(worldTransform_.translation_) == true) {
+		std::cout << "ゲームクリア！" << std::endl;
+		// クリア時の処理をここに追加（例: ステージ移行、リスタートなど）
+		gameScene_->IsClear();
+	}
+
 	// 移動情報をセット
 	CollisionMapInfo collisionMapInfo;
 	collisionMapInfo.move = moveVel_;
@@ -382,11 +390,6 @@ void Player::Update() {
 	//		moveVel_.x = std::min(0.0f, moveVel_.x + deceleration);
 	//	}
 	// }
-	// クリア判定
-	if (mapChipField_->IsClearBlock(worldTransform_.translation_) == true) {
-		std::cout << "ゲームクリア！" << std::endl;
-		// クリア時の処理をここに追加（例: ステージ移行、リスタートなど）
-	}
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
@@ -395,14 +398,23 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 
 bool Player::CheckMapCollision(CollisionMapInfo& info) {
-	// まずCSVマップの簡易衝突判定を行う
+	// 通常の衝突判定
 	if (CheckCollisionWithCSVMap(info)) {
 		return true;
 	}
 
 	if (CheckMapCollisionRight(info) || CheckMapCollisionLeft(info) || CheckMapCollisionBackward(info) || CheckMapCollisionForward(info)) {
-		return true; // 1つでも衝突があればtrueを返す
+		return true;
 	}
+
+	// クリアブロックとの衝突判定
+	if (CheckCollisionWithClearBlock(info)) {
+		gameScene_->IsClear(); // GameScene に通知
+		return true;
+	}
+
+		
+
 	return false;
 }
 
@@ -587,15 +599,31 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 		int mapX = static_cast<int>(std::floor(corner.x / kBlockSize));
 		int mapZ = static_cast<int>(std::floor(corner.z / kBlockSize));
 
-		if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight() || mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kBlock) {
+		// マップ外や壁なら衝突判定
+		if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight()) {
+			hitX = true;
+			hitZ = true;
+			continue;
+		}
 
-			// XとZそれぞれの軸を個別にチェック
+		// マップチップの種類を取得
+		MapChipType chipType = mapChipField_->GetMapChipTypeByIndex(mapX, mapZ);
+
+		// 壁ブロックなら衝突処理
+		if (chipType == MapChipType::kBlock) {
 			if (corner.x != worldTransform_.translation_.x) {
 				hitX = true;
 			}
 			if (corner.z != worldTransform_.translation_.z) {
 				hitZ = true;
 			}
+		}
+
+		// **クリアブロックならゲームクリア処理**
+		if (chipType == MapChipType::kClear) {
+			std::cout << "ゲームクリア！" << std::endl;
+			OnGameClear(); // クリア時の処理を呼び出す
+			return true;
 		}
 	}
 
@@ -611,4 +639,34 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 
 	info.hitWall = hitX || hitZ;
 	return info.hitWall;
+}
+
+void Player::OnGameClear() {
+	// クリア演出や次のステージへの遷移処理
+	std::cout << "ゲームクリア！次のステージへ！" << std::endl;
+}
+
+bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
+	Vector3 centerPos = worldTransform_.translation_ + info.move;
+	int mapX = static_cast<int>(std::round(centerPos.x / kBlockSize));
+	int mapZ = static_cast<int>(std::round(centerPos.z / kBlockSize));
+
+	if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight()) {
+		return false;
+	}
+
+	// クリアブロックに当たったらリセット
+	if (mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kClear) {
+		std::cout << "ゴール！プレイヤーリセット！" << std::endl;
+		ResetPlayer();
+		return true;
+	}
+
+	return false;
+}
+
+
+void Player::ResetPlayer() {
+	worldTransform_.translation_ = startPosition;
+	moveVel_ = {14.0f, 2.0f, 3.0f};
 }

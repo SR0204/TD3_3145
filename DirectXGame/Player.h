@@ -3,7 +3,10 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
+
 class MapChipField;
+class GameScene;
+
 /// <summary>
 /// プレイヤー
 /// </summary>
@@ -95,7 +98,12 @@ public: // メンバ関数
 
 	bool CheckCollisionWithCSVMap(CollisionMapInfo& info);
 
-	
+	bool CheckCollisionWithClearBlock(CollisionMapInfo& info);
+
+	void OnGameClear();
+
+	void ResetPlayer();
+
 	private:                            // メンバ変数
 	WorldTransform worldTransform_; // ワールド変換データ
 	Model* model_ = nullptr;        // モデル
@@ -125,4 +133,9 @@ public: // メンバ関数
 	float kBlockSize = 1.0f;
 
 	bool canMoveAfterCollision;
+
+	GameScene* gameScene_ = nullptr;
+
+	// プレイヤーの初期位置を記憶
+	Vector3 startPosition = {0.0f, 0.0f, 0.0f};
 };

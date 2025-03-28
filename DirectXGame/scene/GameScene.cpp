@@ -5,6 +5,8 @@
 // #include "imgui.h"
 #include <cassert>
 #include <fstream>
+#include <iostream>
+#include "Player.h"
 
 GameScene::GameScene() {}
 
@@ -123,7 +125,6 @@ void GameScene::Update() {
 
 			if (!worldTransformBlock)
 				continue;
-
 			worldTransformBlock->UpdateMatrixBlock();
 		}
 	}
@@ -237,4 +238,15 @@ void GameScene::GenerateClearBlocks() {
 			}
 		}
 	}
+}
+
+void GameScene::OnGameClear() {
+	isClear_ = true; // クリア状態を設定
+	std::cout << "Game Cleared!" << std::endl;
+
+	// クリアエフェクトを再生 (例)
+	//effectManager_->PlayEffect("ClearEffect");
+
+	// 数秒後にリザルト画面へ遷移 (仮)
+	//nextScene_ = SceneType::kResult;
 }

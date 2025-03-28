@@ -6,13 +6,15 @@
 #include "MapChipField.h"
 #include "Model.h"
 #include "OverHeadCamera.h"
-#include "Player.h"
+
 #include "PlayerCamera.h"
 #include "SkySphere.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <sstream>
+
+class Player;
 
 /// <summary>
 /// ゲームシーン
@@ -51,7 +53,9 @@ public: // メンバ関数
 
 	bool IsFinished() const { return isFinished; }
 
-	bool IsClear() const { return isClear; }
+	bool IsClear() const { return isClear_; }
+
+	void OnGameClear();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -101,7 +105,7 @@ private: // メンバ変数
 	// 終了フラグ
 	bool isFinished = false;
 
-	bool isClear = false;
+	bool isClear_ = false;
 
 	// 音
 	uint32_t music;
