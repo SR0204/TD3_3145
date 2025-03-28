@@ -137,5 +137,5 @@ public: // メンバ関数
 	GameScene* gameScene_ = nullptr;
 
 	// プレイヤーの初期位置を記憶
-	Vector3 startPosition = {0.0f, 0.0f, 0.0f};
+	Vector3 startPosition = {14.0f, 2.0f, 3.0f};
 };
