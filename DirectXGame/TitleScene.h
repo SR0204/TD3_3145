@@ -4,7 +4,7 @@
 #include "DirectXCommon.h"
 #include "Input.h"
 #include "Model.h"
-#include "Skydome.h"
+#include "SkySphere.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"

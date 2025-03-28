@@ -35,7 +35,7 @@ void TitleScene::Update() {
 	timer_ += 1.0f / 60.0f;
 
 	// 行列を更新
-	//worldTransformFont_.UpdateMatrix();
+	worldTransformFont_.UpdateMatrixBlock();
 }
 
 void TitleScene::Draw() {

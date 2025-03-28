@@ -15,7 +15,7 @@ void WorldTransform::UpdateMatrix(bool isTransfer) {
 	}
 }
 
-// レールカメラ専用
+
 void WorldTransform::UpdateMatrixBlock() {
 
 	// スケール、回転、平行行列を合成して行列を計算する
