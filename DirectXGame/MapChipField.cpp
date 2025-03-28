@@ -10,6 +10,7 @@ std::map<std::string, MapChipType> mapChipTable = {
     {"0", MapChipType::kBlank },
     {"1", MapChipType::kBlock },
     {"4", MapChipType::kPlayer},
+    {"3", MapChipType::kClear }  // クリアブロックを追加
 };
 }
 
@@ -105,4 +106,12 @@ int MapChipField::GetMapWidth() const {
 
 int MapChipField::GetMapHeight() const {
 	return static_cast<int>(mapChipDate_.date.size()); // 行数がマップの縦幅
+}
+
+bool MapChipField::IsClearBlock(Vector3 playerPos) {
+	// プレイヤーの座標からマップのインデックスを取得
+	IndexSet indexSet = GetMapChipIndexSetByPosition(playerPos);
+
+	// そのマスがクリアブロックなら true を返す
+	return GetMapChipTypeByIndex(indexSet.xIndex, indexSet.zIndex) == MapChipType::kClear;
 }

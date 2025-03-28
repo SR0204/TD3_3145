@@ -6,6 +6,7 @@
 #define _USE_MATH_DEFINES
 #include "MapChipField.h"
 #include <cassert>
+#include <iostream>
 #include <math.h>
 
 Player::~Player() { delete model_; }
@@ -381,6 +382,11 @@ void Player::Update() {
 	//		moveVel_.x = std::min(0.0f, moveVel_.x + deceleration);
 	//	}
 	// }
+	// クリア判定
+	if (mapChipField_->IsClearBlock(worldTransform_.translation_) == true) {
+		std::cout << "ゲームクリア！" << std::endl;
+		// クリア時の処理をここに追加（例: ステージ移行、リスタートなど）
+	}
 }
 
 void Player::Draw(ViewProjection& viewProjection) {

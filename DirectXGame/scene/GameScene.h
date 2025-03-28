@@ -47,6 +47,8 @@ public: // メンバ関数
 
 	void GenerateBlocks();
 
+	void GenerateClearBlocks();
+
 	bool IsFinished() const { return isFinished; }
 
 	bool IsClear() const { return isClear; }

@@ -43,17 +43,16 @@ void GameScene::Initialize() {
 	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
 
 	// 音
-	music = audio_->LoadWave("sound/n003.wav");
+	// music = audio_->LoadWave("sound/n003.wav");
 
-	audio_->PauseWave(music);
+	// audio_->PauseWave(music);
 
 	// 音声再生
-	playMusic = audio_->PlayWave(music, true);
-
-
+	// playMusic = audio_->PlayWave(music, true);
 
 	// 表示ブロックの生成
 	GenerateBlocks();
+	GenerateClearBlocks();
 
 	// ブロックのモデルを読み込む
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
@@ -206,6 +205,29 @@ void GameScene::GenerateBlocks() {
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
 			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+
+				// XZ軸に合わせて位置を設定
+				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
+}
+
+void GameScene::GenerateClearBlocks() {
+
+	// 要素数を変更する
+	worldTransformBlocks_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+
+	// キューブの生成
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
+			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kClear) {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
 				worldTransformBlocks_[i][j] = worldTransform;

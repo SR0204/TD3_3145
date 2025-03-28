@@ -15,10 +15,16 @@ enum class MapChipType {
 	kBlank, // 空白
 	kBlock, // ブロック
 	kPlayer,
+	kClear // クリアブロックを追加
 };
 
 struct MapChipDate {
 	std::vector<std::vector<MapChipType>> date;
+};
+
+struct Block {
+	float x, y, z;     // 3D座標
+	bool isClearBlock; // クリアブロックかどうか
 };
 
 /// <summary>
@@ -53,8 +59,6 @@ public:
 	uint32_t GetNumBlockVirtical() const { return kNumBlockVirtical; };
 	uint32_t GetNumBlockHorizontal() const { return kNumBlockHorizontal; };
 
-	
-
 	struct IndexSet {
 		uint32_t xIndex;
 		uint32_t zIndex;
@@ -76,7 +80,7 @@ public:
 
 	int GetMapHeight() const;
 
-
+	bool IsClearBlock(Vector3 playerPos);
 
 private:
 	// 一ブロックのサイズ
@@ -88,5 +92,6 @@ private:
 	static inline const uint32_t kNumBlockVirtical = 34;
 	static inline const uint32_t kNumBlockHorizontal = 100;
 
+	
 	MapChipDate mapChipDate_;
 };
