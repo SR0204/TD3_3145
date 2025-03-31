@@ -53,7 +53,7 @@ void Enemy::Update() {
 #endif // _DEBUG
 
 	// 更新行列
-	worldTransform_.UpdateMatrixBlock();
+	worldTransform_.UpdateMatrixEnemy();
 }
 
 void Enemy::Draw() { model_->Draw(worldTransform_, *viewProjection_, textureHandle_); }
