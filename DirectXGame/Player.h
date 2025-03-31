@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Model.h"
 #include "WorldTransform.h"
+#include"Audio.h"
 
 class MapChipField;
 class GameScene;
@@ -105,7 +106,8 @@ public: // メンバ関数
 
 	int GetHp() { return hp_; }
 
-private:                            // メンバ変数
+private: // メンバ変数
+	Audio* audio_ = nullptr;
 	WorldTransform worldTransform_; // ワールド変換データ
 	Model* model_ = nullptr;        // モデル
 	uint32_t textureHandle_;        // テクスチャ
@@ -139,5 +141,15 @@ private:                            // メンバ変数
 
 	// プレイヤーの初期位置を記憶
 	Vector3 startPosition = {14.0f, 2.0f, 3.0f};
-	int hp_ = 10;
+	int hp_ = 100;
+
+	// 終了フラグ
+	bool isFinished = false;
+
+	bool isClear_ = false;
+	// 音
+	uint32_t music;
+
+	// 音声再生
+	uint32_t playMusic;
 };

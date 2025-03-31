@@ -363,6 +363,7 @@ void Player::Update() {
 		worldTransform_.translation_.z -= cosf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.z;
 		worldTransform_.translation_.x -= sinf(worldTransform_.rotation_.y + pi / 2.0f) * moveVel_.x;
 	}
+
 	// ImGuiで値を表示
 	/*ImGui::Begin("Player");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
@@ -409,11 +410,9 @@ bool Player::CheckMapCollision(CollisionMapInfo& info) {
 
 	// クリアブロックとの衝突判定
 	if (CheckCollisionWithClearBlock(info)) {
-		gameScene_->IsClear(); // GameScene に通知
+		// gameScene_->IsClear(); // GameScene に通知
 		return true;
 	}
-
-		
 
 	return false;
 }
@@ -641,10 +640,7 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 	return info.hitWall;
 }
 
-void Player::OnGameClear() {
-	// クリア演出や次のステージへの遷移処理
-	std::cout << "ゲームクリア！次のステージへ！" << std::endl;
-}
+void Player::OnGameClear() {}
 
 bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 	Vector3 centerPos = worldTransform_.translation_ + info.move;
@@ -664,7 +660,6 @@ bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 
 	return false;
 }
-
 
 void Player::ResetPlayer() {
 	worldTransform_.translation_ = startPosition;

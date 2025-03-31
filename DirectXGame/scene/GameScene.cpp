@@ -102,7 +102,6 @@ void GameScene::Initialize() {
 
 	// 制限時間初期化
 	StartTimer_ = 500;
-
 }
 
 void GameScene::Update() {
@@ -168,13 +167,14 @@ void GameScene::Update() {
 	StartTimer_--;
 
 	// シーン切り替え
-	Player::CollisionMapInfo collisionInfo{};
-	if (player_->CheckCollisionWithClearBlock(collisionInfo) == true) {
+	Player::CollisionMapInfo collisionMapInfo;
+	if (player_->CheckCollisionWithClearBlock(collisionMapInfo) == true) {
 		// クリアブロックに当たった場合
 		isClear_ = true;
 		isFinished = true;
-		audio_->StopWave(playMusic);
+		// audio_->StopWave(playMusic);
 	}
+
 	if (player_->GetHp() <= 0) {
 		isFinished = true;
 
@@ -184,9 +184,8 @@ void GameScene::Update() {
 	if (StartTimer_ == 0) {
 		isFinished = true;
 
-		//audio_->StopWave(playMusic);
+		// audio_->StopWave(playMusic);
 	}
-	
 }
 
 void GameScene::Draw() {

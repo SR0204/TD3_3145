@@ -12,7 +12,7 @@ void Clear::Initialize() {
 
 	viewProjection_.Initialize();
 
-	textureHandle_ = TextureManager::Load("Resources/GameClear/Clear.png");
+	textureHandle_ = TextureManager::Load("GameClear/Clear.png");
 
 	sprite = Sprite::Create(textureHandle_, {0, 0});
 
