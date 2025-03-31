@@ -30,6 +30,14 @@ GameScene::~GameScene() {
 	delete player_;
 	delete playerCamera_;
 	delete overHeadCamera_;
+
+	//敵
+	delete model_;
+
+	delete enemy_;
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 }
 
 void GameScene::Initialize() {
@@ -84,6 +92,11 @@ void GameScene::Initialize() {
 	SkySphere_ = new SkySphere();
 	SkySphere_->Initialize(modelSkySphere_, &viewProjection_);
 
+	// Enemy
+	enemyTextureHandle_ = TextureManager::Load("uvChecker.png");
+	LoadEnemyPopData();
+
+
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
 	viewProjection_.Initialize();
@@ -134,6 +147,21 @@ void GameScene::Update() {
 
 	// 天球の更新
 	SkySphere_->Update();
+
+	// Enemy更新
+	UpDateEnemyPopCommands();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
+	enemies_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+			delete enemy;
+			return true;
+		}
+		return false;
+	});
+
 }
 
 void GameScene::Draw() {
@@ -175,6 +203,11 @@ void GameScene::Draw() {
 				continue;
 			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
 		}
+	}
+
+	// Enemy描画
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
 	}
 
 	// 3Dオブジェクト描画後処理
@@ -250,3 +283,95 @@ void GameScene::OnGameClear() {
 	// 数秒後にリザルト画面へ遷移 (仮)
 	//nextScene_ = SceneType::kResult;
 }
+
+#pragma region 敵発生関連関数
+void GameScene::SpawnEnemy(Vector3 position) {
+	Enemy* newEnemy = new Enemy();
+
+	newEnemy->SetGameScene(this); // GameScene をセット
+
+	newEnemy->Initialize(model_, enemyTextureHandle_, &viewProjection_, position);
+
+	/*newEnemy->SetPlayer(player_);*/
+
+	enemies_.push_back(newEnemy);
+}
+
+void GameScene::LoadEnemyPopData() {
+	// ファイルを開く
+	std::ifstream file;
+	file.open("Resources/enemyPop.csv");
+	assert(file.is_open());
+
+	// ファイルの内容を文字列ストリームにコピー
+	enemyPopCommands << file.rdbuf();
+
+	// ファイルを閉じる
+	file.close();
+}
+
+void GameScene::UpDateEnemyPopCommands() {
+	// 待機処理
+	if (waitFlag) {
+		waitTimer--;
+		if (waitTimer <= 0) {
+			// 待機完了
+			waitFlag = false;
+		}
+		return;
+	}
+
+	// １行分の文字列を入れる変数
+	std::string line;
+
+	// コマンド実行ループ
+	while (getline(enemyPopCommands, line)) {
+		// １行分の文字列をストリームに変換して解析しやすくする
+		std::istringstream line_stream(line);
+
+		std::string word;
+
+		// ,区切りで行の先頭文字列を取得
+		getline(line_stream, word, ',');
+
+		// "//"から始まる行はコメント
+		if (word.find("//") == 0) {
+			// コメント行を飛ばす
+			continue;
+		}
+
+		// POPコマンド
+		if (word.find("POP") == 0) {
+			// x座標
+			getline(line_stream, word, ',');
+			float x = (float)std::atof(word.c_str());
+
+			// y座標
+			getline(line_stream, word, ',');
+			float y = (float)std::atof(word.c_str());
+
+			// z座標
+			getline(line_stream, word, ',');
+			float z = (float)std::atof(word.c_str());
+
+			// 敵を発生させる
+			SpawnEnemy(Vector3(x, y, z));
+		}
+
+		// WAITコマンド
+		else if (word.find("WAIT") == 0) {
+			getline(line_stream, word, ',');
+
+			// 待ち時間
+			int32_t waitTime = atoi(word.c_str());
+
+			// 待機開始
+			waitFlag = true;
+			waitTimer = waitTime;
+
+			// コマンドループを抜ける
+			break;
+		}
+	}
+}
+#pragma endregion

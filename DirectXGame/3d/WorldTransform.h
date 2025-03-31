@@ -59,6 +59,8 @@ public:
 
 	void UpdateMatrixBlock();
 
+	void UpdateMatrixEnemy();
+
 private:
 	// 定数バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> constBuffer_;

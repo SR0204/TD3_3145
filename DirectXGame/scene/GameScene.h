@@ -13,6 +13,7 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <sstream>
+#include "Enemy.h"
 
 class Player;
 
@@ -56,6 +57,15 @@ public: // メンバ関数
 	bool IsClear() const { return isClear_; }
 
 	void OnGameClear();
+
+	// 敵発生
+	void SpawnEnemy(Vector3 position);
+
+	// 敵発生データの読み込み
+	void LoadEnemyPopData();
+
+	// 敵発生コマンドの更新
+	void UpDateEnemyPopCommands();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -112,4 +122,18 @@ private: // メンバ変数
 
 	// 音声再生
 	uint32_t playMusic;
+
+	// enemy
+	Model* model_ = nullptr;
+	uint32_t enemyTextureHandle_ = 0;
+	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
+
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
+	// 待機中フラグ
+	bool waitFlag = false;
+	// 待機タイマー
+	int32_t waitTimer = 0;
+
 };
