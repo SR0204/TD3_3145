@@ -57,5 +57,5 @@ private:
 	int moveChangeTimer_ = 60;
 
 	// 体力
-	int HP_ = 100;
+	int HP_ = 10;
 };

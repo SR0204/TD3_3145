@@ -101,7 +101,7 @@ void GameScene::Initialize() {
 	viewProjection_.Initialize();
 
 	// 制限時間初期化
-	StartTimer_ = 500;
+	StartTimer_ = 6000.0f;
 }
 
 void GameScene::Update() {
@@ -181,7 +181,7 @@ void GameScene::Update() {
 		audio_->StopWave(playMusic);
 	}
 
-	if (StartTimer_ == 0) {
+	if (StartTimer_ <= 0) {
 		isFinished = true;
 
 		audio_->StopWave(playMusic);
@@ -217,6 +217,11 @@ void GameScene::Draw() {
 
 	player_->Draw(viewProjection_); // プレイヤーの描画
 
+	// Enemy描画
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	}
+
 	// 天球の描画
 	SkySphere_->Draw();
 
@@ -227,11 +232,6 @@ void GameScene::Draw() {
 				continue;
 			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
 		}
-	}
-
-	// Enemy描画
-	for (Enemy* enemy : enemies_) {
-		enemy->Draw();
 	}
 
 	// 3Dオブジェクト描画後処理
@@ -250,51 +250,6 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
-}
-
-void GameScene::GenerateBlocks() {
-	// 要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockVirtical);
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	}
-
-	// キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
-			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
-				WorldTransform* worldTransform = new WorldTransform();
-				worldTransform->Initialize();
-				worldTransformBlocks_[i][j] = worldTransform;
-
-				// XZ軸に合わせて位置を設定
-				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
-			}
-		}
-	}
-}
-
-void GameScene::GenerateClearBlocks() {
-
-	// 要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockVirtical);
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	}
-
-	// キューブの生成
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
-			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kClear) {
-				WorldTransform* worldTransform = new WorldTransform();
-				worldTransform->Initialize();
-				worldTransformBlocks_[i][j] = worldTransform;
-
-				// XZ軸に合わせて位置を設定
-				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
-			}
-		}
-	}
 }
 
 #pragma region 敵発生関連関数
@@ -388,3 +343,48 @@ void GameScene::UpDateEnemyPopCommands() {
 	}
 }
 #pragma endregion
+
+void GameScene::GenerateBlocks() {
+	// 要素数を変更する
+	worldTransformBlocks_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+
+	// キューブの生成
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
+			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+
+				// XZ軸に合わせて位置を設定
+				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
+}
+
+void GameScene::GenerateClearBlocks() {
+
+	// 要素数を変更する
+	worldTransformBlocks_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+
+	// キューブの生成
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
+			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kClear) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+
+				// XZ軸に合わせて位置を設定
+				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
+}

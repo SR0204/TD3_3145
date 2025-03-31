@@ -136,6 +136,6 @@ private: // メンバ変数
 	// 待機タイマー
 	int32_t waitTimer = 0;
 
-	//制限時間
-	float StartTimer_=300;
+	// 制限時間
+	float StartTimer_ = 6000.0f;
 };
