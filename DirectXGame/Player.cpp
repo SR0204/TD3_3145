@@ -449,7 +449,7 @@ bool Player::CheckMapCollisionRight(CollisionMapInfo& info) {
 		info.hitWall = true;
 
 		// デバッグログ
-		// std::cout << "Collision Right! Adjusted X: " << info.move.x << std::endl;
+		std::cout << "Collision Right! Adjusted X: " << info.move.x << std::endl;
 		return true;
 	}
 

@@ -7,13 +7,13 @@
 #include "Model.h"
 #include "OverHeadCamera.h"
 
+#include "Enemy.h"
 #include "PlayerCamera.h"
 #include "SkySphere.h"
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <sstream>
-#include "Enemy.h"
 
 class Player;
 
@@ -66,8 +66,6 @@ public: // メンバ関数
 	void UpDateEnemyPopCommands();
 
 	// マップとの当たり判定情報
-	
-	
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -138,4 +136,7 @@ private: // メンバ変数
 	// 待機タイマー
 	int32_t waitTimer = 0;
 
+	//制限時間
+	float StartTimer_ = 300;
+	
 };

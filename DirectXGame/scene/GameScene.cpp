@@ -99,6 +99,10 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
 	viewProjection_.Initialize();
+
+	// 制限時間初期化
+	StartTimer_ = 500;
+
 }
 
 void GameScene::Update() {
@@ -161,6 +165,8 @@ void GameScene::Update() {
 		return false;
 	});
 
+	StartTimer_--;
+
 	// シーン切り替え
 	Player::CollisionMapInfo collisionInfo{};
 	if (player_->CheckCollisionWithClearBlock(collisionInfo) == true) {
@@ -174,6 +180,13 @@ void GameScene::Update() {
 
 		audio_->StopWave(playMusic);
 	}
+
+	if (StartTimer_ == 0) {
+		isFinished = true;
+
+		//audio_->StopWave(playMusic);
+	}
+	
 }
 
 void GameScene::Draw() {
