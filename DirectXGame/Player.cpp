@@ -654,14 +654,9 @@ bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 	// クリアブロックに当たったらリセット
 	if (mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kClear) {
 		std::cout << "ゴール！プレイヤーリセット！" << std::endl;
-		ResetPlayer();
+		isClear_ = true;
 		return true;
 	}
 
 	return false;
-}
-
-void Player::ResetPlayer() {
-	worldTransform_.translation_ = startPosition;
-	moveVel_ = {0.1f, 0.0f, 0.1f};
 }

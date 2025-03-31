@@ -172,7 +172,7 @@ void GameScene::Update() {
 		// クリアブロックに当たった場合
 		isClear_ = true;
 		isFinished = true;
-		// audio_->StopWave(playMusic);
+		audio_->StopWave(playMusic);
 	}
 
 	if (player_->GetHp() <= 0) {
@@ -184,7 +184,7 @@ void GameScene::Update() {
 	if (StartTimer_ == 0) {
 		isFinished = true;
 
-		// audio_->StopWave(playMusic);
+		audio_->StopWave(playMusic);
 	}
 }
 

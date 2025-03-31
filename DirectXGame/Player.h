@@ -102,8 +102,6 @@ public: // メンバ関数
 
 	void OnGameClear();
 
-	void ResetPlayer();
-
 	int GetHp() { return hp_; }
 
 private: // メンバ変数
