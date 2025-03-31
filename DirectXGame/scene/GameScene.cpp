@@ -3,10 +3,10 @@
 #include "MapChipField.h"
 #include "TextureManager.h"
 // #include "imgui.h"
+#include "Player.h"
 #include <cassert>
 #include <fstream>
 #include <iostream>
-#include "Player.h"
 
 GameScene::GameScene() {}
 
@@ -31,7 +31,7 @@ GameScene::~GameScene() {
 	delete playerCamera_;
 	delete overHeadCamera_;
 
-	//敵
+	// 敵
 	delete model_;
 
 	delete enemy_;
@@ -95,7 +95,6 @@ void GameScene::Initialize() {
 	// Enemy
 	enemyTextureHandle_ = TextureManager::Load("uvChecker.png");
 	LoadEnemyPopData();
-
 
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
@@ -162,6 +161,19 @@ void GameScene::Update() {
 		return false;
 	});
 
+	// シーン切り替え
+	Player::CollisionMapInfo collisionInfo{};
+	if (player_->CheckCollisionWithClearBlock(collisionInfo) == true) {
+		// クリアブロックに当たった場合
+		isClear_ = true;
+		isFinished = true;
+		audio_->StopWave(playMusic);
+	}
+	if (player_->GetHp() <= 0) {
+		isFinished = true;
+
+		audio_->StopWave(playMusic);
+	}
 }
 
 void GameScene::Draw() {
@@ -271,17 +283,6 @@ void GameScene::GenerateClearBlocks() {
 			}
 		}
 	}
-}
-
-void GameScene::OnGameClear() {
-	isClear_ = true; // クリア状態を設定
-	std::cout << "Game Cleared!" << std::endl;
-
-	// クリアエフェクトを再生 (例)
-	//effectManager_->PlayEffect("ClearEffect");
-
-	// 数秒後にリザルト画面へ遷移 (仮)
-	//nextScene_ = SceneType::kResult;
 }
 
 #pragma region 敵発生関連関数

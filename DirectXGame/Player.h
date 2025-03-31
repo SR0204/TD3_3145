@@ -3,7 +3,6 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
-
 class MapChipField;
 class GameScene;
 
@@ -104,7 +103,9 @@ public: // メンバ関数
 
 	void ResetPlayer();
 
-	private:                            // メンバ変数
+	int GetHp() { return hp_; }
+
+private:                            // メンバ変数
 	WorldTransform worldTransform_; // ワールド変換データ
 	Model* model_ = nullptr;        // モデル
 	uint32_t textureHandle_;        // テクスチャ
@@ -138,4 +139,5 @@ public: // メンバ関数
 
 	// プレイヤーの初期位置を記憶
 	Vector3 startPosition = {14.0f, 2.0f, 3.0f};
+	int hp_ = 10;
 };

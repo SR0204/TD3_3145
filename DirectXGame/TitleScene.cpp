@@ -12,7 +12,7 @@ void TitleScene::Initialize() {
 
 	audio_ = Audio::GetInstance();
 
-	modelFont_ = Model::CreateFromOBJ("title");
+	modelFont_ = Model::CreateFromOBJ("Title");
 
 	viewProjection_.Initialize();
 

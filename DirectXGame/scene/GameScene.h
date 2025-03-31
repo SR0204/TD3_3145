@@ -56,8 +56,6 @@ public: // メンバ関数
 
 	bool IsClear() const { return isClear_; }
 
-	void OnGameClear();
-
 	// 敵発生
 	void SpawnEnemy(Vector3 position);
 
@@ -66,6 +64,10 @@ public: // メンバ関数
 
 	// 敵発生コマンドの更新
 	void UpDateEnemyPopCommands();
+
+	// マップとの当たり判定情報
+	
+	
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
