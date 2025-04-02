@@ -77,6 +77,7 @@ private: // メンバ変数
 
 	// 3Dモデルデータ
 	Model* modelBlock_ = nullptr;
+	Model* modelClearBlock_ = nullptr;
 
 	// マップチップフィールド
 	MapChipField* mapChipFiled_;

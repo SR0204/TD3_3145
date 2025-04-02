@@ -38,6 +38,7 @@ GameScene::~GameScene() {
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
 	}
+	enemies_.clear();
 }
 
 void GameScene::Initialize() {
@@ -95,6 +96,8 @@ void GameScene::Initialize() {
 	// Enemy
 	enemyTextureHandle_ = TextureManager::Load("uvChecker.png");
 	LoadEnemyPopData();
+
+	//enemy_->Initialize(model_, enemyTextureHandle_, &viewProjection_, Vector3{14.0f, 2.0f, 3.0f});
 
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
@@ -268,7 +271,7 @@ void GameScene::SpawnEnemy(Vector3 position) {
 void GameScene::LoadEnemyPopData() {
 	// ファイルを開く
 	std::ifstream file;
-	file.open("Resources/enemyPop.csv");
+	file.open("Resources/Enemy/enemyPop.csv");
 	assert(file.is_open());
 
 	// ファイルの内容を文字列ストリームにコピー
