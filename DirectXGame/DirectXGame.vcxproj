@@ -123,6 +123,7 @@
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="SkySphere.cpp" />
     <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="Tutorial.cpp" />
     <ClCompile Include="WorldTransformEx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +166,7 @@
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="SkySphere.h" />
     <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="Tutorial.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\shaders\TerrainPS.hlsl">

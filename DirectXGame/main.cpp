@@ -8,10 +8,12 @@
 #include "PrimitiveDrawer.h"
 #include "TextureManager.h"
 #include "TitleScene.h"
+#include "Tutorial.h"
 #include "WinApp.h"
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
+Tutorial* tutorialScene = nullptr;
 Clear* clearScene_ = nullptr;
 Over* overScene_ = nullptr;
 
@@ -20,6 +22,7 @@ enum class Scene {
 	kUnknown = 0,
 
 	kTitle,
+	kTutorial,
 	kGame,
 	kClear,
 	kOver,
@@ -121,7 +124,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 描画開始
 		dxCommon->PreDraw();
 		// ゲームシーンの描画
-		//gameScene->Draw();
+		// gameScene->Draw();
 
 		// 現在シーンの描画
 		DrawScene();
@@ -158,10 +161,23 @@ void ChangeScene() {
 	case Scene::kTitle:
 		if (titleScene->IsFinished()) {
 			// シーン変更
-			scene = Scene::kGame;
+			scene = Scene::kTutorial;
 			// 旧シーンの開放
 			delete titleScene;
 			titleScene = nullptr;
+			// 新シーンの生成と初期化
+			tutorialScene = new Tutorial;
+			tutorialScene->Initialize();
+		}
+		break;
+
+	case Scene::kTutorial:
+		if (tutorialScene->IsFinished()) {
+			// シーン変更
+			scene = Scene::kGame;
+			// 旧シーンの開放
+			delete tutorialScene;
+			tutorialScene = nullptr;
 			// 新シーンの生成と初期化
 			gameScene = new GameScene;
 			gameScene->Initialize();
@@ -222,6 +238,9 @@ void UpdateScene() {
 	case Scene::kTitle:
 		titleScene->Update();
 		break;
+	case Scene::kTutorial:
+		tutorialScene->Update();
+		break;
 	case Scene::kGame:
 		gameScene->Update();
 		break;
@@ -237,6 +256,9 @@ void DrawScene() {
 	switch (scene) {
 	case Scene::kTitle:
 		titleScene->Draw();
+		break;
+	case Scene::kTutorial:
+		tutorialScene->Draw();
 		break;
 	case Scene::kGame:
 		gameScene->Draw();
