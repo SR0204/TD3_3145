@@ -26,8 +26,15 @@ void TitleScene::Initialize() {
 }
 
 void TitleScene::Update() {
+	Input* input = Input::GetInstance();
 
-	if (Input::GetInstance()->ReleseKey(DIK_SPACE)) {
+	// XInputの状態を取得
+	XINPUT_STATE state;
+	ZeroMemory(&state, sizeof(XINPUT_STATE));
+	DWORD dwResult = XInputGetState(0, &state);
+
+	// スペースキー or コントローラーのAボタンで画面遷移
+	if (input->ReleseKey(DIK_SPACE) || (dwResult == ERROR_SUCCESS && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A))) {
 		finished_ = true;
 	}
 

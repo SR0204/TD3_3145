@@ -1,5 +1,7 @@
 #include "Clear.h"
 #include "TextureManager.h"
+#include <Xinput.h> // XInputのヘッダーをインクルード
+
 Clear::Clear() {}
 
 Clear::~Clear() { delete sprite; }
@@ -26,16 +28,23 @@ void Clear::Initialize() {
 }
 
 void Clear::Update() {
-	if (Input::GetInstance()->ReleseKey(DIK_SPACE)) {
+	Input* input = Input::GetInstance();
+
+	// XInputの状態を取得
+	XINPUT_STATE state;
+	ZeroMemory(&state, sizeof(XINPUT_STATE));
+	DWORD dwResult = XInputGetState(0, &state);
+
+	// スペースキー or コントローラーのAボタンで画面遷移
+	if (input->ReleseKey(DIK_SPACE) || (dwResult == ERROR_SUCCESS && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A))) {
 		finished_ = true;
 		audio_->StopWave(playMusic);
 	}
 
 	// タイマーを加算
 	timer_ += 1.0f / 60.0f;
-
-	// 行列を更新
 }
+
 
 void Clear::Draw() {
 	// コマンドリストの取得

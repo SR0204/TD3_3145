@@ -38,7 +38,7 @@ void Player::Update() {
 	// コントローラー関係
 	/// ーーーここからーーー
 
-	// DWORD dwResult = XInputGetState(0, &state_);                      // コントローラーの状態を取得
+	//DWORD dwResult = XInputGetState(0, &state_);                      // コントローラーの状態を取得
 	vibration_.wLeftMotorSpeed = static_cast<WORD>(vibrationVal_.x);  // 左モーターの振動強さ（最大値）
 	vibration_.wRightMotorSpeed = static_cast<WORD>(vibrationVal_.y); // 右モーターの振動強さ（最大値）
 	XInputSetState(0, &vibration_);                                   // コントローラー0のバイブレーションを設定
