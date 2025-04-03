@@ -54,12 +54,12 @@ void GameScene::Initialize() {
 	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
 
 	// 音
-	// music = audio_->LoadWave("sound/n003.wav");
+	music = audio_->LoadWave("sound/fukakukuraiido.MP3");
 
-	// audio_->PauseWave(music);
+	audio_->PauseWave(music);
 
 	// 音声再生
-	// playMusic = audio_->PlayWave(music, true);
+	playMusic = audio_->PlayWave(music, true);
 
 	// 表示ブロックの生成
 	GenerateBlocks();
@@ -97,7 +97,7 @@ void GameScene::Initialize() {
 	enemyTextureHandle_ = TextureManager::Load("uvChecker.png");
 	LoadEnemyPopData();
 
-	//enemy_->Initialize(model_, enemyTextureHandle_, &viewProjection_, Vector3{14.0f, 2.0f, 3.0f});
+	// enemy_->Initialize(model_, enemyTextureHandle_, &viewProjection_, Vector3{14.0f, 2.0f, 3.0f});
 
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
