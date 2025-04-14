@@ -16,6 +16,7 @@
 #include <sstream>
 
 class Player;
+class Timer;
 
 /// <summary>
 /// ゲームシーン
@@ -65,7 +66,8 @@ public: // メンバ関数
 	// 敵発生コマンドの更新
 	void UpDateEnemyPopCommands();
 
-	// マップとの当たり判定情報
+	// 時間表示用の関数
+	void DrawTimeUI();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -138,5 +140,6 @@ private: // メンバ変数
 	int32_t waitTimer = 0;
 
 	// 制限時間
-	float StartTimer_ = 6000.0f;
+	Timer* timer_ = nullptr;
+	int numberTextures_[10]; //制限時間 0～9のテクスチャハンドル
 };

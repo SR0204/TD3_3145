@@ -4,11 +4,14 @@
 #include "TextureManager.h"
 // #include "imgui.h"
 #include "Player.h"
+#include "Timer.h"
 #include <cassert>
 #include <fstream>
 #include <iostream>
 
-GameScene::GameScene() {}
+GameScene::GameScene()
+    : timer_() // タイマーの初期化、例えば10秒の制限時間
+{}
 
 GameScene::~GameScene() {
 
@@ -39,6 +42,8 @@ GameScene::~GameScene() {
 		delete enemy;
 	}
 	enemies_.clear();
+
+	delete timer_;
 }
 
 void GameScene::Initialize() {
@@ -103,8 +108,14 @@ void GameScene::Initialize() {
 	viewProjection_.farZ = 700;
 	viewProjection_.Initialize();
 
-	// 制限時間初期化
-	StartTimer_ = 6000.0f;
+	// 制限時間の初期化
+	// 数字テクスチャのロード
+	for (int i = 0; i <= 9; i++) {
+		std::string path = "Resources/Numbers/" + std::to_string(i) + ".png";
+		numberTextures_[i] = TextureManager::Load(path);
+	}
+	timer_ = new Timer(180.0f); //制限時間を変更できるよ
+	timer_->Initialize();
 }
 
 void GameScene::Update() {
@@ -167,7 +178,8 @@ void GameScene::Update() {
 		return false;
 	});
 
-	StartTimer_--;
+	// 制限時間の更新
+	timer_->Update();
 
 	// シーン切り替え
 	Player::CollisionMapInfo collisionMapInfo;
@@ -184,7 +196,7 @@ void GameScene::Update() {
 		audio_->StopWave(playMusic);
 	}
 
-	if (StartTimer_ <= 0) {
+	if (timer_->IsTimeOver()) {
 		isFinished = true;
 
 		audio_->StopWave(playMusic);
@@ -217,6 +229,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+
+	// タイマー描画（画面右上あたりに表示）
+	timer_->Draw(numberTextures_, 1000.0f, 10.0f);
 
 	player_->Draw(viewProjection_); // プレイヤーの描画
 
@@ -343,6 +358,12 @@ void GameScene::UpDateEnemyPopCommands() {
 			// コマンドループを抜ける
 			break;
 		}
+	}
+}
+void GameScene::DrawTimeUI() {
+
+	if (timer_) {
+		timer_->Draw(numberTextures_, 1000.0f, 10.0f); // TimeクラスのDrawを呼び出す
 	}
 }
 #pragma endregion

@@ -107,9 +107,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 入力関連の毎フレーム処理
 		input->Update();
 		// ゲームシーンの毎フレーム処理
-		/*gameScene->Update();
-
-		titleScene->Update();*/
+		//gameScene->Update();
+		
+		// titleScene->Update();
 
 		// シーン切り替え
 		ChangeScene();
@@ -118,6 +118,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// 軸表示の更新
 		axisIndicator->Update();
+
 		// ImGui受付終了
 		imguiManager->End();
 
@@ -243,6 +244,7 @@ void UpdateScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Update();
+		gameScene->DrawTimeUI(); // Time::Draw() を呼び出す専用の関数
 		break;
 	case Scene::kClear:
 		clearScene_->Update();
