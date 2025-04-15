@@ -114,7 +114,7 @@ void GameScene::Initialize() {
 		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
-	timer_ = new Timer(180.0f); //制限時間を変更できるよ
+	timer_ = new Timer(120.0f); //制限時間を変更できるよ
 	timer_->Initialize();
 }
 

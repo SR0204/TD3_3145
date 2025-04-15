@@ -1,8 +1,8 @@
 #pragma once
+#include "Audio.h"
 #include "Input.h"
 #include "Model.h"
 #include "WorldTransform.h"
-#include"Audio.h"
 
 class MapChipField;
 class GameScene;
@@ -78,6 +78,8 @@ public: // メンバ関数
 	bool CheckMapCollisionBackward(CollisionMapInfo& info);
 	bool CheckMapCollisionRight(CollisionMapInfo& info);
 	bool CheckMapCollisionLeft(CollisionMapInfo& info);
+
+	bool CheckMapCollisionDirection(CollisionMapInfo& info, const Vector3& direction);
 
 	// 角
 	enum Corner {

@@ -267,7 +267,6 @@ void DrawScene() {
 		break;
 	case Scene::kClear:
 		clearScene_->Draw();
-		gameScene->DrawTimeUI(); // ←ここで呼ぶ！（安全）
 
 		break;
 	case Scene::kOver:
