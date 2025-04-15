@@ -10,7 +10,7 @@
 #include <iostream>
 
 GameScene::GameScene()
-    : timer_() // タイマーの初期化、例えば10秒の制限時間
+    : timer_(nullptr) // タイマーの初期化、例えば10秒の制限時間
 {}
 
 GameScene::~GameScene() {
@@ -111,7 +111,7 @@ void GameScene::Initialize() {
 	// 制限時間の初期化
 	// 数字テクスチャのロード
 	for (int i = 0; i <= 9; i++) {
-		std::string path = "Resources/Numbers/" + std::to_string(i) + ".png";
+		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
 	timer_ = new Timer(180.0f); //制限時間を変更できるよ
@@ -230,8 +230,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	// タイマー描画（画面右上あたりに表示）
-	timer_->Draw(numberTextures_, 1000.0f, 10.0f);
+	
 
 	player_->Draw(viewProjection_); // プレイヤーの描画
 
@@ -263,6 +262,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	// タイマー描画（画面右上あたりに表示）
+	timer_->Draw(numberTextures_, 1000.0f, 10.0f);
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

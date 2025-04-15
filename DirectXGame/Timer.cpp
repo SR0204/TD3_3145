@@ -42,13 +42,16 @@ void Timer::Draw(int numberTextures[], float x, float y) {
 	for (char c : timeText) {
 		int digit = c - '0';
 
-		// Spriteを新しく生成
+		// 範囲外防止チェック
+		if (digit < 0 || digit > 9) {
+			continue; // 無効な文字はスキップ
+		}
+
 		Sprite* digitSprite = Sprite::Create(
 		    numberTextures[digit], // 数字用テクスチャ
 		    {offsetX, y}           // 座標
 		);
 
-		// スプライトを描画
 		digitSprite->Draw();
 
 		offsetX += 64; // 次の数字用にX座標をずらす

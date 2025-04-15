@@ -107,8 +107,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 入力関連の毎フレーム処理
 		input->Update();
 		// ゲームシーンの毎フレーム処理
-		//gameScene->Update();
-		
+		// gameScene->Update();
+
 		// titleScene->Update();
 
 		// シーン切り替え
@@ -244,7 +244,6 @@ void UpdateScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Update();
-		gameScene->DrawTimeUI(); // Time::Draw() を呼び出す専用の関数
 		break;
 	case Scene::kClear:
 		clearScene_->Update();
@@ -264,9 +263,12 @@ void DrawScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Draw();
+
 		break;
 	case Scene::kClear:
 		clearScene_->Draw();
+		gameScene->DrawTimeUI(); // ←ここで呼ぶ！（安全）
+
 		break;
 	case Scene::kOver:
 		overScene_->Draw();
