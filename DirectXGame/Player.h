@@ -152,4 +152,5 @@ private: // メンバ変数
 
 	// 音声再生
 	uint32_t playMusic;
+
 };
