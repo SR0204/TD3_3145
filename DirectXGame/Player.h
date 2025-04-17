@@ -13,6 +13,8 @@ class GameScene;
 class Player {
 
 public: // メンバ関数
+	Player();
+
 	/// <summary>
 	/// 解放処理
 	/// </summary>
@@ -74,11 +76,6 @@ public: // メンバ関数
 
 	bool CheckMapCollision(CollisionMapInfo& info);
 
-	bool CheckMapCollisionForward(CollisionMapInfo& info);
-	bool CheckMapCollisionBackward(CollisionMapInfo& info);
-	bool CheckMapCollisionRight(CollisionMapInfo& info);
-	bool CheckMapCollisionLeft(CollisionMapInfo& info);
-
 	bool CheckMapCollisionDirection(CollisionMapInfo& info, const Vector3& direction);
 
 	// 角
@@ -137,7 +134,7 @@ private: // メンバ変数
 
 	bool canMoveAfterCollision;
 
-	GameScene* gameScene_ = nullptr;
+	GameScene* gameScene_;
 
 	// プレイヤーの初期位置を記憶
 	Vector3 startPosition = {14.0f, 2.0f, 3.0f};
@@ -152,5 +149,4 @@ private: // メンバ変数
 
 	// 音声再生
 	uint32_t playMusic;
-
 };

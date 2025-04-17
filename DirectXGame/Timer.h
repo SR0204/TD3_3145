@@ -29,5 +29,5 @@ private:
 	LARGE_INTEGER lastTime; // 終了時刻
 	LARGE_INTEGER frequency; // 高精度タイマーの周波数
 
-	GameScene* gameScene_ = nullptr;
+	GameScene* gameScene_;
 };

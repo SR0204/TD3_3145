@@ -79,15 +79,15 @@ private: // メンバ変数
 
 	// 3Dモデルデータ
 	Model* modelBlock_ = nullptr;
-	Model* modelClearBlock_ = nullptr;
 
+	// マップモデル
+	Model* mapClearModel_ = nullptr;
 	// マップチップフィールド
 	MapChipField* mapChipFiled_;
 
-	// マップモデル
-	Model* mapModel_ = nullptr;
+	std::vector<std::vector<WorldTransform*>> worldTransformBlockList_;
+	std::vector<std::vector<WorldTransform*>> worldTransformClearBlockList_;
 
-	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
@@ -141,5 +141,5 @@ private: // メンバ変数
 
 	// 制限時間
 	Timer* timer_ = nullptr;
-	int numberTextures_[10]; //制限時間 0～9のテクスチャハンドル
+	int numberTextures_[10]; // 制限時間 0～9のテクスチャハンドル
 };

@@ -43,7 +43,7 @@ private:
 	uint32_t textureHandle_ = 0;
 
 	// GameScene
-	GameScene* gameScene_ = nullptr;
+	GameScene* gameScene_ ;
 
 	// 各フラグ
 	bool isStop_ = false;   // 停止フラグ

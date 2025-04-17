@@ -11,14 +11,26 @@
 
 GameScene::GameScene()
     : timer_(nullptr) // タイマーの初期化、例えば10秒の制限時間
-{}
+
+{
+	isClear_ = false;
+}
 
 GameScene::~GameScene() {
 
 	delete modelBlock_;
+	delete mapClearModel_;
 	delete modelSkySphere_;
 
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+	// 壁のとかのブロック
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlockList_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			delete worldTransformBlock;
+		}
+	}
+
+	// クリアブロック
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformClearBlockList_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
 		}
@@ -72,6 +84,7 @@ void GameScene::Initialize() {
 
 	// ブロックのモデルを読み込む
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
+	mapClearModel_ = Model::CreateFromOBJ("Goal", true);
 
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
@@ -114,7 +127,7 @@ void GameScene::Initialize() {
 		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
-	timer_ = new Timer(120.0f); //制限時間を変更できるよ
+	timer_ = new Timer(120.0f); // 制限時間を変更できるよ
 	timer_->Initialize();
 }
 
@@ -148,7 +161,17 @@ void GameScene::Update() {
 	ImGui::End();*/
 
 	// ブロックの更新
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlockList_) {
+
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+
+			if (!worldTransformBlock)
+				continue;
+			worldTransformBlock->UpdateMatrixBlock();
+		}
+	}
+
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformClearBlockList_) {
 
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 
@@ -183,10 +206,11 @@ void GameScene::Update() {
 
 	// シーン切り替え
 	Player::CollisionMapInfo collisionMapInfo;
-	if (player_->CheckCollisionWithClearBlock(collisionMapInfo) == true) {
+	if (player_->CheckCollisionWithClearBlock(collisionMapInfo)) {
 		// クリアブロックに当たった場合
 		isClear_ = true;
 		isFinished = true;
+		player_->OnGameClear();
 		audio_->StopWave(playMusic);
 	}
 
@@ -230,8 +254,6 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	
-
 	player_->Draw(viewProjection_); // プレイヤーの描画
 
 	// Enemy描画
@@ -243,11 +265,20 @@ void GameScene::Draw() {
 	SkySphere_->Draw();
 
 	// ブロックの描画
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
+	for (auto& blockLine : worldTransformBlockList_) {
+		for (auto* block : blockLine) {
+			if (!block)
 				continue;
-			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			modelBlock_->Draw(*block, viewProjection_);
+		}
+	}
+
+	// クリアブロックの描画
+	for (auto& clearBlockLine : worldTransformClearBlockList_) {
+		for (auto* clearBlock : clearBlockLine) {
+			if (!clearBlock)
+				continue;
+			mapClearModel_->Draw(*clearBlock, viewProjection_);
 		}
 	}
 
@@ -371,22 +402,18 @@ void GameScene::DrawTimeUI() {
 #pragma endregion
 
 void GameScene::GenerateBlocks() {
-	// 要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockVirtical);
+	worldTransformBlockList_.resize(kNumBlockVirtical);
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+		worldTransformBlockList_[i].resize(kNumBlockHorizontal);
 	}
 
-	// キューブの生成
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
 			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
-				worldTransformBlocks_[i][j] = worldTransform;
-
-				// XZ軸に合わせて位置を設定
-				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
+				worldTransformBlockList_[i][j] = worldTransform;
+				worldTransformBlockList_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
 			}
 		}
 	}
@@ -394,22 +421,25 @@ void GameScene::GenerateBlocks() {
 
 void GameScene::GenerateClearBlocks() {
 
-	// 要素数を変更する
-	worldTransformBlocks_.resize(kNumBlockVirtical);
+	worldTransformClearBlockList_.resize(kNumBlockVirtical);
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+		worldTransformClearBlockList_[i].resize(kNumBlockHorizontal);
 	}
 
-	// キューブの生成
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {
 			if (mapChipFiled_->GetMapChipTypeByIndex(j, i) == MapChipType::kClear) {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
-				worldTransformBlocks_[i][j] = worldTransform;
 
-				// XZ軸に合わせて位置を設定
-				worldTransformBlocks_[i][j]->translation_ = mapChipFiled_->GetMapChipPositionByIndex(j, i);
+				Vector3 position = mapChipFiled_->GetMapChipPositionByIndex(j, i);
+				position.y = 2.0f; // ← プレイヤーと同じ高さに設定！
+				worldTransform->translation_ = position;
+
+				// ブロックの向き
+				worldTransform->rotation_ = {0.0f, 90.0f, 0.0f};
+
+				worldTransformClearBlockList_[i][j] = worldTransform;
 			}
 		}
 	}

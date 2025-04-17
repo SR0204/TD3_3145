@@ -10,6 +10,9 @@
 #include <iostream>
 #include <math.h>
 
+Player::Player() {
+}
+
 Player::~Player() { delete model_; }
 
 void Player::Initialize(const Vector3& position) {
@@ -264,6 +267,12 @@ void Player::Update() {
 	collisionMapInfo.move = moveVel_;
 	collisionMapInfo.isBlocked = false;
 
+	// まずクリアブロック判定
+	if (CheckCollisionWithClearBlock(collisionMapInfo)) {
+		// クリアしたならもうこれ以上進めない
+		return;
+	}
+
 	// 衝突判定
 	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
 		collisionMapInfo.isBlocked = true;
@@ -347,13 +356,6 @@ void Player::Update() {
 		moveVel_ = {0.0f, 0.0f, 0.0f};
 	}
 
-	// クリア判定
-	if (CheckCollisionWithClearBlock(worldTransform_.translation_ + nextMove)) {
-
-		moveVel_ = {0.0f, 0.0f, 0.0f};
-		return;
-	}
-
 	// ImGuiで値を表示
 	/*ImGui::Begin("Player");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
@@ -389,6 +391,12 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 
 bool Player::CheckMapCollision(CollisionMapInfo& info) {
+
+	// クリアブロックとの衝突判定
+	if (CheckCollisionWithClearBlock(info)) {
+		return true;
+	}
+
 	// 通常の衝突判定
 	if (CheckCollisionWithCSVMap(info)) {
 		return true;
@@ -399,11 +407,6 @@ bool Player::CheckMapCollision(CollisionMapInfo& info) {
 	    CheckMapCollisionDirection(info, Vector3(-kWidth, 0, 0)) || // 左
 	    CheckMapCollisionDirection(info, Vector3(0, 0, kDepth)) ||  // 前進
 	    CheckMapCollisionDirection(info, Vector3(0, 0, -kDepth))) { // 後退
-		return true;
-	}
-
-	// クリアブロックとの衝突判定
-	if (CheckCollisionWithClearBlock(info)) {
 		return true;
 	}
 
@@ -497,13 +500,11 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 		MapChipType chipType = mapChipField_->GetMapChipTypeByIndex(mapX, mapZ);
 
 		// 壁ブロックなら衝突処理
-		if (chipType == MapChipType::kBlock) {
-			if (corner.x != worldTransform_.translation_.x) {
+		if (chipType == MapChipType::kBlock || chipType == MapChipType::kClear) {
+			if (corner.x != worldTransform_.translation_.x)
 				hitX = true;
-			}
-			if (corner.z != worldTransform_.translation_.z) {
+			if (corner.z != worldTransform_.translation_.z)
 				hitZ = true;
-			}
 		}
 	}
 
@@ -522,14 +523,11 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 }
 
 void Player::OnGameClear() {
-	std::cout << "OnGameClear: isClear_ = " << isClear_ << std::endl;
-	if (!isClear_) {
+	if (isClear_ == true) {
 		std::cout << "ゲームクリア！" << std::endl;
-		isClear_ = true;
 		gameScene_->IsClear(); // ステージ遷移や演出
 	}
 }
-
 bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 	Vector3 centerPos = worldTransform_.translation_ + info.move;
 	int mapX = static_cast<int>(std::round(centerPos.x / kBlockSize));
@@ -541,13 +539,11 @@ bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 
 	// クリアブロックかどうかを確認
 	MapChipType chipType = mapChipField_->GetMapChipTypeByIndex(mapX, mapZ);
-	if (chipType == MapChipType::kClear) {
-		if (!isClear_) { // ゲームクリアが未実行の場合のみ処理
-			std::cout << "ゴール！プレイヤーリセット！" << std::endl;
-			isClear_ = true; // クリアフラグをセット
-			OnGameClear();   // ゲームクリア処理
-		}
-		return true; // クリアブロックと衝突
+	if (chipType == MapChipType::kClear && !isClear_) { // クリアブロックに到達したとき
+		std::cout << "ゴール！プレイヤーリセット！" << std::endl;
+		isClear_ = true; // ゲームクリアフラグを設定
+		OnGameClear();   // ゲームクリア処理
+		return true;     // クリアブロックと衝突
 	}
 	return false;
 }
