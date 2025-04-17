@@ -77,13 +77,12 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
 	playerPosition.y = 2;
 
-	player_ = new Player();              // プレイヤーの生成
-	player_->Initialize(playerPosition); // プレイヤーの初期化
-	player_->SetMapChipField(mapChipFiled_);
+	player_ = new Player();                   // プレイヤーの生成
+	player_->Initialize(mapChipFiled_, this); // プレイヤーの初期化
 
 	playerCamera_ = new PlayerCamera();                                // プレイヤーのカメラの生成
 	playerCamera_->Initialize({0.0f, 0.0f, 1.5f}, {0.0f, 0.0f, 0.0f}); // プレイヤーのカメラの初期化
-	playerCamera_->SetParent(&player_->GetWorldTransform());           // プレイヤーとカメラの親子関係を結ぶ
+	// playerCamera_->SetParent(&player_->GetWorldTransform());           // プレイヤーとカメラの親子関係を結ぶ
 
 	overHeadCamera_ = new OverHeadCamera(); // 俯瞰カメラの生成
 	overHeadCamera_->Initialize();          // 俯瞰カメラの初期化
@@ -114,7 +113,7 @@ void GameScene::Initialize() {
 		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
-	timer_ = new Timer(120.0f); //制限時間を変更できるよ
+	timer_ = new Timer(120.0f); // 制限時間を変更できるよ
 	timer_->Initialize();
 }
 
@@ -182,19 +181,17 @@ void GameScene::Update() {
 	timer_->Update();
 
 	// シーン切り替え
-	Player::CollisionMapInfo collisionMapInfo;
-	if (player_->CheckCollisionWithClearBlock(collisionMapInfo) == true) {
-		// クリアブロックに当たった場合
-		isClear_ = true;
-		isFinished = true;
-		audio_->StopWave(playMusic);
-	}
+	//if (isClear_ = true) {
+	//	// クリアブロックに当たった場合
+	//	isFinished = true;
+	//	audio_->StopWave(playMusic);
+	//}
 
-	if (player_->GetHp() <= 0) {
-		isFinished = true;
+	/*if (player_->GetHp() <= 0) {
+	    isFinished = true;
 
-		audio_->StopWave(playMusic);
-	}
+	    audio_->StopWave(playMusic);
+	}*/
 
 	if (timer_->IsTimeOver()) {
 		isFinished = true;
@@ -229,8 +226,6 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-
-	
 
 	player_->Draw(viewProjection_); // プレイヤーの描画
 
