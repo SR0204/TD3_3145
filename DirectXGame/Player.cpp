@@ -10,7 +10,9 @@
 #include <iostream>
 #include <math.h>
 
-Player::Player(GameScene* scene) { gameScene_ = scene; }
+Player::Player(GameScene* gameScene) {
+	gameScene_ = gameScene; // gameScene_ に gameScene を代入
+}
 
 Player::~Player() { delete model_; }
 
@@ -266,6 +268,10 @@ void Player::Update() {
 	collisionMapInfo.move = moveVel_;
 	collisionMapInfo.isBlocked = false;
 
+	if (isClear_) {
+		return;
+	}
+
 	// 衝突判定
 	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
 		collisionMapInfo.isBlocked = true;
@@ -390,10 +396,6 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 
 bool Player::CheckMapCollision(CollisionMapInfo& info) {
-	// クリアブロックとの衝突判定
-	if (CheckCollisionWithClearBlock(info)) {
-		return true;
-	}
 
 	// CSVマップとの衝突判定
 	if (CheckCollisionWithCSVMap(info)) {
@@ -405,6 +407,10 @@ bool Player::CheckMapCollision(CollisionMapInfo& info) {
 	    CheckMapCollisionDirection(info, Vector3(-kWidth, 0, 0)) || // 左
 	    CheckMapCollisionDirection(info, Vector3(0, 0, kDepth)) ||  // 前進
 	    CheckMapCollisionDirection(info, Vector3(0, 0, -kDepth))) { // 後退
+		return true;
+	}
+	// クリアブロックとの衝突判定
+	if (CheckCollisionWithClearBlock(info)) {
 		return true;
 	}
 
@@ -534,9 +540,9 @@ void Player::OnGameClear() {
 	isClear_ = true;
 
 	// クリア画面に遷移する処理を追加（例：SceneManagerを使用）
-	//SceneManager::GetInstance()->ChangeScene("ClearScene"); // クリアシーンに遷移
+	gameScene_->SetClearFlag(true);
+	gameScene_->SetFinishFlag(true);
 }
-
 
 bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 	// 移動後の位置を計算
@@ -560,6 +566,5 @@ bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 
 	return false;
 }
-
 
 bool Player::IsClear() const { return isClear_; }

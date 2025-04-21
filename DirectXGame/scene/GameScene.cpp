@@ -86,6 +86,9 @@ void GameScene::Initialize() {
 	modelBlock_ = Model::CreateFromOBJ("cube", true);
 	mapClearModel_ = Model::CreateFromOBJ("Goal", true);
 
+	isClear_ = false;
+	isFinished = false;
+
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
 	playerPosition.y = 2;
@@ -127,7 +130,7 @@ void GameScene::Initialize() {
 		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
-	timer_ = new Timer(10.0f); // 制限時間を変更できるよ
+	timer_ = new Timer(60.0f); // 制限時間を変更できるよ
 	timer_->Initialize();
 }
 
@@ -211,7 +214,6 @@ void GameScene::Update() {
 			SetClear();             // 状態セット
 			player_->OnGameClear(); // 演出だけ担当
 			audio_->StopWave(playMusic);
-			isFinished = true;
 		}
 	}
 

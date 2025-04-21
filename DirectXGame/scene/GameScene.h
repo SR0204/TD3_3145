@@ -71,6 +71,9 @@ public: // メンバ関数
 	// 時間表示用の関数
 	void DrawTimeUI();
 
+	void SetClearFlag(bool flag) { isClear_ = flag; }
+	void SetFinishFlag(bool flag) { isFinished = flag; }
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -89,7 +92,6 @@ private: // メンバ変数
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlockList_;
 	std::vector<std::vector<WorldTransform*>> worldTransformClearBlockList_;
-
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
@@ -110,9 +112,6 @@ private: // メンバ変数
 	// 一ブロックのサイズ
 	static inline const float kBlockWidth = 2.0f;  // 横
 	static inline const float kBlockHeight = 2.0f; // 縦
-
-
-
 
 	Player* player_ = nullptr;                 // プレイヤー
 	PlayerCamera* playerCamera_ = nullptr;     // プレイヤーのカメラ

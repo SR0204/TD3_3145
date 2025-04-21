@@ -13,7 +13,7 @@ class GameScene;
 class Player {
 
 public: // メンバ関数
-	Player(GameScene* scene);
+	Player(GameScene*gameScene);
 
 	/// <summary>
 	/// 解放処理
