@@ -57,6 +57,8 @@ public: // メンバ関数
 
 	bool IsClear() const { return isClear_; }
 
+	void SetClear();
+
 	// 敵発生
 	void SpawnEnemy(Vector3 position);
 
@@ -108,6 +110,9 @@ private: // メンバ変数
 	// 一ブロックのサイズ
 	static inline const float kBlockWidth = 2.0f;  // 横
 	static inline const float kBlockHeight = 2.0f; // 縦
+
+
+
 
 	Player* player_ = nullptr;                 // プレイヤー
 	PlayerCamera* playerCamera_ = nullptr;     // プレイヤーのカメラ

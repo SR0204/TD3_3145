@@ -268,7 +268,7 @@ void DrawScene() {
 	case Scene::kClear:
 		clearScene_->Draw();
 
-		break;
+		break;	
 	case Scene::kOver:
 		overScene_->Draw();
 		break;

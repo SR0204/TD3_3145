@@ -90,7 +90,7 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
 	playerPosition.y = 2;
 
-	player_ = new Player();              // プレイヤーの生成
+	player_ = new Player(this);          // プレイヤーの生成
 	player_->Initialize(playerPosition); // プレイヤーの初期化
 	player_->SetMapChipField(mapChipFiled_);
 
@@ -127,7 +127,7 @@ void GameScene::Initialize() {
 		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
-	timer_ = new Timer(120.0f); // 制限時間を変更できるよ
+	timer_ = new Timer(10.0f); // 制限時間を変更できるよ
 	timer_->Initialize();
 }
 
@@ -207,11 +207,12 @@ void GameScene::Update() {
 	// シーン切り替え
 	Player::CollisionMapInfo collisionMapInfo;
 	if (player_->CheckCollisionWithClearBlock(collisionMapInfo)) {
-		// クリアブロックに当たった場合
-		isClear_ = true;
-		isFinished = true;
-		player_->OnGameClear();
-		audio_->StopWave(playMusic);
+		if (player_->IsClear()) {
+			SetClear();             // 状態セット
+			player_->OnGameClear(); // 演出だけ担当
+			audio_->StopWave(playMusic);
+			isFinished = true;
+		}
 	}
 
 	if (player_->GetHp() <= 0) {
@@ -303,7 +304,10 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
+void GameScene::SetClear() { isClear_ = true; }
+
 #pragma region 敵発生関連関数
+
 void GameScene::SpawnEnemy(Vector3 position) {
 	Enemy* newEnemy = new Enemy();
 

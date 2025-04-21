@@ -10,8 +10,7 @@
 #include <iostream>
 #include <math.h>
 
-Player::Player() {
-}
+Player::Player(GameScene* scene) { gameScene_ = scene; }
 
 Player::~Player() { delete model_; }
 
@@ -267,12 +266,6 @@ void Player::Update() {
 	collisionMapInfo.move = moveVel_;
 	collisionMapInfo.isBlocked = false;
 
-	// まずクリアブロック判定
-	if (CheckCollisionWithClearBlock(collisionMapInfo)) {
-		// クリアしたならもうこれ以上進めない
-		return;
-	}
-
 	// 衝突判定
 	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
 		collisionMapInfo.isBlocked = true;
@@ -356,6 +349,12 @@ void Player::Update() {
 		moveVel_ = {0.0f, 0.0f, 0.0f};
 	}
 
+	// まずクリアブロック判定
+	if (CheckCollisionWithClearBlock(collisionMapInfo)) {
+		// クリアしたならもうこれ以上進めない
+		return;
+	}
+
 	// ImGuiで値を表示
 	/*ImGui::Begin("Player");
 	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
@@ -391,13 +390,12 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 
 bool Player::CheckMapCollision(CollisionMapInfo& info) {
-
 	// クリアブロックとの衝突判定
 	if (CheckCollisionWithClearBlock(info)) {
 		return true;
 	}
 
-	// 通常の衝突判定
+	// CSVマップとの衝突判定
 	if (CheckCollisionWithCSVMap(info)) {
 		return true;
 	}
@@ -500,11 +498,20 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 		MapChipType chipType = mapChipField_->GetMapChipTypeByIndex(mapX, mapZ);
 
 		// 壁ブロックなら衝突処理
-		if (chipType == MapChipType::kBlock || chipType == MapChipType::kClear) {
-			if (corner.x != worldTransform_.translation_.x)
+		if (chipType == MapChipType::kBlock) {
+			if (corner.x != worldTransform_.translation_.x) {
 				hitX = true;
-			if (corner.z != worldTransform_.translation_.z)
+			}
+			if (corner.z != worldTransform_.translation_.z) {
 				hitZ = true;
+			}
+		}
+
+		// **クリアブロックならゲームクリア処理**
+		if (chipType == MapChipType::kClear) {
+			std::cout << "ゲームクリア！" << std::endl;
+			OnGameClear(); // クリア時の処理を呼び出す
+			return true;
 		}
 	}
 
@@ -523,27 +530,36 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 }
 
 void Player::OnGameClear() {
-	if (isClear_ == true) {
-		std::cout << "ゲームクリア！" << std::endl;
-		gameScene_->IsClear(); // ステージ遷移や演出
-	}
-}
-bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
-	Vector3 centerPos = worldTransform_.translation_ + info.move;
-	int mapX = static_cast<int>(std::round(centerPos.x / kBlockSize));
-	int mapZ = static_cast<int>(std::round(centerPos.z / kBlockSize));
+	// ゲームクリアフラグを立てる
+	isClear_ = true;
 
+	// クリア画面に遷移する処理を追加（例：SceneManagerを使用）
+	//SceneManager::GetInstance()->ChangeScene("ClearScene"); // クリアシーンに遷移
+}
+
+
+bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
+	// 移動後の位置を計算
+	Vector3 newPos = worldTransform_.translation_ + info.move;
+
+	// クリアブロックの位置を取得
+	int mapX = static_cast<int>(std::round(newPos.x / kBlockSize));
+	int mapZ = static_cast<int>(std::round(newPos.z / kBlockSize));
+
+	// マップ外や範囲外なら判定しない
 	if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight()) {
 		return false;
 	}
 
-	// クリアブロックかどうかを確認
-	MapChipType chipType = mapChipField_->GetMapChipTypeByIndex(mapX, mapZ);
-	if (chipType == MapChipType::kClear && !isClear_) { // クリアブロックに到達したとき
-		std::cout << "ゴール！プレイヤーリセット！" << std::endl;
-		isClear_ = true; // ゲームクリアフラグを設定
-		OnGameClear();   // ゲームクリア処理
-		return true;     // クリアブロックと衝突
+	// クリアブロックに当たった場合、ゲームクリア処理を呼び出す
+	if (mapChipField_->GetMapChipTypeByIndex(mapX, mapZ) == MapChipType::kClear) {
+		std::cout << "ゲームクリア！" << std::endl;
+		OnGameClear(); // クリア時の処理を呼び出す
+		return true;
 	}
+
 	return false;
 }
+
+
+bool Player::IsClear() const { return isClear_; }

@@ -13,7 +13,7 @@ class GameScene;
 class Player {
 
 public: // メンバ関数
-	Player();
+	Player(GameScene* scene);
 
 	/// <summary>
 	/// 解放処理
@@ -102,6 +102,8 @@ public: // メンバ関数
 	void OnGameClear();
 
 	int GetHp() { return hp_; }
+
+	bool IsClear() const;
 
 private: // メンバ変数
 	Audio* audio_ = nullptr;
