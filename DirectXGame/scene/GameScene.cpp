@@ -71,7 +71,7 @@ void GameScene::Initialize() {
 	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
 
 	// 音
-	music = audio_->LoadWave("sound/fukakukuraiido.MP3");
+	music = audio_->LoadWave("BGM/fukakukuraiido.MP3");
 
 	audio_->PauseWave(music);
 
