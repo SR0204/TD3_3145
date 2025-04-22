@@ -23,6 +23,14 @@ void TitleScene::Initialize() {
 	worldTransformFont_.translation_.x = -1;
 	worldTransformFont_.rotation_.y = -1.5;
 	worldTransformFont_.scale_ = {7, 5, 5};
+
+	// 音
+	music = audio_->LoadWave("BGM/Title.mp3");
+
+	audio_->PauseWave(music);
+
+	// 音声再生
+	playMusic = audio_->PlayWave(music, true);
 }
 
 void TitleScene::Update() {
@@ -36,6 +44,7 @@ void TitleScene::Update() {
 	// スペースキー or コントローラーのAボタンで画面遷移
 	if (input->ReleseKey(DIK_SPACE) || (dwResult == ERROR_SUCCESS && (state.Gamepad.wButtons & XINPUT_GAMEPAD_A))) {
 		finished_ = true;
+		audio_->StopWave(playMusic);
 	}
 
 	// タイマーを加算

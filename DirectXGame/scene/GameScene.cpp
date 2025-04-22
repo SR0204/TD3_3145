@@ -71,12 +71,11 @@ void GameScene::Initialize() {
 	mapChipFiled_->LoadMapChipCsv("Resources/Stage01.csv");
 
 	// 音
-	music = audio_->LoadWave("BGM/fukakukuraiido.MP3");
+	music = audio_->LoadWave("BGM/Play.MP3");
 
 	audio_->PauseWave(music);
-
 	// 音声再生
-	playMusic = audio_->PlayWave(music, true);
+	playMusic = audio_->PlayWave(music, true, 1);
 
 	// 表示ブロックの生成
 	GenerateBlocks();
@@ -135,6 +134,8 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
+	
 
 	if (isOverHeadCameraActive_ == false) {
 		// プレイヤーのカメラの更新

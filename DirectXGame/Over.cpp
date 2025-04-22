@@ -18,13 +18,13 @@ void Over::Initialize() {
 
 	sprite = Sprite::Create(textureHandle_, {0, 0});
 
-	//// 音
-	// music = audio_->LoadWave("BGM/GameOver.wav");
+	// 音
+	 music = audio_->LoadWave("BGM/GameOver.mp3");
 
-	// audio_->PauseWave(music);
+	 audio_->PauseWave(music);
 
-	//// 音声再生
-	// playMusic = audio_->PlayWave(music, true);
+	// 音声再生
+	 playMusic = audio_->PlayWave(music, true);
 }
 
 void Over::Update() {

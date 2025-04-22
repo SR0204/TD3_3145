@@ -51,4 +51,10 @@ private:
 
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
+
+	// 音
+	uint32_t music;
+
+	// 音声再生
+	uint32_t playMusic;
 };
