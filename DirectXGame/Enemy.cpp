@@ -62,7 +62,7 @@ void Enemy::OnCollosion() { isStop_ = true; }
 
 void Enemy::Move() {
 	MoveVector_.x = (rand() % 100 - 50) / 500.0f; // -0.1 ～ 0.1
-	MoveVector_.y = (rand() % 100 - 50) / 500.0f; // -0.1 ～ 0.1
+	//MoveVector_.y = (rand() % 100 - 50) / 500.0f; // -0.1 ～ 0.1
 	MoveVector_.z = (rand() % 100 - 50) / 500.0f; // -0.1 ～ 0.1
 
 	moveChangeTimer_ = 120; // 60フレームごとに変更
