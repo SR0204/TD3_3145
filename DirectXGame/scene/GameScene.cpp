@@ -135,8 +135,6 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	
-
 	if (isOverHeadCameraActive_ == false) {
 		// プレイヤーのカメラの更新
 		playerCamera_->Update();
