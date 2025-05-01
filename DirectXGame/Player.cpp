@@ -396,28 +396,26 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 
 bool Player::CheckMapCollision(CollisionMapInfo& info) {
-
-	// CSVマップとの衝突判定
-	if (CheckCollisionWithCSVMap(info)) {
-		return true;
-	}
-
-	// 各方向の衝突判定をまとめて行う
-	if (CheckMapCollisionDirection(info, Vector3(kWidth, 0, 0)) ||  // 右
-	    CheckMapCollisionDirection(info, Vector3(-kWidth, 0, 0)) || // 左
-	    CheckMapCollisionDirection(info, Vector3(0, 0, kDepth)) ||  // 前進
-	    CheckMapCollisionDirection(info, Vector3(0, 0, -kDepth))) { // 後退
-		return true;
-	}
-	// クリアブロックとの衝突判定
+	// クリアブロックとの衝突（最優先で判定）
 	if (CheckCollisionWithClearBlock(info)) {
 		return true;
 	}
 
-	return false;
+	// CSVマップのブロックとの衝突判定
+	bool hitCSVBlock = CheckCollisionWithCSVMap(info);
+
+	// 移動方向ごとの補正処理（詳細な接触調整）
+	bool hitDirectional = CheckMapCollisionDirection(info, Vector3(kWidth, 0, 0)) ||  // 右
+	                      CheckMapCollisionDirection(info, Vector3(-kWidth, 0, 0)) || // 左
+	                      CheckMapCollisionDirection(info, Vector3(0, 0, kDepth)) ||  // 前
+	                      CheckMapCollisionDirection(info, Vector3(0, 0, -kDepth));   // 後
+
+	// いずれかで衝突したら true を返す
+	return hitCSVBlock || hitDirectional;
 }
 
 bool Player::CheckMapCollisionDirection(CollisionMapInfo& info, const Vector3& direction) {
+	// 移動方向と逆なら判定しない
 	if (direction.x != 0 && (info.move.x <= 0 && direction.x > 0 || info.move.x >= 0 && direction.x < 0)) {
 		return false;
 	}
@@ -425,6 +423,7 @@ bool Player::CheckMapCollisionDirection(CollisionMapInfo& info, const Vector3& d
 		return false;
 	}
 
+	// 判定用の4点（足元の4隅）
 	std::array<Vector3, 4> positionNew = {
 	    worldTransform_.translation_ + info.move + direction + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
 	    worldTransform_.translation_ + info.move + direction + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
@@ -443,17 +442,33 @@ bool Player::CheckMapCollisionDirection(CollisionMapInfo& info, const Vector3& d
 	}
 
 	if (hit) {
+		// 今いる位置と direction から衝突しているマスの矩形を取得
 		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + direction);
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.zIndex);
-		if (direction.x != 0) {
-			info.move.x = std::max(0.0f, rect.left - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
+
+		if (direction.x > 0) {
+			// 右方向への移動時
+			float rightEdge = worldTransform_.translation_.x + kWidth / 2.0f + kBlank;
+			info.move.x = std::min(info.move.x, rect.left - rightEdge);
+		} else if (direction.x < 0) {
+			// 左方向への移動時
+			float leftEdge = worldTransform_.translation_.x - kWidth / 2.0f - kBlank;
+			info.move.x = std::max(info.move.x, rect.right - leftEdge);
 		}
-		if (direction.z != 0) {
-			info.move.z = std::max(0.0f, rect.front - worldTransform_.translation_.z - (kDepth / 2.0f + kBlank * 0.5f));
+
+		if (direction.z > 0) {
+			// 前方向への移動時
+			float frontEdge = worldTransform_.translation_.z + kDepth / 2.0f + kBlank;
+			info.move.z = std::min(info.move.z, rect.front - frontEdge);
+		} else if (direction.z < 0) {
+			// 後方向への移動時
+			float backEdge = worldTransform_.translation_.z - kDepth / 2.0f - kBlank;
+			info.move.z = std::max(info.move.z, rect.back - backEdge);
 		}
+
 		info.hitWall = true;
 
-		// デバッグログ
+		// デバッグ出力
 		std::cout << "Collision " << direction.x << ", " << direction.z << "!" << std::endl;
 		return true;
 	}
@@ -478,7 +493,7 @@ Vector3 Player::CornerPosition(const Vector3& center, Corner corner) {
 }
 
 bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
-	// プレイヤーの四隅をチェック
+	// プレイヤーの足元4隅の座標を取得
 	std::array<Vector3, 4> corners = {
 	    worldTransform_.translation_ + info.move + Vector3(-kWidth / 2.0f, 0, -kDepth / 2.0f),
 	    worldTransform_.translation_ + info.move + Vector3(+kWidth / 2.0f, 0, -kDepth / 2.0f),
@@ -493,17 +508,16 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 		int mapX = static_cast<int>(std::floor(corner.x / kBlockSize));
 		int mapZ = static_cast<int>(std::floor(corner.z / kBlockSize));
 
-		// マップ外や壁なら衝突判定
+		// マップ外なら衝突扱い
 		if (mapX < 0 || mapZ < 0 || mapX >= mapChipField_->GetMapWidth() || mapZ >= mapChipField_->GetMapHeight()) {
 			hitX = true;
 			hitZ = true;
 			continue;
 		}
 
-		// マップチップの種類を取得
 		MapChipType chipType = mapChipField_->GetMapChipTypeByIndex(mapX, mapZ);
 
-		// 壁ブロックなら衝突処理
+		// 壁との衝突判定
 		if (chipType == MapChipType::kBlock) {
 			if (corner.x != worldTransform_.translation_.x) {
 				hitX = true;
@@ -513,20 +527,18 @@ bool Player::CheckCollisionWithCSVMap(CollisionMapInfo& info) {
 			}
 		}
 
-		// **クリアブロックならゲームクリア処理**
+		// クリアブロックとの衝突（ゲームクリア処理）
 		if (chipType == MapChipType::kClear) {
 			std::cout << "ゲームクリア！" << std::endl;
-			OnGameClear(); // クリア時の処理を呼び出す
+			OnGameClear();
 			return true;
 		}
 	}
 
-	// X方向の衝突があったらX成分をゼロにする
+	// X/Z方向ごとの衝突補正
 	if (hitX) {
 		info.move.x = 0;
 	}
-
-	// Z方向の衝突があったらZ成分をゼロにする
 	if (hitZ) {
 		info.move.z = 0;
 	}

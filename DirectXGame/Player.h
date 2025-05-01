@@ -93,7 +93,7 @@ public: // メンバ関数
 
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
-	static inline const float kBlank = 1.0f;
+	static inline const float kBlank = 0.01f;
 
 	bool CheckCollisionWithCSVMap(CollisionMapInfo& info);
 
