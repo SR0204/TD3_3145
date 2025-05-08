@@ -10,12 +10,16 @@
 #include "TitleScene.h"
 #include "Tutorial.h"
 #include "WinApp.h"
+// #include "gauge.h"
+// #include "character.h"
+#include "BattleScene.h"
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
 Tutorial* tutorialScene = nullptr;
 Clear* clearScene_ = nullptr;
 Over* overScene_ = nullptr;
+BattleScene* battleScene = nullptr;
 
 // シーン(型)
 enum class Scene {
@@ -24,6 +28,7 @@ enum class Scene {
 	kTitle,
 	kTutorial,
 	kGame,
+	kBattle,
 	kClear,
 	kOver,
 };
@@ -185,7 +190,11 @@ void ChangeScene() {
 		}
 		break;
 	case Scene::kGame:
-		if (gameScene->IsFinished()) {
+		if (gameScene->ShouldStartBattle()) { // ← 戦闘フラグをGameSceneに用意する
+			scene = Scene::kBattle;
+			battleScene = new BattleScene;
+			battleScene->Initialize();
+		} else if (gameScene->IsFinished()) {
 			if (gameScene->IsClear() == true) {
 				// シーン変更
 				scene = Scene::kClear;
@@ -207,6 +216,17 @@ void ChangeScene() {
 			}
 		}
 		break;
+	case Scene::kBattle:
+		if (battleScene->IsFinished()) {
+			gameScene->ResetBattleTrigger();
+			scene = Scene::kGame;
+			delete battleScene;
+			battleScene = nullptr;
+
+			// GameSceneを再生成せず再開したい場合、gameScene は保持しておく
+			// 必要なら gameScene->ResumeAfterBattle() などを呼ぶ
+		}
+		break;
 	case Scene::kClear:
 		if (clearScene_->IsFinished()) {
 			// シーン変更
@@ -219,6 +239,7 @@ void ChangeScene() {
 			titleScene->Initialize();
 		}
 		break;
+	
 	case Scene::kOver:
 		if (overScene_->IsFinished()) {
 			// シーン変更
@@ -245,6 +266,9 @@ void UpdateScene() {
 	case Scene::kGame:
 		gameScene->Update();
 		break;
+	case Scene::kBattle:
+		battleScene->Update();
+		break;
 	case Scene::kClear:
 		clearScene_->Update();
 		break;
@@ -265,10 +289,13 @@ void DrawScene() {
 		gameScene->Draw();
 
 		break;
+	case Scene::kBattle:
+		battleScene->Draw();
+		break;
 	case Scene::kClear:
 		clearScene_->Draw();
 
-		break;	
+		break;
 	case Scene::kOver:
 		overScene_->Draw();
 		break;

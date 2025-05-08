@@ -13,7 +13,7 @@ class GameScene;
 class Player {
 
 public: // メンバ関数
-	Player(GameScene*gameScene);
+	Player(GameScene* gameScene);
 
 	/// <summary>
 	/// 解放処理
@@ -104,6 +104,9 @@ public: // メンバ関数
 	int GetHp() { return hp_; }
 
 	bool IsClear() const;
+
+	Vector3 GetPosition() const { return worldTransform_.translation_; }
+	Vector3 GetSize() const { return {kWidth, kHeight, kDepth}; }
 
 private: // メンバ変数
 	Audio* audio_ = nullptr;

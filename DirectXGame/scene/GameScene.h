@@ -13,6 +13,9 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "character.h"
+#include "game_manager.h"
+#include "gauge.h"
 #include <sstream>
 
 class Player;
@@ -59,14 +62,20 @@ public: // メンバ関数
 
 	void SetClear();
 
-	// 敵発生
-	void SpawnEnemy(Vector3 position);
+	bool ShouldStartBattle() const;
 
-	// 敵発生データの読み込み
-	void LoadEnemyPopData();
+	void ResetBattleTrigger(){};
 
-	// 敵発生コマンドの更新
-	void UpDateEnemyPopCommands();
+	void CheckEnemyCollision();      // 敵との接触チェック用メソッド
+
+	//// 敵発生
+	//void SpawnEnemy(Vector3 position);
+
+	//// 敵発生データの読み込み
+	//void LoadEnemyPopData();
+
+	//// 敵発生コマンドの更新
+	//void UpDateEnemyPopCommands();
 
 	// 時間表示用の関数
 	void DrawTimeUI();
@@ -78,6 +87,7 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
+	GameManager gameManager;
 
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
@@ -146,4 +156,18 @@ private: // メンバ変数
 	// 制限時間
 	Timer* timer_ = nullptr;
 	int numberTextures_[10]; // 制限時間 0～9のテクスチャハンドル
+
+	bool isBattleTriggered_ = false; // 敵と接触したら true
+
+	bool isDefending = false;       // 防御中かどうか
+	int enemyAttackTimer = 0;       // 敵の攻撃タイマー
+	Sprite* gaugeSprite_ = nullptr; // ゲージ表示用スプライト
+
+	Gauge attackGauge;  // 攻撃用ゲージ
+	Gauge defenseGauge; // 防御用ゲージ
+
+	Character player;                    // プレイヤーキャラクター
+	Character enemy;                     // 敵キャラクター
+	Sprite* BackgroundSprite_ = nullptr; // 背景スプライト
+	Sprite* EnemySprite_ = nullptr;      // 敵スプライト
 };

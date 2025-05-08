@@ -110,8 +110,12 @@
     <ClCompile Include="3d\ViewProjection.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="BattleScene.cpp" />
+    <ClCompile Include="character.cpp" />
     <ClCompile Include="Clear.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="game_manager.cpp" />
+    <ClCompile Include="Gauge.cpp" />
     <ClCompile Include="InputEx.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapChipField.cpp" />
@@ -152,8 +156,12 @@
     <ClInclude Include="base\StringUtility.h" />
     <ClInclude Include="base\TextureManager.h" />
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="BattleScene.h" />
+    <ClInclude Include="character.h" />
     <ClInclude Include="Clear.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="game_manager.h" />
+    <ClInclude Include="Gauge.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="MapChipField.h" />
     <ClInclude Include="MathUtilityForText.h" />

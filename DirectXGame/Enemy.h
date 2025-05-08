@@ -29,7 +29,7 @@ public:
 
 public:
 	Vector3 GetWorldPosition();
-
+	Vector3 GetSize() const { return {kWidth_, kHeight_, kDepth_}; }
 	// 各フラグのGetter
 	bool IsStop() const { return isStop_; }
 	bool IsEngage() const { return isEngage_; }
@@ -58,4 +58,9 @@ private:
 
 	// 体力
 	int HP_ = 10;
+
+	// メンバ変数（private に）
+	float kWidth_ = 1.0f;
+	float kHeight_ = 2.0f;
+	float kDepth_ = 1.0f;
 };
