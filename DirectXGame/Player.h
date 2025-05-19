@@ -108,6 +108,10 @@ public: // メンバ関数
 	Vector3 GetPosition() const { return worldTransform_.translation_; }
 	Vector3 GetSize() const { return {kWidth, kHeight, kDepth}; }
 
+	// Player.h
+	void takeDamage(int damage, bool isDefending, float defenseRate);
+
+
 private: // メンバ変数
 	Audio* audio_ = nullptr;
 	WorldTransform worldTransform_; // ワールド変換データ

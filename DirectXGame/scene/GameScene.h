@@ -7,7 +7,6 @@
 #include "Model.h"
 #include "OverHeadCamera.h"
 
-#include "Enemy.h"
 #include "PlayerCamera.h"
 #include "SkySphere.h"
 #include "Sprite.h"
@@ -20,6 +19,7 @@
 
 class Player;
 class Timer;
+class Enemy;
 
 /// <summary>
 /// ゲームシーン

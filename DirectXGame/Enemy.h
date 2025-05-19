@@ -27,6 +27,9 @@ public:
 
 	void Move();
 
+	void takeDamage(int damage, bool isPlayerAttack, float defenseRate);
+
+
 public:
 	Vector3 GetWorldPosition();
 	Vector3 GetSize() const { return {kWidth_, kHeight_, kDepth_}; }

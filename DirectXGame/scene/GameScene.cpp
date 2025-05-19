@@ -3,11 +3,13 @@
 #include "MapChipField.h"
 #include "TextureManager.h"
 // #include "imgui.h"
+#include "Enemy.h"
 #include "Player.h"
 #include "Timer.h"
 #include <cassert>
 #include <fstream>
 #include <iostream>
+#include <list>
 
 const int ENEMY_ATTACK_INTERVAL = 90; // 敵の攻撃間隔（1.5秒）
 
@@ -307,7 +309,7 @@ void GameScene::Draw() {
 
 	// gaugeSprite_->Draw();      // スプライトの描画
 
-	EnemySprite_->Draw(); // 敵スプライトの描画
+	//EnemySprite_->Draw(); // 敵スプライトの描画
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -334,25 +336,27 @@ void GameScene::SetClear() { isClear_ = true; }
 bool GameScene::ShouldStartBattle() const { return isBattleTriggered_; }
 
 void GameScene::CheckEnemyCollision() {
-	// プレイヤーと敵の当たり判定の矩形を取得
-	Vector3 playerPos = player_->GetPosition();
-	Vector3 playerSize = player_->GetSize(); // プレイヤーの幅と高さ
+	//Vector3 playerPos = player_->GetPosition();
+	//Vector3 playerSize = player_->GetSize(); // 一度だけ定義
 
-	for (const auto& enemy : enemies_) {
-		Vector3 enemyPos = enemy->GetWorldPosition();
-		Vector3 enemySize = enemy->GetSize();
+	//for (Enemy*enemy : enemies_) {
+	//	if (!enemy)
+	//		continue;
 
-		// AABB（Axis-Aligned Bounding Box）による接触判定
-		bool isColliding = playerPos.x < enemyPos.x + enemySize.x && playerPos.x + playerSize.x > enemyPos.x && playerPos.y < enemyPos.y + enemySize.y && playerPos.y + playerSize.y > enemyPos.y;
+	//	Vector3 enemyPos = enemy->GetWorldPosition();
+	//	Vector3 enemySize = enemy->GetSize();
 
-		if (isColliding) {
-			isBattleTriggered_ = true;
-			break; // 一体でも当たっていればフラグ立てて終了
-		}
-	}
+	//	bool isColliding = playerPos.x < enemyPos.x + enemySize.x && playerPos.x + playerSize.x > enemyPos.x && playerPos.y < enemyPos.y + enemySize.y && playerPos.y + playerSize.y > enemyPos.y &&
+	//	                   playerPos.z < enemyPos.z + enemySize.z && playerPos.z + playerSize.z > enemyPos.z;
+
+	//	if (isColliding) {
+	//		isBattleTriggered_ = true;
+	//		break;
+	//	}
+	//}
 }
 
-//void GameScene::ResetBattleTrigger() { isBattleTriggered_ = false; }
+// void GameScene::ResetBattleTrigger() { isBattleTriggered_ = false; }
 
 // #pragma region 敵発生関連関数
 

@@ -579,4 +579,15 @@ bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 	return false;
 }
 
+void Player::takeDamage(int damage, bool isDefending, float defenseRate) {
+	int actualDamage = damage;
+	if (isDefending) {
+		actualDamage = static_cast<int>(damage * (1.0f - defenseRate));
+	}
+	hp_ -= actualDamage;
+	if (hp_ < 0) {
+		hp_ = 0;
+	}
+}
+
 bool Player::IsClear() const { return isClear_; }
