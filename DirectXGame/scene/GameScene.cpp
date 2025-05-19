@@ -336,10 +336,10 @@ void GameScene::SetClear() { isClear_ = true; }
 bool GameScene::ShouldStartBattle() const { return isBattleTriggered_; }
 
 void GameScene::CheckEnemyCollision() {
-	//Vector3 playerPos = player_->GetPosition();
-	//Vector3 playerSize = player_->GetSize(); // 一度だけ定義
+	// Vector3 playerPos = player_->GetPosition();
+	// Vector3 playerSize = player_->GetSize(); // 一度だけ定義
 
-	//for (Enemy*enemy : enemies_) {
+	// for (Enemy*enemy : enemies_) {
 	//	if (!enemy)
 	//		continue;
 

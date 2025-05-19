@@ -114,9 +114,6 @@
     <ClCompile Include="Timer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="game_manager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
