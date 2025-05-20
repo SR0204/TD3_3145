@@ -1,69 +1,55 @@
 #pragma once
 
 #include "Model.h"
-#include "ViewProjection.h"
 #include "WorldTransform.h"
+#include<cmath>
 
-// GameSceneクラスの前方宣言
-class GameScene;
-
-/// <summary>
-/// てき
-/// </summary>
+class MapChipField;
 
 class Enemy {
 public:
 	~Enemy();
 
-	void Initialize(Model* model, uint32_t textureHandle, ViewProjection* viewProjection, const Vector3& position);
+	void Initialize(const Vector3 position, Model* model);
 
 	void Update();
 
-	void Draw();
+	void Draw(ViewProjection* viewProjection);
 
-	void OnCollosion();
+	void SetTranslation(Vector3 translation) { worldTransform_.translation_ = translation; }
 
-	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
-	void Move();
+	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
-	void takeDamage(int damage, bool isPlayerAttack, float defenseRate);
-
-
-public:
-	Vector3 GetWorldPosition();
-	Vector3 GetSize() const { return {kWidth_, kHeight_, kDepth_}; }
-	// 各フラグのGetter
-	bool IsStop() const { return isStop_; }
-	bool IsEngage() const { return isEngage_; }
-	bool IsDead() const { return isDead_; }
+	void SetPlayerPosition(const Vector3& position) { playerPosition_ = position; }
 
 private:
+	bool CanSeePlayer();
+
+	bool CheckCollisionWithPlayer(const Vector3& playerPos, float collisionRadius);
+
+private:
+	// ワールド変形
 	WorldTransform worldTransform_;
-	ViewProjection* viewProjection_ = nullptr;
+	// モデルデータ
 	Model* model_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
 
-	// GameScene
-	GameScene* gameScene_ ;
+	MapChipField* mapChipField_;
 
-	// 各フラグ
-	bool isStop_ = false;   // 停止フラグ
-	bool isEngage_ = false; // 接触フラグ
-	bool isDead_ = false;   // 死亡フラグ
+	Vector3 pointA_;      // 移動開始位置
+	Vector3 pointB_;      // 移動終了位置
+	Vector3 targetPoint_; // 今向かっている目標地点
 
-	// 移動ベクトル
-	Vector3 MoveVector_ = {0, 0, 0};
+	float elapsedTime_ = 0.0f;  // 経過時間
+	float moveInterval_ = 3.0f; // 移動間隔（秒）
+	float moveSpeed_ = 0.05f;   // 1フレームごとの移動速度
 
-	// 移動方向変更タイマー
-	int moveChangeTimer_ = 60;
-
-	// 体力
-	int HP_ = 10;
-
-	// メンバ変数（private に）
-	float kWidth_ = 1.0f;
-	float kHeight_ = 2.0f;
-	float kDepth_ = 1.0f;
+	Vector3 playerPosition_;    // プレイヤーの位置（外から渡す）
+	bool isChasing_ = false;    // 追跡中フラグ
+	float chaseTimer_ = 0.0f;   // 追跡時間カウント
+	float maxChaseTime_ = 1.0f; // 追跡最大秒数
+	float sightRange_ = 10.0f;   // 視界範囲（距離）
 };

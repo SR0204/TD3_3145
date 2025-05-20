@@ -360,34 +360,6 @@ void Player::Update() {
 		// クリアしたならもうこれ以上進めない
 		return;
 	}
-
-	// ImGuiで値を表示
-	/*ImGui::Begin("Player");
-	ImGui::DragFloat3("translation", &worldTransform_.translation_.x, 0.1f);
-	ImGui::DragFloat3("rotation", &worldTransform_.rotation_.x, 0.01f);
-	if (ImGui::Button("Reset")) {
-	    worldTransform_.translation_ = {0.0f, 0.0f, 0.0f};
-	    worldTransform_.rotation_ = {0.0f, 0.0f, 0.0f};
-	}
-	ImGui::End();*/
-
-	// キーが放された場合に減速処理を行う
-	// const float deceleration = 0.05f;
-	// if (!input_->PushKey(DIK_W) && !input_->PushKey(DIK_S)) {
-	//	if (moveVel_.z > 0.0f) {
-	//		moveVel_.z = std::max(0.0f, moveVel_.z - deceleration);
-	//	} else if (moveVel_.z < 0.0f) {
-	//		moveVel_.z = std::min(0.0f, moveVel_.z + deceleration);
-	//	}
-	//}
-
-	// if (!input_->PushKey(DIK_A) && !input_->PushKey(DIK_D)) {
-	//	if (moveVel_.x > 0.0f) {
-	//		moveVel_.x = std::max(0.0f, moveVel_.x - deceleration);
-	//	} else if (moveVel_.x < 0.0f) {
-	//		moveVel_.x = std::min(0.0f, moveVel_.x + deceleration);
-	//	}
-	// }
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
@@ -577,17 +549,6 @@ bool Player::CheckCollisionWithClearBlock(CollisionMapInfo& info) {
 	}
 
 	return false;
-}
-
-void Player::takeDamage(int damage, bool isDefending, float defenseRate) {
-	int actualDamage = damage;
-	if (isDefending) {
-		actualDamage = static_cast<int>(damage * (1.0f - defenseRate));
-	}
-	hp_ -= actualDamage;
-	if (hp_ < 0) {
-		hp_ = 0;
-	}
 }
 
 bool Player::IsClear() const { return isClear_; }

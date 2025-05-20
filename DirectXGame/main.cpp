@@ -12,14 +12,12 @@
 #include "WinApp.h"
 // #include "gauge.h"
 // #include "character.h"
-#include "BattleScene.h"
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
 Tutorial* tutorialScene = nullptr;
 Clear* clearScene_ = nullptr;
 Over* overScene_ = nullptr;
-BattleScene* battleScene = nullptr;
 
 // シーン(型)
 enum class Scene {
@@ -92,8 +90,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion
 
 	// ゲームシーンの初期化
-	gameScene = new GameScene();
-	gameScene->Initialize();
+	/*gameScene = new GameScene();
+	gameScene->Initialize();*/
 
 	// タイトル
 	scene = Scene::kTitle;
@@ -116,10 +114,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// titleScene->Update();
 
-		// シーン切り替え
-		ChangeScene();
 		// 現在シーン更新
 		UpdateScene();
+		// シーン切り替え
+		ChangeScene();
 
 		// 軸表示の更新
 		axisIndicator->Update();
@@ -147,8 +145,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 各種解放
 	delete gameScene;
-
 	delete titleScene;
+	delete tutorialScene;
+	delete clearScene_;
+	delete overScene_;
 
 	// 3Dモデル解放
 	Model::StaticFinalize();
@@ -165,91 +165,82 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 void ChangeScene() {
 	switch (scene) {
 	case Scene::kTitle:
-		if (titleScene->IsFinished()) {
-			// シーン変更
-			scene = Scene::kTutorial;
-			// 旧シーンの開放
+		if (titleScene && titleScene->IsFinished()) {
+			if (!tutorialScene) {
+				tutorialScene = new Tutorial;
+				tutorialScene->Initialize();
+			}
 			delete titleScene;
 			titleScene = nullptr;
-			// 新シーンの生成と初期化
-			tutorialScene = new Tutorial;
-			tutorialScene->Initialize();
+			scene = Scene::kTutorial;
 		}
 		break;
 
 	case Scene::kTutorial:
-		if (tutorialScene->IsFinished()) {
-			// シーン変更
-			scene = Scene::kGame;
-			// 旧シーンの開放
+		if (tutorialScene && tutorialScene->IsFinished()) {
 			delete tutorialScene;
 			tutorialScene = nullptr;
-			// 新シーンの生成と初期化
-			gameScene = new GameScene;
-			gameScene->Initialize();
+
+			if (!gameScene) {
+				gameScene = new GameScene;
+				gameScene->Initialize();
+			}
+
+			scene = Scene::kGame;
 		}
 		break;
+
 	case Scene::kGame:
-		if (gameScene->ShouldStartBattle()) { // ← 戦闘フラグをGameSceneに用意する
-			scene = Scene::kBattle;
-			battleScene = new BattleScene;
-			battleScene->Initialize();
-		} else if (gameScene->IsFinished()) {
-			if (gameScene->IsClear() == true) {
-				// シーン変更
-				scene = Scene::kClear;
-				// 旧シーンの開放
-				delete gameScene;
-				gameScene = nullptr;
-				// 新シーンの生成と初期化
-				clearScene_ = new Clear;
-				clearScene_->Initialize();
-			} else {
-				// シーン変更
-				scene = Scene::kOver;
-				// 旧シーンの開放
-				delete gameScene;
-				gameScene = nullptr;
-				// 新シーンの生成と初期化
-				overScene_ = new Over;
-				overScene_->Initialize();
+		if (gameScene) {
+			if (gameScene->IsFinished()) {
+				if (gameScene->IsClear()) {
+					delete gameScene;
+					gameScene = nullptr;
+
+					if (!clearScene_) {
+						clearScene_ = new Clear;
+						clearScene_->Initialize();
+					}
+					scene = Scene::kClear;
+					return; // ← 追加：このフレームでの処理をここで終わらせる
+
+				} else {
+					delete gameScene;
+					gameScene = nullptr;
+
+					if (!overScene_) {
+						overScene_ = new Over;
+						overScene_->Initialize();
+					}
+					scene = Scene::kOver;
+				}
 			}
 		}
 		break;
-	case Scene::kBattle:
-		if (battleScene->IsFinished()) {
-			gameScene->ResetBattleTrigger();
-			scene = Scene::kGame;
-			delete battleScene;
-			battleScene = nullptr;
 
-			// GameSceneを再生成せず再開したい場合、gameScene は保持しておく
-			// 必要なら gameScene->ResumeAfterBattle() などを呼ぶ
-		}
+	case Scene::kBattle:
+
 		break;
+
 	case Scene::kClear:
-		if (clearScene_->IsFinished()) {
-			// シーン変更
-			scene = Scene::kTitle;
-			// 旧シーンの開放
+		if (clearScene_ && clearScene_->IsFinished()) {
 			delete clearScene_;
 			clearScene_ = nullptr;
-			// 新シーンの生成と初期化
+
 			titleScene = new TitleScene;
 			titleScene->Initialize();
+			scene = Scene::kTitle;
 		}
 		break;
-	
+
 	case Scene::kOver:
-		if (overScene_->IsFinished()) {
-			// シーン変更
-			scene = Scene::kTitle;
-			// 旧シーンの開放
+		if (overScene_ && overScene_->IsFinished()) {
 			delete overScene_;
 			overScene_ = nullptr;
-			// 新シーンの生成と初期化
+
 			titleScene = new TitleScene;
 			titleScene->Initialize();
+			scene = Scene::kTitle;
 		}
 		break;
 	}
@@ -258,46 +249,55 @@ void ChangeScene() {
 void UpdateScene() {
 	switch (scene) {
 	case Scene::kTitle:
-		titleScene->Update();
+		if (titleScene)
+			titleScene->Update();
 		break;
 	case Scene::kTutorial:
-		tutorialScene->Update();
+		if (tutorialScene)
+			tutorialScene->Update();
 		break;
 	case Scene::kGame:
-		gameScene->Update();
+		if (gameScene)
+			gameScene->Update();
 		break;
 	case Scene::kBattle:
-		battleScene->Update();
+
 		break;
 	case Scene::kClear:
-		clearScene_->Update();
+		if (clearScene_)
+			clearScene_->Update();
 		break;
 	case Scene::kOver:
-		overScene_->Update();
+		if (overScene_)
+			overScene_->Update();
+		break;
 	}
 }
 
 void DrawScene() {
 	switch (scene) {
 	case Scene::kTitle:
-		titleScene->Draw();
+		if (titleScene)
+			titleScene->Draw();
 		break;
 	case Scene::kTutorial:
-		tutorialScene->Draw();
+		if (tutorialScene)
+			tutorialScene->Draw();
 		break;
 	case Scene::kGame:
-		gameScene->Draw();
-
+		if (gameScene)
+			gameScene->Draw();
 		break;
 	case Scene::kBattle:
-		battleScene->Draw();
-		break;
-	case Scene::kClear:
-		clearScene_->Draw();
 
 		break;
+	case Scene::kClear:
+		if (clearScene_)
+			clearScene_->Draw();
+		break;
 	case Scene::kOver:
-		overScene_->Draw();
+		if (overScene_)
+			overScene_->Draw();
 		break;
 	}
 }

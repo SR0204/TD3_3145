@@ -52,13 +52,14 @@ GameScene::~GameScene() {
 
 	// 敵
 	delete model_;
+	delete enemy_;
 
+	// 制限時間
 	delete timer_;
 
 	// メモリ解放などがあればここに記述
-	delete gaugeSprite_;      // スプライトのメモリ解放（必要に応じて）
-	delete BackgroundSprite_; // スプライトのメモリ解放（必要に応じて）4
-	delete EnemySprite_;      // スプライトのメモリ解放（必要に応じて）
+	delete gaugeSprite_; // スプライトのメモリ解放（必要に応じて）
+	delete BackgroundSprite_;
 }
 
 void GameScene::Initialize() {
@@ -116,12 +117,6 @@ void GameScene::Initialize() {
 	SkySphere_ = new SkySphere();
 	SkySphere_->Initialize(modelSkySphere_, &viewProjection_);
 
-	// Enemy
-	// enemyTextureHandle_ = TextureManager::Load("uvChecker.png");
-	// LoadEnemyPopData();
-
-	// enemy_->Initialize(model_, enemyTextureHandle_, &viewProjection_, Vector3{14.0f, 2.0f, 3.0f});
-
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
 	viewProjection_.Initialize();
@@ -132,12 +127,26 @@ void GameScene::Initialize() {
 		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
-	timer_ = new Timer(120.0f); // 制限時間を変更できるよ
+	timer_ = new Timer(1000.0f); // 制限時間を変更できるよ
 	timer_->Initialize();
 
 	gaugeSprite_ = Sprite::Create(TextureManager::Load("./Resources/Gauge/gauge.png"), {50, 300});
-	// BackgroundSprite_ = Sprite::Create(TextureManager::Load("background.png"), {0, 0});
-	EnemySprite_ = Sprite::Create(TextureManager::Load("uvChecker.png"), {200, 200});
+	BackgroundSprite_ = Sprite::Create(TextureManager::Load("uvChecker.png"), {0, 0});
+
+	// 敵のマップ座標指定
+	Vector3 enemyPosition = mapChipFiled_->GetMapChipPositionByIndex(5, 3);
+	enemyPosition.y = 3;
+
+	// 敵の初期化処理
+	model_ = Model::CreateFromOBJ("Ghost");                                    // モデルの生成
+	enemyTextureHandle_ = TextureManager::Load("./Resources/Ghost/Ghost.png"); // テクスチャの読み込み
+
+	enemy_ = new Enemy();
+	enemy_->Initialize(enemyPosition, model_);
+	enemy_->SetMapChipField(mapChipFiled_);
+	enemy_->SetPlayerPosition(player_->GetWorldTransform().translation_);
+
+	shouldStartBattle_ = false;
 }
 
 void GameScene::Update() {
@@ -158,16 +167,6 @@ void GameScene::Update() {
 
 	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
-
-	// ImGuiで値を表示
-	/*ImGui::Begin("Camera");
-	if (ImGui::Button("OverHeadCamera")) {
-	    isOverHeadCameraActive_ = true;
-	}
-	if (ImGui::Button("PlayerCamera")) {
-	    isOverHeadCameraActive_ = false;
-	}
-	ImGui::End();*/
 
 	// ブロックの更新
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlockList_) {
@@ -193,13 +192,25 @@ void GameScene::Update() {
 	// プレイヤーの更新処理
 	player_->Update();
 
+	// 敵の更新処理
+	enemy_->Update();
+
+	Vector3 playerPos = player_->GetPosition();
+	Vector3 enemyPos = enemy_->GetWorldTransform().translation_;
+
+	float dx = playerPos.x - enemyPos.x;
+	float dz = playerPos.z - enemyPos.z;
+	float distance = std::sqrt(dx * dx + dz * dz);
+
+	if (distance < 1.0f) {
+		shouldStartBattle_ = true;
+	}
+
 	// 天球の更新
 	SkySphere_->Update();
 
 	// 制限時間の更新
 	timer_->Update();
-
-	CheckEnemyCollision(); // 敵と接触していないかチェック
 
 	// シーン切り替え
 	Player::CollisionMapInfo collisionMapInfo;
@@ -268,7 +279,9 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-	// BackgroundSprite_->Draw(); // 背景スプライトの描画
+	if (shouldStartBattle_ == true) {
+		BackgroundSprite_->Draw(); // 背景スプライトの描画
+	}
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -285,6 +298,9 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player_->Draw(viewProjection_); // プレイヤーの描画
+
+	// 敵の描画
+	enemy_->Draw(&viewProjection_);
 
 	// 天球の描画
 	SkySphere_->Draw();
@@ -306,11 +322,12 @@ void GameScene::Draw() {
 			mapClearModel_->Draw(*clearBlock, viewProjection_);
 		}
 	}
+	// if (shouldStartBattle_ == true) {
 
-	// gaugeSprite_->Draw();      // スプライトの描画
+	//	gaugeSprite_->Draw(); // スプライトの描画
+	//}
 
-	//EnemySprite_->Draw(); // 敵スプライトの描画
-	// 3Dオブジェクト描画後処理
+	//  3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
 
@@ -333,122 +350,8 @@ void GameScene::Draw() {
 
 void GameScene::SetClear() { isClear_ = true; }
 
-bool GameScene::ShouldStartBattle() const { return isBattleTriggered_; }
+// bool GameScene::ShouldStartBattle() const { return isBattleTriggered_; }
 
-void GameScene::CheckEnemyCollision() {
-	// Vector3 playerPos = player_->GetPosition();
-	// Vector3 playerSize = player_->GetSize(); // 一度だけ定義
-
-	// for (Enemy*enemy : enemies_) {
-	//	if (!enemy)
-	//		continue;
-
-	//	Vector3 enemyPos = enemy->GetWorldPosition();
-	//	Vector3 enemySize = enemy->GetSize();
-
-	//	bool isColliding = playerPos.x < enemyPos.x + enemySize.x && playerPos.x + playerSize.x > enemyPos.x && playerPos.y < enemyPos.y + enemySize.y && playerPos.y + playerSize.y > enemyPos.y &&
-	//	                   playerPos.z < enemyPos.z + enemySize.z && playerPos.z + playerSize.z > enemyPos.z;
-
-	//	if (isColliding) {
-	//		isBattleTriggered_ = true;
-	//		break;
-	//	}
-	//}
-}
-
-// void GameScene::ResetBattleTrigger() { isBattleTriggered_ = false; }
-
-// #pragma region 敵発生関連関数
-
-// void GameScene::SpawnEnemy(Vector3 position) {
-//	Enemy* newEnemy = new Enemy();
-//
-//	newEnemy->SetGameScene(this); // GameScene をセット
-//
-//	newEnemy->Initialize(model_, enemyTextureHandle_, &viewProjection_, position);
-//
-//	/*newEnemy->SetPlayer(player_);*/
-//
-//	enemies_.push_back(newEnemy);
-// }
-//
-// void GameScene::LoadEnemyPopData() {
-//	// ファイルを開く
-//	std::ifstream file;
-//	file.open("Resources/Enemy/enemyPop.csv");
-//	assert(file.is_open());
-//
-//	// ファイルの内容を文字列ストリームにコピー
-//	enemyPopCommands << file.rdbuf();
-//
-//	// ファイルを閉じる
-//	file.close();
-// }
-//
-// void GameScene::UpDateEnemyPopCommands() {
-//	// 待機処理
-//	if (waitFlag) {
-//		waitTimer--;
-//		if (waitTimer <= 0) {
-//			// 待機完了
-//			waitFlag = false;
-//		}
-//		return;
-//	}
-//
-//	// １行分の文字列を入れる変数
-//	std::string line;
-//
-//	// コマンド実行ループ
-//	while (getline(enemyPopCommands, line)) {
-//		// １行分の文字列をストリームに変換して解析しやすくする
-//		std::istringstream line_stream(line);
-//
-//		std::string word;
-//
-//		// ,区切りで行の先頭文字列を取得
-//		getline(line_stream, word, ',');
-//
-//		// "//"から始まる行はコメント
-//		if (word.find("//") == 0) {
-//			// コメント行を飛ばす
-//			continue;
-//		}
-//
-//		// POPコマンド
-//		if (word.find("POP") == 0) {
-//			// x座標
-//			getline(line_stream, word, ',');
-//			float x = (float)std::atof(word.c_str());
-//
-//			// y座標
-//			getline(line_stream, word, ',');
-//			float y = (float)std::atof(word.c_str());
-//
-//			// z座標
-//			getline(line_stream, word, ',');
-//			float z = (float)std::atof(word.c_str());
-//
-//			// 敵を発生させる
-//			SpawnEnemy(Vector3(x, y, z));
-//		}
-//
-//		// WAITコマンド
-//		else if (word.find("WAIT") == 0) {
-//			getline(line_stream, word, ',');
-//
-//			// 待ち時間
-//			int32_t waitTime = atoi(word.c_str());
-//
-//			// 待機開始
-//			waitFlag = true;
-//			waitTimer = waitTime;
-//
-//			// コマンドループを抜ける
-//			break;
-//		}
-//	}
-// }
 void GameScene::DrawTimeUI() {
 
 	if (timer_) {

@@ -62,20 +62,8 @@ public: // メンバ関数
 
 	void SetClear();
 
-	bool ShouldStartBattle() const;
-
-	void ResetBattleTrigger(){};
-
-	void CheckEnemyCollision();      // 敵との接触チェック用メソッド
-
-	//// 敵発生
-	//void SpawnEnemy(Vector3 position);
-
-	//// 敵発生データの読み込み
-	//void LoadEnemyPopData();
-
-	//// 敵発生コマンドの更新
-	//void UpDateEnemyPopCommands();
+	bool ShouldStartBattle() const { return shouldStartBattle_; }
+	void ResetBattleTrigger() { shouldStartBattle_ = false; }
 
 	// 時間表示用の関数
 	void DrawTimeUI();
@@ -102,12 +90,6 @@ private: // メンバ変数
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlockList_;
 	std::vector<std::vector<WorldTransform*>> worldTransformClearBlockList_;
-
-	// デバッグカメラ有効
-	bool isDebugCameraActive_ = false;
-
-	// デバッグカメラ
-	DebugCamera* debugCamera_ = nullptr;
 
 	// 天球
 	SkySphere* SkySphere_ = nullptr;
@@ -144,7 +126,6 @@ private: // メンバ変数
 	Model* model_ = nullptr;
 	uint32_t enemyTextureHandle_ = 0;
 	Enemy* enemy_ = nullptr;
-	std::list<Enemy*> enemies_;
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
@@ -169,5 +150,7 @@ private: // メンバ変数
 	Character player;                    // プレイヤーキャラクター
 	Character enemy;                     // 敵キャラクター
 	Sprite* BackgroundSprite_ = nullptr; // 背景スプライト
-	Sprite* EnemySprite_ = nullptr;      // 敵スプライト
+	                                     // Sprite* EnemySprite_ = nullptr;      // 敵スプライト
+
+	bool shouldStartBattle_;
 };
