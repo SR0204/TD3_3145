@@ -16,6 +16,7 @@ void BattleScene::Initialize() {
 
 	// 画面サイズに拡大（例: 1280x720のウィンドウを想定）
 	bgSprite_->SetSize({1280.0f, 720.0f});
+	bgSprite_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 }
 
 void BattleScene::Update() {
