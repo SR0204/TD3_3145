@@ -71,190 +71,11 @@ void Player::Update() {
 	leftStickUnitVector_ = {static_cast<float>(leftThumbX) / leftStickLange_, static_cast<float>(leftThumbY) / leftStickLange_};
 	rightStickUnitVector_ = {static_cast<float>(rightThumbX) / rightStickLange_, static_cast<float>(rightThumbY) / rightStickLange_};
 
-	/*ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.5f, 0.1f, 0.1f, 1.0f));
-	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.2f, 0.2f, 0.5f, 1.0f));*/
-
 	//// コントローラーの状態をImGuiで出力
 	// ImGui::Begin("Controller");
 	if (dwResult == ERROR_SUCCESS) {
-		//// コントローラーが接続出来ている時
-		// ImGui::Text("Connect");
-		//  ボタン入力を確認
-		/*if (ImGui::TreeNode("Button")) {
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_A) {
-		        ImGui::Text("A Buttun     [1]");
-		    } else {
-		        ImGui::Text("A Buttun     [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_B) {
-		        ImGui::Text("B Buttun     [1]");
-		    } else {
-		        ImGui::Text("B Buttun     [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_X) {
-		        ImGui::Text("X Buttun     [1]");
-		    } else {
-		        ImGui::Text("X Buttun     [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_Y) {
-		        ImGui::Text("Y Buttun     [1]");
-		    } else {
-		        ImGui::Text("Y Buttun     [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) {
-		        ImGui::Text("LS Buttun    [1]");
-		    } else {
-		        ImGui::Text("LS Buttun    [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) {
-		        ImGui::Text("RS Buttun    [1]");
-		    } else {
-		        ImGui::Text("RS Buttun    [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_START) {
-		        ImGui::Text("START Buttun [1]");
-		    } else {
-		        ImGui::Text("START Buttun [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) {
-		        ImGui::Text("UP Buttun    [1]");
-		    } else {
-		        ImGui::Text("UP Buttun    [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) {
-		        ImGui::Text("DOWN Buttun  [1]");
-		    } else {
-		        ImGui::Text("DOWN Buttun  [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) {
-		        ImGui::Text("RIGHT Buttun [1]");
-		    } else {
-		        ImGui::Text("RIGHT Buttun [0]");
-		    }
-		    if (state_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) {
-		        ImGui::Text("LEFT Buttun  [1]");
-		    } else {
-		        ImGui::Text("LEFT Buttun  [0]");
-		    }
-		    ImGui::TreePop();*/
+		
 	}
-	//	// スティック
-	//	if (ImGui::TreeNode("Stick")) {
-	//		ImGui::Text("LeftStick  [%6d,%6d]", leftThumbX, leftThumbY);
-	//		ImGui::Text("RightStick [%6d,%6d]", rightThumbX, rightThumbY);
-	//		ImGui::Text("LeftStickLange [%f]", leftStickLange_);
-	//		ImGui::Text("LeftUnitVector[%f,%f]", leftStickUnitVector_.x, leftStickUnitVector_.y);
-	//		ImGui::Text("LeftStickLange [%f]", rightStickLange_);
-	//		ImGui::Text("RightUnitVector[%f,%f]", rightStickUnitVector_.x, rightStickUnitVector_.y);
-	//		ImGui::Text("DeadZone Max [32767]");
-	//		ImGui::SliderInt("DeadZone", &deadZone_, 0, 32767);
-	//		if (ImGui::TreeNode("Set")) {
-	//			if (ImGui::Button("0", {50, 20})) {
-	//				deadZone_ = 0;
-	//			}
-	//			if (ImGui::Button("2000", {50, 20})) {
-	//				deadZone_ = 2000;
-	//			}
-	//			if (ImGui::Button("4000", {50, 20})) {
-	//				deadZone_ = 4000;
-	//			}
-	//			if (ImGui::Button("6000", {50, 20})) {
-	//				deadZone_ = 6000;
-	//			}
-	//			if (ImGui::Button("8000", {50, 20})) {
-	//				deadZone_ = 8000;
-	//			}
-	//			if (ImGui::Button("10000", {50, 20})) {
-	//				deadZone_ = 10000;
-	//			}
-	//			if (ImGui::Button("12000", {50, 20})) {
-	//				deadZone_ = 12000;
-	//			}
-	//			if (ImGui::Button("14000", {50, 20})) {
-	//				deadZone_ = 14000;
-	//			}
-	//			if (ImGui::Button("16000", {50, 20})) {
-	//				deadZone_ = 16000;
-	//			}
-	//			if (ImGui::Button("18000", {50, 20})) {
-	//				deadZone_ = 18000;
-	//			}
-	//			if (ImGui::Button("18000", {50, 20})) {
-	//				deadZone_ = 18000;
-	//			}
-	//			if (ImGui::Button("20000", {50, 20})) {
-	//				deadZone_ = 20000;
-	//			}
-	//			ImGui::TreePop();
-	//		}
-	//		ImGui::TreePop();
-	//	}
-	//	// トリガー
-	//	if (ImGui::TreeNode("Trigger")) {
-	//		ImGui::Text("LeftTriger [%3d]", leftTrigger);
-	//		ImGui::Text("RightTriger[%3d]", rightTrigger);
-	//		ImGui::Text("TriggerDeadZone Max[255]");
-	//		ImGui::SliderInt("TriggerDeadZone", &trigerDeadZone_, 0, 255);
-	//		if (ImGui::TreeNode("Set")) {
-	//			if (ImGui::Button("0", {50, 20})) {
-	//				trigerDeadZone_ = 0;
-	//			}
-	//			if (ImGui::Button("32", {50, 20})) {
-	//				trigerDeadZone_ = 32;
-	//			}
-	//			if (ImGui::Button("64", {50, 20})) {
-	//				trigerDeadZone_ = 64;
-	//			}
-	//			if (ImGui::Button("96", {50, 20})) {
-	//				trigerDeadZone_ = 96;
-	//			}
-	//			if (ImGui::Button("128", {50, 20})) {
-	//				trigerDeadZone_ = 128;
-	//			}
-	//			if (ImGui::Button("160", {50, 20})) {
-	//				trigerDeadZone_ = 160;
-	//			}
-	//			if (ImGui::Button("192", {50, 20})) {
-	//				trigerDeadZone_ = 192;
-	//			}
-	//			if (ImGui::Button("224", {50, 20})) {
-	//				trigerDeadZone_ = 224;
-	//			}
-	//			if (ImGui::Button("255", {50, 20})) {
-	//				trigerDeadZone_ = 255;
-	//			}
-	//			ImGui::TreePop();
-	//		}
-	//		ImGui::TreePop();
-	//	}
-	//	// 振動
-	//	if (ImGui::TreeNode("Vibration")) {
-	//		ImGui::Text("Vibration Max [65535]");
-	//		ImGui::SliderFloat("VibrationX", &vibrationVal_.x, 0.0f, 65535.0f);
-	//		ImGui::SliderFloat("VibrationY", &vibrationVal_.y, 0.0f, 65535.0f);
-	//		ImGui::TreePop();
-	//	}
-	//	// リセット
-	//	if (ImGui::TreeNode("Reset")) {
-	//		ImGui::Text("DeadZone[8000]");
-	//		ImGui::Text("TrigerDeadZone[30]");
-	//		ImGui::Text("Vibration[0,0]");
-	//		if (ImGui::Button("Reset")) {
-	//			deadZone_ = 8000;
-	//			trigerDeadZone_ = 30;
-	//			vibrationVal_ = {};
-	//		}
-	//		ImGui::TreePop();
-	//	}
-	//} else {
-	//	// コントローラーが接続出来ていない時
-	//	ImGui::Text("Unconnect");
-	//}
-
-	// ImGui::End();
-
-	// ImGui::PopStyleColor();
-	// ImGui::PopStyleColor();
 
 	/// ーーーここまでーーー
 
@@ -271,6 +92,8 @@ void Player::Update() {
 	if (isClear_) {
 		return;
 	}
+
+	moveVel_ = {0.1f, 0.0f, 0.1f};
 
 	// 衝突判定
 	if (CheckMapCollision(collisionMapInfo) || CheckCollisionWithCSVMap(collisionMapInfo)) {
@@ -352,7 +175,7 @@ void Player::Update() {
 	if (!CheckMapCollision(collisionMapInfo) && !CheckCollisionWithCSVMap(collisionMapInfo)) {
 		worldTransform_.translation_ += nextMove;
 	} else {
-		moveVel_ = {0.0f, 0.0f, 0.0f};
+		//moveVel_ = {0.0f, 0.0f, 0.0f};
 	}
 
 	// まずクリアブロック判定
