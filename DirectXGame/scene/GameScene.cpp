@@ -130,18 +130,18 @@ void GameScene::Initialize() {
 	timer_->Initialize();
 
 	gaugeSprite_ = Sprite::Create(TextureManager::Load("./Resources/Gauge/gauge.png"), {50, 300});
-	BackgroundSprite_ = Sprite::Create(TextureManager::Load("uvChecker.png"), {0, 0});
+	BackgroundSprite_ = Sprite::Create(TextureManager::Load("./Resources/background.png"), {0, 0});
 
 	// 敵のマップ座標指定
 	Vector3 enemyPosition = mapChipFiled_->GetMapChipPositionByIndex(5, 3);
-	enemyPosition.y = 3;
+	enemyPosition.y = 2;
 
 	// 敵の初期化処理
-	model_ = Model::CreateFromOBJ("Ghost");                                    // モデルの生成
-	enemyTextureHandle_ = TextureManager::Load("./Resources/Ghost/Ghost.png"); // テクスチャの読み込み
+	// model_ = Model::CreateFromOBJ("Ghost");                                    // モデルの生成
+	// enemyTextureHandle_ = TextureManager::Load("./Resources/Ghost/Ghost.png"); // テクスチャの読み込み
 
 	enemy_ = new Enemy();
-	enemy_->Initialize(enemyPosition, model_);
+	enemy_->Initialize(enemyPosition);
 	enemy_->SetMapChipField(mapChipFiled_);
 	enemy_->SetPlayerPosition(player_->GetWorldTransform().translation_);
 
@@ -192,7 +192,13 @@ void GameScene::Update() {
 	player_->Update();
 
 	// 敵の更新処理
+	enemy_->SetPlayerPosition(player_->GetPosition());
 	enemy_->Update();
+
+	if (enemy_->IsRequestingBattle()) {
+		requestBattle_ = true;
+		isFinished_ = true;
+	}
 
 	Vector3 playerPos = player_->GetPosition();
 	Vector3 enemyPos = enemy_->GetWorldTransform().translation_;
@@ -358,6 +364,10 @@ void GameScene::DrawTimeUI() {
 	}
 }
 #pragma endregion
+
+bool GameScene::IsBattleRequested() const { return requestBattle_; }
+
+bool GameScene::IsFinished() const { return isFinished_; }
 
 void GameScene::GenerateBlocks() {
 	worldTransformBlockList_.resize(kNumBlockVirtical);

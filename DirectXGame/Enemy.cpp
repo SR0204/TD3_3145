@@ -8,12 +8,14 @@
 
 Enemy::~Enemy() { delete model_; }
 
-void Enemy::Initialize(const Vector3 position, Model* model) {
-	worldTransform_.Initialize(); // ワールド変換データの初期化
-
-	this->model_ = model;
+void Enemy::Initialize(const Vector3 position) {
+	worldTransform_.Initialize();                                         // ワールド変換データの初期化
+	model_ = Model::CreateFromOBJ("Ghost");                               // モデルの生成
+	textureHandle_ = TextureManager::Load("./Resources/Ghost/Ghost.png"); // テクスチャの読み込み
 
 	worldTransform_.translation_ = position; // 初期配置
+
+	chaseTimer_ = 0.0f;
 
 	// 行き先ポイントの設定
 	pointA_ = position;
@@ -96,10 +98,19 @@ void Enemy::Update() {
 			}
 		}
 	}
+
+	if (CheckCollisionWithPlayer()) {
+		requestBattle_ = true; // バトル開始をリクエスト
+
+		return; // これ以降の処理は不要になる
+	}
+
 	worldTransform_.UpdateMatrix(true);
 }
 
 void Enemy::Draw(ViewProjection* viewProjection) { model_->Draw(worldTransform_, *viewProjection, textureHandle_); }
+
+void Enemy::SetPlayerPosition(const Vector3& playerPos) { playerPosition_ = playerPos; }
 
 bool Enemy::CanSeePlayer() {
 	if (!mapChipField_)
@@ -143,4 +154,14 @@ bool Enemy::CanSeePlayer() {
 	}
 
 	return true;
+}
+
+bool Enemy::CheckCollisionWithPlayer() {
+	Vector3 pos = worldTransform_.translation_;
+	float dx = playerPosition_.x - pos.x;
+	float dz = playerPosition_.z - pos.z;
+	float distance = std::sqrt(dx * dx + dz * dz);
+
+	float collisionRadius = 1.0f; // プレイヤーと敵の当たり判定の合計半径（調整してね）
+	return distance < collisionRadius;
 }

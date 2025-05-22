@@ -2,7 +2,6 @@
 
 #include "Model.h"
 #include "WorldTransform.h"
-#include<cmath>
 
 class MapChipField;
 
@@ -10,7 +9,7 @@ class Enemy {
 public:
 	~Enemy();
 
-	void Initialize(const Vector3 position, Model* model);
+	void Initialize(const Vector3 position);
 
 	void Update();
 
@@ -22,13 +21,17 @@ public:
 
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
-	void SetPlayerPosition(const Vector3& position) { playerPosition_ = position; }
+	void SetPlayerPosition(const Vector3& playerPos);
+
+	bool IsRequestingBattle() const { return requestBattle_; }
+	void ResetBattleRequest() { requestBattle_ = false; }
 
 private:
 	bool CanSeePlayer();
 
-	bool CheckCollisionWithPlayer(const Vector3& playerPos, float collisionRadius);
+	bool CheckCollisionWithPlayer();
 
+	bool requestBattle_ = false; // バトルを開始したいかどうか
 private:
 	// ワールド変形
 	WorldTransform worldTransform_;
@@ -51,5 +54,5 @@ private:
 	bool isChasing_ = false;    // 追跡中フラグ
 	float chaseTimer_ = 0.0f;   // 追跡時間カウント
 	float maxChaseTime_ = 1.0f; // 追跡最大秒数
-	float sightRange_ = 10.0f;   // 視界範囲（距離）
+	float sightRange_ = 5.0f;   // 視界範囲（距離）
 };

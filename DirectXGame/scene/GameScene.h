@@ -56,8 +56,6 @@ public: // メンバ関数
 
 	void GenerateClearBlocks();
 
-	bool IsFinished() const { return isFinished; }
-
 	bool IsClear() const { return isClear_; }
 
 	void SetClear();
@@ -70,6 +68,9 @@ public: // メンバ関数
 
 	void SetClearFlag(bool flag) { isClear_ = flag; }
 	void SetFinishFlag(bool flag) { isFinished = flag; }
+
+	bool IsBattleRequested() const;
+	bool IsFinished() const;
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -153,4 +154,6 @@ private: // メンバ変数
 	                                     // Sprite* EnemySprite_ = nullptr;      // 敵スプライト
 
 	bool shouldStartBattle_;
+	bool requestBattle_ = false;
+	bool isFinished_ = false;
 };

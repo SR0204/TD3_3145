@@ -12,12 +12,14 @@
 #include "WinApp.h"
 // #include "gauge.h"
 // #include "character.h"
+#include "BattleScene.h"
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
 Tutorial* tutorialScene = nullptr;
 Clear* clearScene_ = nullptr;
 Over* overScene_ = nullptr;
+BattleScene* battleScene = nullptr;
 
 // シーン(型)
 enum class Scene {
@@ -193,6 +195,17 @@ void ChangeScene() {
 	case Scene::kGame:
 		if (gameScene) {
 			if (gameScene->IsFinished()) {
+
+				if (gameScene->IsBattleRequested()) {
+					// バトルへ移行
+					if (!battleScene) {
+						battleScene = new BattleScene;
+						battleScene->Initialize();
+					}
+					scene = Scene::kBattle;
+					return;
+				}
+
 				if (gameScene->IsClear()) {
 					delete gameScene;
 					gameScene = nullptr;
@@ -219,7 +232,15 @@ void ChangeScene() {
 		break;
 
 	case Scene::kBattle:
+		if (battleScene && battleScene->IsFinished()) {
+			delete battleScene;
+			battleScene = nullptr;
 
+			// バトル終了後にフィールドに戻る例
+			gameScene = new GameScene;
+			gameScene->Initialize();
+			scene = Scene::kGame;
+		}
 		break;
 
 	case Scene::kClear:
@@ -261,7 +282,9 @@ void UpdateScene() {
 			gameScene->Update();
 		break;
 	case Scene::kBattle:
-
+		if (battleScene) {
+			battleScene->Update();
+		}
 		break;
 	case Scene::kClear:
 		if (clearScene_)
@@ -289,7 +312,9 @@ void DrawScene() {
 			gameScene->Draw();
 		break;
 	case Scene::kBattle:
-
+		if (battleScene) {
+			battleScene->Draw();
+		}
 		break;
 	case Scene::kClear:
 		if (clearScene_)
