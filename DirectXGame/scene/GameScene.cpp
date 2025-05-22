@@ -51,7 +51,6 @@ GameScene::~GameScene() {
 	delete overHeadCamera_;
 
 	// 敵
-	delete model_;
 	delete enemy_;
 
 	// 制限時間
