@@ -2,7 +2,7 @@
 #include "AxisIndicator.h"
 #include "MapChipField.h"
 #include "TextureManager.h"
-// #include "imgui.h"
+
 #include "Enemy.h"
 #include "Player.h"
 #include "Timer.h"
@@ -354,8 +354,6 @@ void GameScene::Draw() {
 }
 
 void GameScene::SetClear() { isClear_ = true; }
-
-// bool GameScene::ShouldStartBattle() const { return isBattleTriggered_; }
 
 void GameScene::DrawTimeUI() {
 

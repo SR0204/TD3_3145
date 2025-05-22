@@ -1,6 +1,6 @@
 #define NOMINMAX
 #include "Player.h"
-// #include "ImGui.h"
+
 #include "MathUtilityForText.h"
 #include "TextureManager.h"
 #define _USE_MATH_DEFINES
@@ -72,7 +72,7 @@ void Player::Update() {
 	rightStickUnitVector_ = {static_cast<float>(rightThumbX) / rightStickLange_, static_cast<float>(rightThumbY) / rightStickLange_};
 
 	//// コントローラーの状態をImGuiで出力
-	// ImGui::Begin("Controller");
+	
 	if (dwResult == ERROR_SUCCESS) {
 		
 	}
