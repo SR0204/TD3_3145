@@ -20,6 +20,7 @@
 class Player;
 class Timer;
 class Enemy;
+class BattleScene;
 
 /// <summary>
 /// ゲームシーン
@@ -67,10 +68,12 @@ public: // メンバ関数
 	void DrawTimeUI();
 
 	void SetClearFlag(bool flag) { isClear_ = flag; }
-	void SetFinishFlag(bool flag) { isFinished = flag; }
+	void SetFinishFlag(bool flag) { isFinished_ = flag; }
 
 	bool IsBattleRequested() const;
 	bool IsFinished() const;
+
+	void ClearBattleRequest();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -112,9 +115,6 @@ private: // メンバ変数
 
 	bool isOverHeadCameraActive_; // 俯瞰カメラのアクティブ
 
-	// 終了フラグ
-	bool isFinished = false;
-
 	bool isClear_ = false;
 
 	// 音
@@ -152,8 +152,11 @@ private: // メンバ変数
 	Character enemy;                     // 敵キャラクター
 	Sprite* BackgroundSprite_ = nullptr; // 背景スプライト
 	                                     // Sprite* EnemySprite_ = nullptr;      // 敵スプライト
-
 	bool shouldStartBattle_;
 	bool requestBattle_ = false;
 	bool isFinished_ = false;
+
+	//バトルシーン
+	BattleScene* battleScene_ = nullptr;
+	bool hasBattled_ = false; // もう戦ったかどうか
 };

@@ -23,8 +23,13 @@ public:
 
 	void SetPlayerPosition(const Vector3& playerPos);
 
-	bool IsRequestingBattle() const { return requestBattle_; }
 	void ResetBattleRequest() { requestBattle_ = false; }
+
+	void SetActive(bool active) { isActive_ = active; }
+	bool IsActive() const { return isActive_; }
+	bool IsRequestingBattle() const { return isActive_ && requestBattle_; }
+
+	void SetRequestBattle(bool flag);
 
 private:
 	bool CanSeePlayer();
@@ -32,6 +37,9 @@ private:
 	bool CheckCollisionWithPlayer();
 
 	bool requestBattle_ = false; // バトルを開始したいかどうか
+
+	bool isActive_ = true;
+
 private:
 	// ワールド変形
 	WorldTransform worldTransform_;
@@ -48,7 +56,7 @@ private:
 
 	float elapsedTime_ = 0.0f;  // 経過時間
 	float moveInterval_ = 3.0f; // 移動間隔（秒）
-	float moveSpeed_ = 0.05f;   // 1フレームごとの移動速度
+	float moveSpeed_ = 0.01f;   // 1フレームごとの移動速度
 
 	Vector3 playerPosition_;    // プレイヤーの位置（外から渡す）
 	bool isChasing_ = false;    // 追跡中フラグ

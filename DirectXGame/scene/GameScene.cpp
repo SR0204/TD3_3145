@@ -3,6 +3,7 @@
 #include "MapChipField.h"
 #include "TextureManager.h"
 
+#include "BattleScene.h"
 #include "Enemy.h"
 #include "Player.h"
 #include "Timer.h"
@@ -10,8 +11,6 @@
 #include <fstream>
 #include <iostream>
 #include <list>
-
-const int ENEMY_ATTACK_INTERVAL = 90; // 敵の攻撃間隔（1.5秒）
 
 GameScene::GameScene()
     : timer_(nullptr), gameManager(), attackGauge(100), defenseGauge(100), player(100), enemy(100)
@@ -59,6 +58,9 @@ GameScene::~GameScene() {
 	// メモリ解放などがあればここに記述
 	delete gaugeSprite_; // スプライトのメモリ解放（必要に応じて）
 	delete BackgroundSprite_;
+
+	// バトルシーン
+	delete battleScene_;
 }
 
 void GameScene::Initialize() {
@@ -89,7 +91,7 @@ void GameScene::Initialize() {
 	mapClearModel_ = Model::CreateFromOBJ("Goal", true);
 
 	isClear_ = false;
-	isFinished = false;
+	isFinished_ = false;
 
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
@@ -118,7 +120,7 @@ void GameScene::Initialize() {
 
 	// ビュープロジェクションの初期化
 	viewProjection_.farZ = 700;
-	viewProjection_.Initialize();
+	viewProjection_.TransferMatrix();
 
 	// 制限時間の初期化
 	// 数字テクスチャのロード
@@ -126,10 +128,11 @@ void GameScene::Initialize() {
 		std::string path = "Numbers/" + std::to_string(i) + ".png";
 		numberTextures_[i] = TextureManager::Load(path);
 	}
-	timer_ = new Timer(1000.0f); // 制限時間を変更できるよ
+
+	constexpr float kTimeLimit = 1000.0f;
+	timer_ = new Timer(kTimeLimit); // 制限時間を変更できるよ
 	timer_->Initialize();
 
-	gaugeSprite_ = Sprite::Create(TextureManager::Load("./Resources/Gauge/gauge.png"), {50, 300});
 	BackgroundSprite_ = Sprite::Create(TextureManager::Load("./Resources/background.png"), {0, 0});
 
 	// 敵のマップ座標指定
@@ -146,128 +149,97 @@ void GameScene::Initialize() {
 	enemy_->SetPlayerPosition(player_->GetWorldTransform().translation_);
 
 	shouldStartBattle_ = false;
+	requestBattle_ = false;
+
+	// バトルシーン初期化
+	battleScene_ = new BattleScene();
+	battleScene_->Initialize();
 }
 
 void GameScene::Update() {
 
+	// バトル状態ならバトル更新だけ行って即 return
+	if (shouldStartBattle_) {
+		battleScene_->Update();
+		// バトルの勝敗に応じた処理
+		BattleScene::BattleResult result = battleScene_->GetResult();
+		if (result == BattleScene::BattleResult::PlayerLose) {
+			isFinished_ = true;          // ゲームオーバー
+			audio_->StopWave(playMusic); // 必要ならBGM停止
+		} else if (result == BattleScene::BattleResult::PlayerWin) {
+			// 勝利時の処理（例：敵リスポーン禁止、次のイベントへ進むなど）
+			printf("バトル勝利！通常シーンに戻ります。\n");
+			shouldStartBattle_ = false;
+			requestBattle_ = false;
+			hasBattled_ = true;
+			enemy_->SetActive(false);
+			enemy_->SetRequestBattle(false);
+		}
+		return;
+	}
+
+	// ===== 通常時のカメラ更新処理 =====
 	if (isOverHeadCameraActive_ == false) {
-		// プレイヤーのカメラの更新
 		playerCamera_->Update();
-		// ビュープロジェクションにプレイヤーのカメラを登録する
 		viewProjection_.matView = playerCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = playerCamera_->GetViewProjection().matProjection;
-	} else if (isOverHeadCameraActive_ == true) {
-
+	} else {
 		overHeadCamera_->Update();
-
 		viewProjection_.matView = overHeadCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = overHeadCamera_->GetViewProjection().matProjection;
 	}
 
-	// ビュープロジェクション行列の転送
 	viewProjection_.TransferMatrix();
 
-	// ブロックの更新
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlockList_) {
-
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
-			if (!worldTransformBlock)
-				continue;
-			worldTransformBlock->UpdateMatrixBlock();
+	// ブロックの更新処理
+	for (auto& blockLine : worldTransformBlockList_) {
+		for (auto* block : blockLine) {
+			if (block)
+				block->UpdateMatrixBlock();
+		}
+	}
+	for (auto& clearBlockLine : worldTransformClearBlockList_) {
+		for (auto* block : clearBlockLine) {
+			if (block)
+				block->UpdateMatrixBlock();
 		}
 	}
 
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformClearBlockList_) {
-
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
-			if (!worldTransformBlock)
-				continue;
-			worldTransformBlock->UpdateMatrixBlock();
-		}
-	}
-
-	// プレイヤーの更新処理
+	// ===== 通常のゲームロジック更新 =====
 	player_->Update();
-
-	// 敵の更新処理
 	enemy_->SetPlayerPosition(player_->GetPosition());
 	enemy_->Update();
 
-	if (enemy_->IsRequestingBattle()) {
+	if (enemy_->IsActive() && enemy_->IsRequestingBattle()) {
 		requestBattle_ = true;
 		isFinished_ = true;
 	}
-
 	Vector3 playerPos = player_->GetPosition();
 	Vector3 enemyPos = enemy_->GetWorldTransform().translation_;
-
 	float dx = playerPos.x - enemyPos.x;
 	float dz = playerPos.z - enemyPos.z;
 	float distance = std::sqrt(dx * dx + dz * dz);
 
-	if (distance < 1.0f) {
+	if (enemy_->IsActive() && !hasBattled_ && !timer_->IsTimeOver() && distance < 1.0f) {
 		shouldStartBattle_ = true;
+		return;
 	}
 
-	// 天球の更新
 	SkySphere_->Update();
-
-	// 制限時間の更新
 	timer_->Update();
 
-	// シーン切り替え
 	Player::CollisionMapInfo collisionMapInfo;
 	if (player_->CheckCollisionWithClearBlock(collisionMapInfo)) {
 		if (player_->IsClear()) {
-			SetClear();             // 状態セット
-			player_->OnGameClear(); // 演出だけ担当
+			SetClear();
+			player_->OnGameClear();
 			audio_->StopWave(playMusic);
 		}
 	}
 
-	if (player_->GetHp() <= 0) {
-		isFinished = true;
-
+	if (player_->GetHp() <= 0 || timer_->IsTimeOver()) {
+		isFinished_ = true;
 		audio_->StopWave(playMusic);
-	}
-
-	if (timer_->IsTimeOver()) {
-		isFinished = true;
-
-		audio_->StopWave(playMusic);
-	}
-
-	// ゲージ更新
-	attackGauge.update();
-	defenseGauge.update();
-
-	if (input_->PushKey(DIK_SPACE)) {
-		float attackPower = attackGauge.getRate();       // ゲージの割合を攻撃力として使用
-		int damage = static_cast<int>(attackPower * 20); // 20を基準ダメージとする
-		enemy.takeDamage(damage, false, 0.0f);           // 敵に攻撃（防御なし）
-
-		// デバッグ用出力
-		printf("プレイヤーが攻撃！ ダメージ: %d, 敵HP: %d\n", damage, enemy.getHp());
-	} // 修正後のattack関数を呼び出す
-
-	// 防御ボタン（例: Dキー）
-	if (input_->PushKey(DIK_D)) {
-		isDefending = true;
-	} else {
-		isDefending = false;
-	}
-	// 敵の攻撃処理
-	enemyAttackTimer++;
-	if (enemyAttackTimer >= ENEMY_ATTACK_INTERVAL) {
-		enemyAttackTimer = 0;                       // タイマーリセット
-		int enemyDamage = 15;                       // 敵の基本攻撃力
-		float defenseRate = defenseGauge.getRate(); // 防御ゲージの割合を軽減率に使用
-		player.takeDamage(enemyDamage, isDefending, defenseRate);
-
-		// デバッグ用出力
-		printf("敵が攻撃！ 受けたダメージ: %d, プレイヤーHP: %d\n", isDefending ? static_cast<int>(enemyDamage * (1.0f - defenseRate)) : enemyDamage, player.getHp());
 	}
 }
 
@@ -284,9 +256,9 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-	if (shouldStartBattle_ == true) {
-		BackgroundSprite_->Draw(); // 背景スプライトの描画
-	}
+	// if (shouldStartBattle_ == true) {
+	//	BackgroundSprite_->Draw(); // 背景スプライトの描画
+	// }
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
@@ -327,10 +299,11 @@ void GameScene::Draw() {
 			mapClearModel_->Draw(*clearBlock, viewProjection_);
 		}
 	}
-	// if (shouldStartBattle_ == true) {
 
-	//	gaugeSprite_->Draw(); // スプライトの描画
-	//}
+	if (shouldStartBattle_) {
+		battleScene_->Draw();
+		return;
+	}
 
 	//  3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -366,6 +339,8 @@ void GameScene::DrawTimeUI() {
 bool GameScene::IsBattleRequested() const { return requestBattle_; }
 
 bool GameScene::IsFinished() const { return isFinished_; }
+
+void GameScene::ClearBattleRequest() { requestBattle_ = false; }
 
 void GameScene::GenerateBlocks() {
 	worldTransformBlockList_.resize(kNumBlockVirtical);

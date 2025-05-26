@@ -91,10 +91,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	primitiveDrawer->Initialize();
 #pragma endregion
 
-	// ゲームシーンの初期化
-	/*gameScene = new GameScene();
-	gameScene->Initialize();*/
-
 	// タイトル
 	scene = Scene::kTitle;
 	titleScene = new TitleScene;
@@ -172,6 +168,13 @@ void ChangeScene() {
 				tutorialScene = new Tutorial;
 				tutorialScene->Initialize();
 			}
+
+			// ★ ここで GameScene を再生成する！
+			if (!gameScene) {
+				gameScene = new GameScene;
+				gameScene->Initialize();
+			}
+
 			delete titleScene;
 			titleScene = nullptr;
 			scene = Scene::kTutorial;
@@ -183,6 +186,7 @@ void ChangeScene() {
 			delete tutorialScene;
 			tutorialScene = nullptr;
 
+			// 念のためもう一回チェック
 			if (!gameScene) {
 				gameScene = new GameScene;
 				gameScene->Initialize();
@@ -233,13 +237,30 @@ void ChangeScene() {
 
 	case Scene::kBattle:
 		if (battleScene && battleScene->IsFinished()) {
+			BattleScene::BattleResult result = battleScene->GetResult();
+
+			battleScene->Finalize();
 			delete battleScene;
 			battleScene = nullptr;
 
-			// バトル終了後にフィールドに戻る例
-			gameScene = new GameScene;
-			gameScene->Initialize();
-			scene = Scene::kGame;
+			if (result == BattleScene::BattleResult::PlayerWin) {
+				if (!gameScene) {
+					gameScene = new GameScene;
+					gameScene->Initialize();
+				}
+
+				// ★ここでバトルリクエストを解除する
+				gameScene->ClearBattleRequest();
+
+				scene = Scene::kGame;
+
+			} else if (result == BattleScene::BattleResult::PlayerLose) {
+				if (!overScene_) {
+					overScene_ = new Over;
+					overScene_->Initialize();
+				}
+				scene = Scene::kOver;
+			}
 		}
 		break;
 

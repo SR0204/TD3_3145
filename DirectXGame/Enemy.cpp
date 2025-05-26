@@ -24,6 +24,11 @@ void Enemy::Initialize(const Vector3 position) {
 }
 
 void Enemy::Update() {
+
+	if (!isActive_) {
+		return; // 無効なら何もしない
+	}
+
 	const float deltaTime = 1.0f / 60.0f;
 	Vector3& pos = worldTransform_.translation_;
 
@@ -112,6 +117,8 @@ void Enemy::Draw(ViewProjection* viewProjection) { model_->Draw(worldTransform_,
 
 void Enemy::SetPlayerPosition(const Vector3& playerPos) { playerPosition_ = playerPos; }
 
+void Enemy::SetRequestBattle(bool flag) { requestBattle_ = flag; }
+
 bool Enemy::CanSeePlayer() {
 	if (!mapChipField_)
 		return false;
@@ -162,6 +169,6 @@ bool Enemy::CheckCollisionWithPlayer() {
 	float dz = playerPosition_.z - pos.z;
 	float distance = std::sqrt(dx * dx + dz * dz);
 
-	float collisionRadius = 1.0f; // プレイヤーと敵の当たり判定の合計半径（調整してね）
+	float collisionRadius = 2.0f; // プレイヤーと敵の当たり判定の合計半径（調整してね）
 	return distance < collisionRadius;
 }
