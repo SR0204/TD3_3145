@@ -129,7 +129,7 @@ void GameScene::Initialize() {
 		numberTextures_[i] = TextureManager::Load(path);
 	}
 
-	constexpr float kTimeLimit = 1000.0f;
+	constexpr float kTimeLimit = 180.0f;
 	timer_ = new Timer(kTimeLimit); // 制限時間を変更できるよ
 	timer_->Initialize();
 
@@ -150,32 +150,35 @@ void GameScene::Initialize() {
 
 	shouldStartBattle_ = false;
 	requestBattle_ = false;
-
-	// バトルシーン初期化
-	battleScene_ = new BattleScene();
-	battleScene_->Initialize();
 }
 
 void GameScene::Update() {
 
 	// バトル状態ならバトル更新だけ行って即 return
-	if (shouldStartBattle_) {
+	if (shouldStartBattle_ && battleScene_) {
 		battleScene_->Update();
-		// バトルの勝敗に応じた処理
-		BattleScene::BattleResult result = battleScene_->GetResult();
-		if (result == BattleScene::BattleResult::PlayerLose) {
-			isFinished_ = true;          // ゲームオーバー
-			audio_->StopWave(playMusic); // 必要ならBGM停止
-		} else if (result == BattleScene::BattleResult::PlayerWin) {
-			// 勝利時の処理（例：敵リスポーン禁止、次のイベントへ進むなど）
-			printf("バトル勝利！通常シーンに戻ります。\n");
-			shouldStartBattle_ = false;
-			requestBattle_ = false;
-			hasBattled_ = true;
-			enemy_->SetActive(false);
-			enemy_->SetRequestBattle(false);
+
+		if (battleScene_->IsFinished()) {
+			BattleScene::BattleResult result = battleScene_->GetResult();
+
+			if (result == BattleScene::BattleResult::PlayerLose) {
+				isFinished_ = true;
+				audio_->StopWave(playMusic);
+				return; // ゲーム終了状態なので return
+			} else if (result == BattleScene::BattleResult::PlayerWin) {
+				delete battleScene_;
+				battleScene_ = nullptr;
+				shouldStartBattle_ = false;
+				requestBattle_ = false;
+				hasBattled_ = true;
+				enemy_->SetActive(false);
+				enemy_->SetRequestBattle(false);
+				ResumeAffterBattle(); // 状態復帰
+				                      // ※ここでは return しない
+			}
+		} else {
+			return; // バトルがまだ続いている
 		}
-		return;
 	}
 
 	// ===== 通常時のカメラ更新処理 =====
@@ -210,7 +213,7 @@ void GameScene::Update() {
 	enemy_->SetPlayerPosition(player_->GetPosition());
 	enemy_->Update();
 
-	if (enemy_->IsActive() && enemy_->IsRequestingBattle()) {
+	if (!hasBattled_ && enemy_->IsActive() && enemy_->IsRequestingBattle()) {
 		requestBattle_ = true;
 		isFinished_ = true;
 	}
@@ -220,7 +223,7 @@ void GameScene::Update() {
 	float dz = playerPos.z - enemyPos.z;
 	float distance = std::sqrt(dx * dx + dz * dz);
 
-	if (enemy_->IsActive() && !hasBattled_ && !timer_->IsTimeOver() && distance < 1.0f) {
+	if (!isFinished_ && enemy_->IsActive() && !hasBattled_ && !timer_->IsTimeOver() && distance < 1.0f) {
 		shouldStartBattle_ = true;
 		return;
 	}
@@ -300,7 +303,7 @@ void GameScene::Draw() {
 		}
 	}
 
-	if (shouldStartBattle_) {
+	if (battleScene_) {
 		battleScene_->Draw();
 		return;
 	}
@@ -341,6 +344,17 @@ bool GameScene::IsBattleRequested() const { return requestBattle_; }
 bool GameScene::IsFinished() const { return isFinished_; }
 
 void GameScene::ClearBattleRequest() { requestBattle_ = false; }
+
+void GameScene::ResumeAffterBattle() {
+	isFinished_ = false;
+
+	// 状態リセット例（必要に応じて）
+	/*player_->SetActive(true);
+	player_->ResetAnimation();*/ // 必要なら
+	                           // 無敵時間をつけたいならここ
+	                           // camera モードを戻すなど
+}
+
 
 void GameScene::GenerateBlocks() {
 	worldTransformBlockList_.resize(kNumBlockVirtical);

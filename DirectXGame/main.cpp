@@ -1,7 +1,9 @@
 #include "Audio.h"
 #include "AxisIndicator.h"
+#include "BattleScene.h"
 #include "Clear.h"
 #include "DirectXCommon.h"
+#include "GameRulu.h"
 #include "GameScene.h"
 #include "ImGuiManager.h"
 #include "Over.h"
@@ -10,9 +12,6 @@
 #include "TitleScene.h"
 #include "Tutorial.h"
 #include "WinApp.h"
-// #include "gauge.h"
-// #include "character.h"
-#include "BattleScene.h"
 
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
@@ -20,12 +19,14 @@ Tutorial* tutorialScene = nullptr;
 Clear* clearScene_ = nullptr;
 Over* overScene_ = nullptr;
 BattleScene* battleScene = nullptr;
+GameRulu* gameRulu_ = nullptr;
 
 // シーン(型)
 enum class Scene {
 	kUnknown = 0,
 
 	kTitle,
+	kGameRulu,
 	kTutorial,
 	kGame,
 	kBattle,
@@ -144,6 +145,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 各種解放
 	delete gameScene;
 	delete titleScene;
+	delete gameRulu_;
 	delete tutorialScene;
 	delete clearScene_;
 	delete overScene_;
@@ -164,9 +166,9 @@ void ChangeScene() {
 	switch (scene) {
 	case Scene::kTitle:
 		if (titleScene && titleScene->IsFinished()) {
-			if (!tutorialScene) {
-				tutorialScene = new Tutorial;
-				tutorialScene->Initialize();
+			if (!gameRulu_) {
+				gameRulu_ = new GameRulu;
+				gameRulu_->Initialize();
 			}
 
 			// ★ ここで GameScene を再生成する！
@@ -177,6 +179,17 @@ void ChangeScene() {
 
 			delete titleScene;
 			titleScene = nullptr;
+			scene = Scene::kGameRulu;
+		}
+		break;
+
+	case Scene::kGameRulu:
+		if (gameRulu_ && gameRulu_->IsFinished()) {
+			delete gameRulu_;
+			gameRulu_ = nullptr;
+
+			tutorialScene = new Tutorial();
+			tutorialScene->Initialize();
 			scene = Scene::kTutorial;
 		}
 		break;
@@ -208,22 +221,18 @@ void ChangeScene() {
 					}
 					scene = Scene::kBattle;
 					return;
-				}
-
-				if (gameScene->IsClear()) {
+				} else if (gameScene->IsClear()) {
+					// ↓ここで gameScene を delete してしまうと戻れなくなる
 					delete gameScene;
-					gameScene = nullptr;
 
 					if (!clearScene_) {
 						clearScene_ = new Clear;
 						clearScene_->Initialize();
 					}
 					scene = Scene::kClear;
-					return; // ← 追加：このフレームでの処理をここで終わらせる
-
-				} else {
+					return;
+				} else if (gameScene->IsFinished()) {
 					delete gameScene;
-					gameScene = nullptr;
 
 					if (!overScene_) {
 						overScene_ = new Over;
@@ -244,17 +253,19 @@ void ChangeScene() {
 			battleScene = nullptr;
 
 			if (result == BattleScene::BattleResult::PlayerWin) {
-				if (!gameScene) {
-					gameScene = new GameScene;
-					gameScene->Initialize();
+				if (gameScene) {
+					gameScene->ClearBattleRequest();
+					gameScene->ResumeAffterBattle();
+					gameScene->ResetBattleTrigger();
+					gameScene->SetFinishFlag(false);
 				}
-
-				// ★ここでバトルリクエストを解除する
-				gameScene->ClearBattleRequest();
-
-				scene = Scene::kGame;
-
+				gameScene = new GameScene();
+				gameScene->Initialize();
+				scene = Scene::kGame; // ← 再開するだけでOK
 			} else if (result == BattleScene::BattleResult::PlayerLose) {
+				delete gameScene;
+				gameScene = nullptr;
+
 				if (!overScene_) {
 					overScene_ = new Over;
 					overScene_->Initialize();
@@ -294,6 +305,11 @@ void UpdateScene() {
 		if (titleScene)
 			titleScene->Update();
 		break;
+	case Scene::kGameRulu:
+		if (gameRulu_)
+			gameRulu_->Update();
+		break;
+
 	case Scene::kTutorial:
 		if (tutorialScene)
 			tutorialScene->Update();
@@ -304,6 +320,7 @@ void UpdateScene() {
 		break;
 	case Scene::kBattle:
 		if (battleScene) {
+			printf("バトルシーン更新中/n");
 			battleScene->Update();
 		}
 		break;
@@ -323,6 +340,10 @@ void DrawScene() {
 	case Scene::kTitle:
 		if (titleScene)
 			titleScene->Draw();
+		break;
+	case Scene::kGameRulu:
+		if (gameRulu_)
+			gameRulu_->Draw();
 		break;
 	case Scene::kTutorial:
 		if (tutorialScene)

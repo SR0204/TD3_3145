@@ -26,7 +26,7 @@ void BattleScene::Initialize() {
 
 	// プレイヤーと敵のHP初期化（ここ重要）
 	player = Character(100); // HP100のキャラを作成
-	enemy = Character(1);
+	enemy = Character(10);
 
 	// ゲージの初期化（毎回作り直す）
 	if (attackGauge) {

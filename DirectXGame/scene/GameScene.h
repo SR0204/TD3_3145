@@ -74,6 +74,7 @@ public: // メンバ関数
 	bool IsFinished() const;
 
 	void ClearBattleRequest();
+	void ResumeAffterBattle();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -156,7 +157,7 @@ private: // メンバ変数
 	bool requestBattle_ = false;
 	bool isFinished_ = false;
 
-	//バトルシーン
+	// バトルシーン
 	BattleScene* battleScene_ = nullptr;
 	bool hasBattled_ = false; // もう戦ったかどうか
 };

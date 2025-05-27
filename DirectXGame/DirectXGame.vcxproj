@@ -114,6 +114,7 @@
     <ClCompile Include="character.cpp" />
     <ClCompile Include="Clear.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="GameRulu.cpp" />
     <ClCompile Include="game_manager.cpp" />
     <ClCompile Include="Gauge.cpp" />
     <ClCompile Include="InputEx.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="character.h" />
     <ClInclude Include="Clear.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="GameRulu.h" />
     <ClInclude Include="game_manager.h" />
     <ClInclude Include="Gauge.h" />
     <ClInclude Include="input\Input.h" />
