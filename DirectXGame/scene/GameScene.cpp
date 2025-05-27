@@ -46,6 +46,7 @@ GameScene::~GameScene() {
 	delete SkySphere_;
 
 	delete player_;
+	player_ = nullptr;
 	delete playerCamera_;
 	delete overHeadCamera_;
 
@@ -97,7 +98,9 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
 	playerPosition.y = 2;
 
-	player_ = new Player(this);          // プレイヤーの生成
+	if (!player_) {
+		player_ = new Player(this); // 生成は一度だけ
+	}
 	player_->Initialize(playerPosition); // プレイヤーの初期化
 	player_->SetMapChipField(mapChipFiled_);
 
@@ -154,17 +157,42 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
-	// バトル状態ならバトル更新だけ行って即 return
-	if (shouldStartBattle_ && battleScene_) {
+	if (needsPlayerResume_) {
+		if (player_) {
+			delete player_;
+			player_ = nullptr;
+		}
+
+		Vector3 pos = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
+		pos.y = 2;
+
+		player_ = new Player(this);
+		player_->Initialize(pos);
+		player_->SetMapChipField(mapChipFiled_);
+		playerCamera_->SetParent(&player_->GetWorldTransform());
+		needsPlayerResume_ = false;
+	}
+
+	// バトル中かどうかチェック
+	if (shouldStartBattle_) {
+		// battleScene_ が nullptr なら BattleScene を生成
+		if (battleScene_ == nullptr) {
+			battleScene_ = new BattleScene();
+			battleScene_->Initialize();
+			return; // 初期化後は処理を終える（次フレームから Update される）
+		}
+
+		// battleScene_ があるならバトル更新
 		battleScene_->Update();
 
+		// バトル終了チェック
 		if (battleScene_->IsFinished()) {
 			BattleScene::BattleResult result = battleScene_->GetResult();
 
 			if (result == BattleScene::BattleResult::PlayerLose) {
 				isFinished_ = true;
 				audio_->StopWave(playMusic);
-				return; // ゲーム終了状態なので return
+				return;
 			} else if (result == BattleScene::BattleResult::PlayerWin) {
 				delete battleScene_;
 				battleScene_ = nullptr;
@@ -173,11 +201,12 @@ void GameScene::Update() {
 				hasBattled_ = true;
 				enemy_->SetActive(false);
 				enemy_->SetRequestBattle(false);
-				ResumeAffterBattle(); // 状態復帰
-				                      // ※ここでは return しない
+				ResumeAffterBattle(); // プレイヤーとカメラなどを復帰
+
+				// ここで return しないことで、通常更新処理に進む
 			}
 		} else {
-			return; // バトルがまだ続いている
+			return; // バトルが継続中の場合、通常処理は行わない
 		}
 	}
 
@@ -226,6 +255,11 @@ void GameScene::Update() {
 	if (!isFinished_ && enemy_->IsActive() && !hasBattled_ && !timer_->IsTimeOver() && distance < 1.0f) {
 		shouldStartBattle_ = true;
 		return;
+	}
+
+	if (shouldStartBattle_ && battleScene_ == nullptr) {
+		battleScene_ = new BattleScene();
+		battleScene_->Initialize();
 	}
 
 	SkySphere_->Update();
@@ -348,13 +382,17 @@ void GameScene::ClearBattleRequest() { requestBattle_ = false; }
 void GameScene::ResumeAffterBattle() {
 	isFinished_ = false;
 
-	// 状態リセット例（必要に応じて）
-	/*player_->SetActive(true);
-	player_->ResetAnimation();*/ // 必要なら
-	                           // 無敵時間をつけたいならここ
-	                           // camera モードを戻すなど
-}
+	needsPlayerResume_ = true;
 
+	// 位置を元に戻すだけ
+	Vector3 pos = mapChipFiled_->GetMapChipPositionByIndex(14, 3);
+	pos.y = 2;
+
+	if (player_) {
+		player_->Initialize(pos); // 再初期化（メモリ確保は不要）
+		player_->SetMapChipField(mapChipFiled_);
+	}
+}
 
 void GameScene::GenerateBlocks() {
 	worldTransformBlockList_.resize(kNumBlockVirtical);

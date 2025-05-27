@@ -144,11 +144,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 各種解放
 	delete gameScene;
+	gameScene = nullptr;
 	delete titleScene;
+	titleScene = nullptr;
 	delete gameRulu_;
+	gameRulu_ = nullptr;
 	delete tutorialScene;
+	tutorialScene = nullptr;
 	delete clearScene_;
+	clearScene_ = nullptr;
 	delete overScene_;
+	overScene_ = nullptr;
 
 	// 3Dモデル解放
 	Model::StaticFinalize();
@@ -177,6 +183,7 @@ void ChangeScene() {
 				gameScene->Initialize();
 			}
 
+
 			delete titleScene;
 			titleScene = nullptr;
 			scene = Scene::kGameRulu;
@@ -187,6 +194,11 @@ void ChangeScene() {
 		if (gameRulu_ && gameRulu_->IsFinished()) {
 			delete gameRulu_;
 			gameRulu_ = nullptr;
+
+			if (!gameScene) {
+				gameScene = new GameScene;
+				gameScene->Initialize();
+			}
 
 			tutorialScene = new Tutorial();
 			tutorialScene->Initialize();
@@ -224,6 +236,7 @@ void ChangeScene() {
 				} else if (gameScene->IsClear()) {
 					// ↓ここで gameScene を delete してしまうと戻れなくなる
 					delete gameScene;
+					gameScene = nullptr;
 
 					if (!clearScene_) {
 						clearScene_ = new Clear;
@@ -233,6 +246,7 @@ void ChangeScene() {
 					return;
 				} else if (gameScene->IsFinished()) {
 					delete gameScene;
+					gameScene = nullptr;
 
 					if (!overScene_) {
 						overScene_ = new Over;
@@ -259,7 +273,6 @@ void ChangeScene() {
 					gameScene->ResetBattleTrigger();
 					gameScene->SetFinishFlag(false);
 				}
-				gameScene = new GameScene();
 				gameScene->Initialize();
 				scene = Scene::kGame; // ← 再開するだけでOK
 			} else if (result == BattleScene::BattleResult::PlayerLose) {

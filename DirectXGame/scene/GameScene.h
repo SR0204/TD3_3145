@@ -160,4 +160,6 @@ private: // メンバ変数
 	// バトルシーン
 	BattleScene* battleScene_ = nullptr;
 	bool hasBattled_ = false; // もう戦ったかどうか
+
+	bool needsPlayerResume_ = false;
 };

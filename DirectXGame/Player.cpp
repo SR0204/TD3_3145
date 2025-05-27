@@ -17,8 +17,11 @@ Player::Player(GameScene* gameScene) {
 Player::~Player() { delete model_; }
 
 void Player::Initialize(const Vector3& position) {
+
+	if (!model_) {
+		model_ = Model::CreateFromOBJ("player"); // モデルの生成
+	}
 	worldTransform_.Initialize();                           // ワールド変換データの初期化
-	model_ = Model::CreateFromOBJ("player");                // モデルの生成
 	textureHandle_ = TextureManager::Load("uvChecker.png"); // テクスチャの読み込み
 	input_ = Input::GetInstance();                          // 入力のインスタンスを取得
 
@@ -72,9 +75,8 @@ void Player::Update() {
 	rightStickUnitVector_ = {static_cast<float>(rightThumbX) / rightStickLange_, static_cast<float>(rightThumbY) / rightStickLange_};
 
 	//// コントローラーの状態をImGuiで出力
-	
+
 	if (dwResult == ERROR_SUCCESS) {
-		
 	}
 
 	/// ーーーここまでーーー
@@ -175,7 +177,7 @@ void Player::Update() {
 	if (!CheckMapCollision(collisionMapInfo) && !CheckCollisionWithCSVMap(collisionMapInfo)) {
 		worldTransform_.translation_ += nextMove;
 	} else {
-		//moveVel_ = {0.0f, 0.0f, 0.0f};
+		// moveVel_ = {0.0f, 0.0f, 0.0f};
 	}
 
 	// まずクリアブロック判定
