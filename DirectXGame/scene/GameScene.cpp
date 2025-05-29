@@ -113,8 +113,8 @@ void GameScene::Initialize() {
 
 	isOverHeadCameraActive_ = false; // 俯瞰カメラのアクティブ
 
-	AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
+	//AxisIndicator::GetInstance()->SetVisible(true);                          // 軸方向表示の表示を有効化
+	//AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection_); // 軸方向表示が表示するビュープロジェクションを指定する（アドレス渡し）
 
 	// 天球の生成
 	modelSkySphere_ = Model::CreateFromOBJ("SkySphere", true);
