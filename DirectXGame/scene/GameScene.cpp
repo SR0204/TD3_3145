@@ -19,6 +19,7 @@ GameScene::GameScene()
 	isClear_ = false;
 }
 
+
 GameScene::~GameScene() {
 
 	delete modelBlock_;
