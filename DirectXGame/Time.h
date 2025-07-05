@@ -1,6 +1,6 @@
 //#include "imgui.h"
 #include "Audio.h"
-//#include <DirectXCommon.cpp>
+#include <DirectXCommon.cpp>
 #include <Input.h>
 #include <Model.h>
 #include <chrono>
